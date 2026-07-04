@@ -24,6 +24,12 @@ ACGT = set("ACGT")
 AUTOSOMES = {f"chr{i}" for i in range(1, 23)}
 
 
+def col(f, ix, name):
+    """Uppercased value of column `name`, or "" if the column is absent or the row is short."""
+    j = ix.get(name)
+    return f[j].upper() if j is not None and j < len(f) else ""
+
+
 def orient(chrom, pos, a1, a2):
     """(ref, alt): ref = the reference-matching allele (longest match, so an
     indel's deleted-sequence allele is REF); None if neither matches the genome."""
@@ -72,9 +78,10 @@ for sf in SCOREFILES:
                 pos = int(f[ix[pos_col]])
             except (ValueError, KeyError, IndexError):
                 continue                                # unmapped variant (blank hm_pos)
-            ea, oa = f[ix["effect_allele"]].upper(), f[ix["other_allele"]].upper()
-            if not oa and "hm_inferOtherAllele" in ix:  # raw hmPOS may leave other_allele blank
-                oa = f[ix["hm_inferOtherAllele"]].upper()
+            # other_allele may be blank OR absent as a column in some raw hmPOS scorefiles;
+            # fall back to hm_inferOtherAllele. col() tolerates missing cols and short rows.
+            ea = col(f, ix, "effect_allele")
+            oa = col(f, ix, "other_allele") or col(f, ix, "hm_inferOtherAllele")
             if not ea or not oa or not (set(ea) <= ACGT and set(oa) <= ACGT):
                 skip_nonacgt += 1
                 continue
