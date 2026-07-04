@@ -221,6 +221,66 @@ On a real 55-trait selection: 83 of 108 scores graded A, 11 B, and the 14 C/D ar
 exactly the thin-evidence traits (AMD, ankylosing spondylitis, coeliac, migraine…),
 auto-caveated rather than hidden or hard-excluded.
 
+At `TOP_N=2` (two scores per trait for consensus), the full 61-trait set resolves to
+**119 PGS scorefiles** (some thin traits have only one usable score). The full-set run
+force-genotypes at the union of their loci (**12.6M autosomal sites** on HG001).
+
+### The full trait list
+
+Every trait in `LAUNCH_SET` (`bin/select_pgs.py`), with the PGS Catalog trait ontology
+ID each is resolved against. Grades are per-score and data-driven (§4), so a trait's
+tier is its *posture*, not a fixed grade.
+
+**Core — 25 (grade-A-capable, headline):**
+
+| Trait | Ontology ID | | Trait | Ontology ID |
+|---|---|---|---|---|
+| coronary artery disease | MONDO_0005010 | | age-related macular degeneration | MONDO_0005150 |
+| type 2 diabetes | MONDO_0005148 | | osteoporosis | MONDO_0005298 |
+| atrial fibrillation | MONDO_0004981 | | gout | MONDO_0005393 |
+| ischemic stroke | HP_0002140 | | type 1 diabetes | MONDO_0005147 |
+| LDL cholesterol | EFO_0004611 | | coeliac disease | MONDO_0005130 |
+| HDL cholesterol | EFO_0004612 | | hypothyroidism | MONDO_0005420 |
+| triglycerides | EFO_0004530 | | breast cancer | MONDO_0004989 |
+| lipoprotein(a) | EFO_0006925 | | prostate cancer | MONDO_0005159 |
+| body mass index | EFO_0004340 | | colorectal cancer | MONDO_0005575 |
+| chronic kidney disease | MONDO_0005300 | | melanoma | MONDO_0005105 |
+| heart failure | MONDO_0005252 | | lung cancer | MONDO_0005138 |
+| venous thromboembolism | MONDO_0005399 | | glaucoma | MONDO_0005041 |
+| hypertension | MONDO_0001134 | | | |
+
+**Extended — 30 (grade ≥ B, informative):**
+
+| Trait | Ontology ID | | Trait | Ontology ID |
+|---|---|---|---|---|
+| rheumatoid arthritis | MONDO_0008383 | | thyroid cancer | MONDO_0015075 |
+| inflammatory bowel disease | MONDO_0005265 | | endometrial cancer | MONDO_0002447 |
+| psoriasis | MONDO_0005083 | | basal cell carcinoma | MONDO_0020804 |
+| multiple sclerosis | MONDO_0005301 | | osteoarthritis | MONDO_0006629 |
+| systemic lupus erythematosus | MONDO_0007915 | | hyperthyroidism | MONDO_0010138 |
+| ankylosing spondylitis | MONDO_0005306 | | polycystic ovary syndrome | MONDO_0008559 |
+| asthma | MONDO_0004979 | | cataract | MONDO_0005129 |
+| chronic obstructive pulmonary disease | MONDO_0005002 | | fatty liver disease | MONDO_0013209 |
+| Parkinson disease | MONDO_0005180 | | gallstones | MONDO_0012672 |
+| migraine | MONDO_0005277 | | abdominal aortic aneurysm | MONDO_0005350 |
+| Alzheimer disease | MONDO_0004975 | | C-reactive protein | EFO_0004458 |
+| atopic dermatitis | MONDO_0004980 | | HbA1c | EFO_0004541 |
+| ovarian cancer | MONDO_0005140 | | height | OBA_VT0001253 |
+| pancreatic cancer | MONDO_0005192 | | waist-hip ratio | EFO_0004343 |
+| bladder cancer | MONDO_0004986 | | | |
+| testicular cancer | MONDO_0005447 | | | |
+
+**Gated — 6 (opt-in; sensitive / behavioural — off by default):**
+
+| Trait | Ontology ID |
+|---|---|
+| schizophrenia | MONDO_0005090 |
+| major depressive disorder | MONDO_0002009 |
+| bipolar disorder | MONDO_0004985 |
+| ADHD | MONDO_0007743 |
+| autism spectrum disorder | MONDO_0005258 |
+| intelligence | EFO_0004337 |
+
 ### On ancestry sources beyond European
 
 Non-European GWAS exist and are growing: Biobank Japan (East Asian), the Million
@@ -237,8 +297,23 @@ matched or multi-ancestry-trained scores, instead of always the best-evidence
 ## 7. Performance and caching
 
 The expensive stage is genotype-prep (force-genotyping millions of scattered loci,
-seek-bound on the BAM). It is chunk-parallel: the coord-sorted targets are split
-into N contiguous genomic blocks run concurrently (genome-partitioned parallelism).
+seek-bound on the BAM). It is chunk-parallel: the coord-sorted targets are split into
+`NPROC * 4` contiguous genomic blocks and pulled dynamically by `NPROC` workers
+(`xargs -P`), so the deepest-region chunk — the mpileup straggler — is ~1/4 the size
+and no worker sits idle at the tail. On the 61-trait set (12.6M loci, 60 workers) prep
+runs in ~15 min at ~99.9% genotyped.
+
+Three cheap prep-stage wins keep that number down:
+
+- **Memoized target orientation** (`scoring_targets.py`): overlapping scorefiles share
+  most loci, so each `(chrom,pos,allele)` is oriented against the FASTA once, not once
+  per scorefile that references it. On 119 heavily-overlapping scorefiles this collapses
+  tens of millions of FASTA fetches to the unique-locus count.
+- **No unused FORMAT fields**: mpileup drops `FORMAT/DP,FORMAT/AD` — plink2 scores off
+  `GT`, nothing downstream reads them, so computing them is pure waste.
+- **ALT-allele cap** (`MAX_ALTS=100`): plink2's VCF import aborts above 254 ALTs, and at
+  scale a single indel hotspot can accumulate hundreds of distinct ALTs across scorefiles.
+  Capping well under the limit keeps the score pass from crashing (~10 of 12.6M sites).
 
 Caching, in order of real impact:
 
@@ -246,7 +321,9 @@ Caching, in order of real impact:
   and the ~1.5–2 h genotype-prep. A re-run or a new trait whose loci are already
   prepped becomes score-only (~90–110s of compute).
 - **`--scorefile-cache`**: locally cached PGS Catalog scoring files feed pgsc_calc
-  `--scorefile`, skipping the ~40–58s per-run download.
+  `--scorefile`, skipping the ~40–58s per-run download — **and** on a BAM run with every
+  score cached, the harmonize nextflow pass is skipped entirely (the cached hmPOS files
+  go straight into genotype-prep), removing one of two pgsc_calc cold-starts.
 - **`--work-cache`**: persistent nextflow work dir + `-resume` reuses the 16 GB
   panel extraction across calibrated runs.
 - **`make_pgen.sh` / `format=pfile`**: marginal (plink2's VCF→pgen is already ~13s;
@@ -295,6 +372,17 @@ docs/    this file + pgs-pipeline-spec.md
   ancestry call is in `pop_summary.csv`. The grader handles all three.
 - **chrX in the scoring set breaks plink2 without sample sex.** poly-suite restricts
   targets to autosomes.
+- **plink2 VCF import caps at 254 ALT alleles per site.** Across many scorefiles one
+  indel hotspot can pile up hundreds of distinct ALTs; the score pass aborts with
+  "variant with N ALT alleles; limited to 254". `scoring_targets.py` caps at
+  `MAX_ALTS=100`. (Surfaced only at 61-trait scale — 18 traits never hit it.)
+- **Harmonized scorefiles come in two shapes.** Raw PGS-Catalog `*_hmPOS_GRCh38.txt.gz`
+  carry a `#` comment header and put GRCh38 coords in `hm_chr`/`hm_pos` (the plain
+  `chr_name`/`chr_position` are the *original* build), and some omit `other_allele`
+  entirely (only `hm_inferOtherAllele`). pgsc_calc's own `normalised_*` files are
+  headerless with GRCh38 already in `chr_name`/`chr_position`. `scoring_targets.py`
+  reads both, so the harmonize-skip fast path (feeding cached raw files straight to
+  genotype-prep) produces identical targets.
 
 ---
 

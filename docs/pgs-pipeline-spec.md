@@ -121,9 +121,13 @@ samplesheets (1000G/HGDP samples) as SVcaller ships GIAB ones.
 
 ## 7. Open dependencies to resolve during build
 
-- **Full-genotype input for validation samples** (benchmark VCFs are variant-only) — genotype
-  from BAM or use 1000G callsets.
+- ~~**Full-genotype input for validation samples**~~ — RESOLVED: `bin/genotype_prep.sh`
+  force-genotypes the GIAB HG001 BAM at scoring loci (99.8% CAD coverage).
 - **Baseline-incidence data** per trait × ancestry × sex/age (for absolute risk) — source
-  (e.g., SEER for cancers, national registries for CVD); a real data-gathering task.
-- **16 GB ancestry panel** (`pgsc_HGDP+1kGP_v1.tar.zst`) — one-time download.
-- **Which traits/PGS** are in the launch set, and the evidence-grade thresholds.
+  (e.g., SEER for cancers, national registries for CVD); a real data-gathering task. Launch
+  values in `resources/` are illustrative and need per-score verification.
+- ~~**16 GB ancestry panel**~~ — RESOLVED: `pgsc_HGDP+1kGP_v1.tar.zst` present at
+  `ref/pgsc/`, wired via `--panel`/`--run_ancestry` (+ `--work-cache` reuses its extraction).
+- ~~**Which traits/PGS in the launch set**~~ — RESOLVED: 61-trait tiered set
+  (25 core + 30 extended + 6 gated) in `bin/select_pgs.py`; evidence grade is the
+  data-sufficiency filter (thin traits self-downgrade). See Documentation.md §6.

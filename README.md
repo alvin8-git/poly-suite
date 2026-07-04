@@ -47,16 +47,21 @@ work/       Nextflow work dir
 docs/       Documentation.md (the 101) + pgs-pipeline-spec.md
 ```
 
-## Run (current: scoring core + grading)
+## Run
 
-One command (orchestrator):
+One command (orchestrator) — BAM → prep → score → ancestry → grade → report:
 ```bash
 bin/run.sh --sample HG001 --pgs "PGS000018,PGS000004" --outdir results/hg001 \
   --bam /data/alvin/ref/GIAB/HG001.bwa.sortdup.bqsr.bam \
   --bootstrap-vcf data/HG001_GRCh38_benchmark.vcf.gz \
-  --panel /data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst      # optional; omit = uncalibrated
+  --panel /data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst \    # optional; omit = uncalibrated
+  --scorefile-cache cache/scorefiles --work-cache work        # optional; reuse downloads + panel
 # add --dry-run to print the plan. Or run the stages manually:
 ```
+
+Full launch set (61 traits, 119 scorefiles at top-2): resolve with
+`python3 bin/select_pgs.py results/meta.json 2 all`, then pass the resolved ids as `--pgs`.
+See [Documentation.md §6](docs/Documentation.md#6-the-tiered-launch-set) for the trait list.
 
 Manual stages:
 ```bash
@@ -68,7 +73,7 @@ NPROC=32 bin/genotype_prep.sh \
   results/prep/HG001.vcf.gz  work/**/normalised_PGS000018_hmPOS_GRCh38.txt.gz ...
 #    then point the samplesheet at results/prep/HG001 (path_prefix, format vcf)
 
-# 1. score (pgsc_calc, containerized) — no ancestry panel yet (staged, see review §4)
+# 1. score (pgsc_calc, containerized). Add --run_ancestry <panel> for calibrated percentiles.
 nextflow run pgscatalog/pgsc_calc -profile docker \
   --input data/samplesheet.csv --target_build GRCh38 \
   --pgs_id PGS000018,PGS000004 --min_overlap 0.1 \
@@ -99,8 +104,8 @@ controlled-vocab caveats.
 - **Variant-only VCFs cannot support a valid PRS.** A GIAB benchmark VCF lists only
   non-ref sites, so scoring loci where the sample is hom-ref are *missing*, not dosage 0.
   Coverage comes out low and the score is biased. The grader correctly grades these **D**
-  and refuses a percentile. Accurate scoring needs a full-genotype VCF (call the BAM
-  genome-wide) — the genotype-prep stage (review §4/§6, not yet built).
+  and refuses a percentile. The genotype-prep stage (`bin/genotype_prep.sh`) fixes this by
+  force-calling the BAM at the scoring alleles — CAD coverage 27.5% → 99.8% (below).
 
 ## Resources on this box (`/data/alvin/ref`)
 
@@ -112,8 +117,8 @@ controlled-vocab caveats.
 - **`ref/GRCh38/`** — hg38 FASTA, **bwa-mem2 indexed** (`.0123/.bwt.2bit.64/...`) +
   `GRCh38.dict` — everything alignment + calling needs. `hg38.alphabetical.fa` is the
   canonical reference.
-- **`ref/pgsc/`** — ancestry-panel staging dir (16 GB HGDP+1kGP panel goes here for
-  `--run_ancestry`; not downloaded yet). `ref/vep_cache/`, `ref/annotsv/` — annotation.
+- **`ref/pgsc/`** — the 16 GB HGDP+1kGP ancestry panel (`pgsc_HGDP+1kGP_v1.tar.zst`) for
+  `--run_ancestry`; present and wired. `ref/vep_cache/`, `ref/annotsv/` — annotation.
 
 ## Validated (HG001, variant-only benchmark VCF)
 
@@ -145,6 +150,19 @@ strand-ambiguous SNPs pgsc_calc excludes. Including indels is the next increment
 
 ## Status
 
+- [x] **Full 61-trait launch run (HG001)** — `select_pgs.py … all` → 119 scorefiles at top-2,
+      force-genotyped at the **union of 12.6M autosomal loci** (99.9% genotyped), scored +
+      ancestry-calibrated + graded. Runs on the fully-optimized path (scorefile-cache →
+      harmonize-skip, reused panel extraction). See `results/launch61/`.
+- [x] **Genotype-prep perf pass** — memoized target orientation (each locus oriented vs the
+      FASTA once across overlapping scorefiles, not once per scorefile), over-split chunks
+      (`NPROC*4`, dynamic `xargs -P` pull) to kill the mpileup straggler, dropped the unused
+      `FORMAT/DP,FORMAT/AD`, and record-count from the index (no full-decompress).
+- [x] **Scale fixes exposed at 61 traits** — `scoring_targets.py` reads both harmonized
+      formats (raw `*_hmPOS_*` with `hm_chr`/`hm_pos` + `#` header, and `normalised_*`),
+      tolerates a missing `other_allele` column (falls back to `hm_inferOtherAllele`), and
+      caps ALTs at 100 (plink2's VCF import aborts above 254). `run.sh --scorefile-cache` now
+      also skips the harmonize nextflow run on a full cache hit.
 - [x] **Prep-once + caching speedup** (`run.sh --reuse-prep`, `--work-cache`) — reuse a cached
       full-union prepped VCF (skips harmonize + the multi-hour genotype-prep; a re-run/new-trait
       drops from hours to minutes) and share a nextflow work dir so the 16GB panel extraction is
