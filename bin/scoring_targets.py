@@ -22,6 +22,10 @@ ACGT = set("ACGT")
 # Autosomes only: chrX needs sex-aware (haploid-male) dosage that pgsc_calc/plink2
 # reject without sample sex; chrX is a small coverage fraction. Documented limitation.
 AUTOSOMES = {f"chr{i}" for i in range(1, 23)}
+# plink2's VCF import caps a site at 254 ALT alleles. Across many scorefiles a
+# single indel hotspot can accumulate hundreds of distinct ALTs (representation
+# artifacts); cap well under the limit so pgsc_calc's plink2 step doesn't abort.
+MAX_ALTS = 100
 
 
 def col(f, ix, name):
@@ -106,11 +110,17 @@ for sf in SCOREFILES:
                 skip_conflict += 1                          # conflicting REF orientation
 
 rows = sorted(sites.items(), key=lambda kv: (order.get(kv[0][0], 1 << 30), kv[0][1]))
+n_capped = 0
 with open(OUT, "w") as out:
     for (chrom, pos), v in rows:
-        out.write(f"{chrom}\t{pos}\t{v['ref']},{','.join(v['alts'])}\n")
+        alts = v["alts"]
+        if len(alts) > MAX_ALTS:                        # keep plink2 (<=254 ALT) happy
+            alts = alts[:MAX_ALTS]
+            n_capped += 1
+        out.write(f"{chrom}\t{pos}\t{v['ref']},{','.join(alts)}\n")
 
 sys.stderr.write(
     f"[scoring_targets] {len(rows):,} sites ({n_indel:,} indels) | dropped: "
     f"refmismatch={skip_refmismatch:,} off-contig={skip_contig:,} "
-    f"non-ACGT={skip_nonacgt:,} ref-conflict={skip_conflict:,} sex-chr={skip_sex:,}\n")
+    f"non-ACGT={skip_nonacgt:,} ref-conflict={skip_conflict:,} sex-chr={skip_sex:,} "
+    f"| alt-capped sites (>{MAX_ALTS} ALT): {n_capped:,}\n")
