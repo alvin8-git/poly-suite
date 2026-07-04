@@ -20,6 +20,8 @@ reproducible/referenced output.
 
 **Docs:** [Documentation.md](docs/Documentation.md) — the 101 (science, decisions, architecture) · [pgs-pipeline-spec.md](docs/pgs-pipeline-spec.md) — build spec.
 
+**Example output:** [`examples/HG001-18trait/`](examples/HG001-18trait/) — the calibrated 18-trait card for GIAB HG001 (report.html + pgs_scores.tsv/.json + provenance).
+
 ## Layout
 
 ```
