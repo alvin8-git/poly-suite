@@ -19,6 +19,8 @@ cache/
 *.tar.zst.part
 
 # logs, python cache, editor/agent scratch
+logs/
+scratch/
 *.log
 __pycache__/
 *.pyc
