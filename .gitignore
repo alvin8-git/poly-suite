@@ -1,0 +1,28 @@
+# poly-suite — track source only; everything below is data / build output.
+
+# pipeline outputs and nextflow work dirs (tens of GB)
+results/
+work/
+work_*/
+.nextflow/
+.nextflow.log*
+
+# localized test data, caches, panels (large; fetched/derived, not source)
+data/
+cache/
+*.vcf.gz
+*.vcf.gz.tbi
+*.pgen
+*.pvar
+*.psam
+*.tar.zst
+*.tar.zst.part
+
+# logs, python cache, editor/agent scratch
+*.log
+__pycache__/
+*.pyc
+.omc/
+
+# AI-harness config, not part of the pipeline
+CLAUDE.md
