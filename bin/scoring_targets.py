@@ -38,6 +38,8 @@ def orient(chrom, pos, a1, a2):
 
 
 sites = {}  # (chrom,pos) -> {"ref": ref, "alts": [alt,...]}
+orient_cache = {}  # (chrom,pos,ea,oa) -> orient() result; overlapping scorefiles share loci,
+                   # so this collapses N*variants FASTA fetches down to ~unique loci.
 n_indel = skip_contig = skip_nonacgt = skip_refmismatch = skip_conflict = skip_sex = 0
 for sf in SCOREFILES:
     with gzip.open(sf, "rt") as fh:
@@ -60,7 +62,11 @@ for sf in SCOREFILES:
             if not ea or not oa or not (set(ea) <= ACGT and set(oa) <= ACGT):
                 skip_nonacgt += 1
                 continue
-            o = orient(chrom, pos, ea, oa)
+            ck = (chrom, pos, ea, oa)
+            if ck in orient_cache:
+                o = orient_cache[ck]
+            else:
+                o = orient_cache[ck] = orient(chrom, pos, ea, oa)
             if o is None:
                 skip_refmismatch += 1
                 continue

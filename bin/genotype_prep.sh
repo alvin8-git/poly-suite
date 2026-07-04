@@ -20,11 +20,15 @@ ALL="$OUTDIR/${BASE}.targets.tsv"
 echo "[genotype-prep] building targets from ${#SCOREFILES[@]} scorefile(s)..."
 python3 "$HERE/scoring_targets.py" "$ALL" "$REF" "${SCOREFILES[@]}"
 NSITES=$(wc -l < "$ALL")
-echo "[genotype-prep] $NSITES targets -> $NPROC parallel chunks"
+# Over-split (4x the worker count) so xargs -P pulls chunks dynamically: mpileup cost
+# tracks read depth, not site count, so equal-line chunks are uneven. Smaller chunks
+# shrink the deepest-region straggler to ~1/4 and keep all workers busy to the end.
+NCHUNK=$((NPROC * 4))
+echo "[genotype-prep] $NSITES targets -> $NCHUNK chunks across $NPROC workers"
 
-# split into NPROC coord-ordered chunks (split -n l/N preserves line order, and
-# ALL is already sorted, so chunk k..k+1 stays genome-sorted -> concat needs no re-sort)
-split -n "l/$NPROC" -d -a 3 "$ALL" "$CHUNK/part_"
+# split into coord-ordered chunks (split -n l/N preserves line order, and ALL is
+# already sorted, so chunk k..k+1 stays genome-sorted -> concat needs no re-sort)
+split -n "l/$NCHUNK" -d -a 3 "$ALL" "$CHUNK/part_"
 
 # force-genotype one chunk (alleles file for `call -C alleles`, regions for mpileup -R)
 force_chunk() {
@@ -34,7 +38,7 @@ force_chunk() {
   bgzip -f "$t.regions"; tabix -s1 -b2 -e2 -f "$t.regions.gz"
   docker run --rm -v /data:/data -w "$PWD" "$IMG" bash -c "
     set -euo pipefail
-    bcftools mpileup -f '$REF' -R '$t.regions.gz' -a FORMAT/DP,FORMAT/AD -Ou '$BAM' |
+    bcftools mpileup -f '$REF' -R '$t.regions.gz' -Ou '$BAM' |
     bcftools call -m -A -C alleles -T '$t.gz' -Oz -o '$t.vcf.gz'
   "
 }
@@ -51,4 +55,5 @@ docker run --rm -v /data:/data -w "$PWD" "$IMG" \
 tabix -f -p vcf "$OUT"
 rm -rf "$CHUNK"
 echo "[genotype-prep] done -> $OUT"
-echo "[genotype-prep] $(zcat "$OUT" | grep -vc '^#') genotype records emitted"
+# record count from the index we just built — no full decompress of the VCF
+echo "[genotype-prep] $(docker run --rm -v /data:/data -w "$PWD" "$IMG" bcftools index -n "$OUT") genotype records emitted"
