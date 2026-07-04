@@ -41,6 +41,19 @@ OUTDIR=$(readlink -f "$OUTDIR")
 ANC=(); [ -n "$PANEL" ] && ANC=(--run_ancestry "$PANEL")
 FMT=vcf   # score-input format; reuse-prep upgrades to pfile when a .pgen exists (skips VCF->pgen)
 
+# Resolve cached raw hmPOS scorefiles for a PGS list: prints one absolute path per id,
+# all-or-nothing (returns nonzero and prints nothing on the first miss). A full hit lets us
+# skip the harmonize nextflow run (feed scoring_targets.py directly) and the scoring download.
+cache_scorefile_paths() {
+  local dir=$1 ids=$2 id f out=()
+  for id in ${ids//,/ }; do
+    f="$dir/${id}_hmPOS_GRCh38.txt.gz"
+    [ -f "$f" ] || return 1
+    out+=("$(readlink -f "$f")")
+  done
+  printf '%s\n' "${out[@]}"
+}
+
 plan() { echo "  $*"; }
 echo "== poly-suite run: $SAMPLE =="
 plan "scores : $PGS"
@@ -53,11 +66,15 @@ if [ -n "$REUSE_PREP" ]; then
   plan "reuse cached prep: $SCORE_IN ($FMT)  (skip harmonize + genotype-prep${FMT:+; $FMT=no VCF conversion})"
   [ -n "$BAM" ] && [ -z "$SEX" ] && plan "infer sex from BAM"
 elif [ -n "$BAM" ]; then
-  BOOT=${BOOT:-$VCF}
-  [ -n "$BOOT" ] || { echo "BAM input needs --bootstrap-vcf (a VCF to trigger scorefile harmonization)"; exit 2; }
-  plan "step 1: harmonize scorefiles (bootstrap $BOOT)"
-  plan "step 2: genotype-prep BAM at scoring loci -> $OUTDIR/${SAMPLE}.prepped.vcf.gz"
   SCORE_IN="$OUTDIR/${SAMPLE}.prepped"
+  if [ -n "$SCOREFILE_CACHE" ] && cache_scorefile_paths "$SCOREFILE_CACHE" "$PGS" >/dev/null 2>&1; then
+    plan "step 1: scorefile-cache hit -> skip harmonize (no --bootstrap-vcf needed)"
+  else
+    BOOT=${BOOT:-$VCF}
+    [ -n "$BOOT" ] || { echo "BAM input needs --bootstrap-vcf (or --scorefile-cache with every id cached)"; exit 2; }
+    plan "step 1: harmonize scorefiles (bootstrap $BOOT)"
+  fi
+  plan "step 2: genotype-prep BAM at scoring loci -> $OUTDIR/${SAMPLE}.prepped.vcf.gz"
   [ -z "$SEX" ] && plan "step 2b: infer sex from BAM"
 else
   SCORE_IN="${VCF%.vcf.gz}"
@@ -72,13 +89,22 @@ if [ -n "$REUSE_PREP" ]; then
   [ -f "$REUSE_PREP" ] || { echo "reuse-prep VCF not found: $REUSE_PREP"; exit 1; }
   [ -z "$SEX" ] && [ -n "$BAM" ] && SEX=$(python3 bin/infer_sex.py "$BAM" | sed -n 's/.*sex=\([a-z]*\).*/\1/p')
 elif [ -n "$BAM" ]; then
-  printf 'sampleset,path_prefix,chrom,format\n%s,%s,,vcf\n' "$SAMPLE" "${BOOT%.vcf.gz}" > "$OUTDIR/hm.samplesheet.csv"
-  rm -rf "$OUTDIR/hm" "$OUTDIR/work_hm"
-  NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
-    --input "$OUTDIR/hm.samplesheet.csv" --target_build GRCh38 --pgs_id "$PGS" --min_overlap 0.1 \
-    -c conf/rootless.config --outdir "$OUTDIR/hm" -work-dir "$OUTDIR/work_hm" > "$OUTDIR/harmonize.log" 2>&1
-  mapfile -t SF < <(python3 -c "import glob,os;s={};[s.setdefault(os.path.basename(p),p) for p in glob.glob('$OUTDIR/work_hm/**/normalised_*_hmPOS_GRCh38.txt.gz',recursive=True)];print(chr(10).join(sorted(s.values())))")
-  [ "${#SF[@]}" -ge 1 ] || { echo "no harmonized scorefiles — check $OUTDIR/harmonize.log"; exit 1; }
+  # Full scorefile-cache hit -> feed the cached hmPOS files straight to genotype-prep and
+  # skip the harmonize nextflow run entirely (one fewer pgsc_calc cold-start on the BAM path).
+  SF=()
+  [ -n "$SCOREFILE_CACHE" ] && mapfile -t SF < <(cache_scorefile_paths "$SCOREFILE_CACHE" "$PGS")
+  if [ "${#SF[@]}" -gt 0 ]; then
+    echo "[harmonize] scorefile-cache hit (${#SF[@]} files) -> skipping harmonize nextflow run"
+  else
+    [ -n "$SCOREFILE_CACHE" ] && echo "[harmonize] scorefile-cache miss -> running harmonize" >&2
+    printf 'sampleset,path_prefix,chrom,format\n%s,%s,,vcf\n' "$SAMPLE" "${BOOT%.vcf.gz}" > "$OUTDIR/hm.samplesheet.csv"
+    rm -rf "$OUTDIR/hm" "$OUTDIR/work_hm"
+    NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+      --input "$OUTDIR/hm.samplesheet.csv" --target_build GRCh38 --pgs_id "$PGS" --min_overlap 0.1 \
+      -c conf/rootless.config --outdir "$OUTDIR/hm" -work-dir "$OUTDIR/work_hm" > "$OUTDIR/harmonize.log" 2>&1
+    mapfile -t SF < <(python3 -c "import glob,os;s={};[s.setdefault(os.path.basename(p),p) for p in glob.glob('$OUTDIR/work_hm/**/normalised_*_hmPOS_GRCh38.txt.gz',recursive=True)];print(chr(10).join(sorted(s.values())))")
+    [ "${#SF[@]}" -ge 1 ] || { echo "no harmonized scorefiles — check $OUTDIR/harmonize.log"; exit 1; }
+  fi
   NPROC=${NPROC:-24} bin/genotype_prep.sh "$BAM" "$REF" "$OUTDIR/${SAMPLE}.prepped.vcf.gz" "${SF[@]}"
   [ -z "$SEX" ] && SEX=$(python3 bin/infer_sex.py "$BAM" | sed -n 's/.*sex=\([a-z]*\).*/\1/p')
 fi
@@ -90,13 +116,12 @@ rm -rf "$OUTDIR/score"
 # --pgs_id, skipping the ~40-58s DOWNLOAD_SCOREFILES step. Falls back to --pgs_id on any miss.
 SCORE_SEL=(--pgs_id "$PGS")
 if [ -n "$SCOREFILE_CACHE" ]; then
-  SFDIR="$OUTDIR/scorefiles"; rm -rf "$SFDIR"; mkdir -p "$SFDIR"; miss=
-  for id in ${PGS//,/ }; do
-    f="$SCOREFILE_CACHE/${id}_hmPOS_GRCh38.txt.gz"
-    if [ -f "$f" ]; then ln -sf "$(readlink -f "$f")" "$SFDIR/"; else miss="$miss $id"; fi
-  done
-  if [ -z "$miss" ]; then SCORE_SEL=(--scorefile "$SFDIR/*.txt.gz")
-  else echo "scorefile-cache miss:$miss -> using --pgs_id" >&2; fi
+  CACHED_SF=(); mapfile -t CACHED_SF < <(cache_scorefile_paths "$SCOREFILE_CACHE" "$PGS")
+  if [ "${#CACHED_SF[@]}" -gt 0 ]; then
+    SFDIR="$OUTDIR/scorefiles"; rm -rf "$SFDIR"; mkdir -p "$SFDIR"
+    for f in "${CACHED_SF[@]}"; do ln -sf "$f" "$SFDIR/"; done
+    SCORE_SEL=(--scorefile "$SFDIR/*.txt.gz")
+  else echo "scorefile-cache miss -> using --pgs_id" >&2; fi
 fi
 # --work-cache: persistent shared work dir + -resume, so the 16GB panel extraction
 # (EXTRACT_DATABASE, keyed on the panel only) is reused across runs instead of re-unpacked.

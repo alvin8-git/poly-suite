@@ -43,10 +43,24 @@ orient_cache = {}  # (chrom,pos,ea,oa) -> orient() result; overlapping scorefile
 n_indel = skip_contig = skip_nonacgt = skip_refmismatch = skip_conflict = skip_sex = 0
 for sf in SCOREFILES:
     with gzip.open(sf, "rt") as fh:
-        ix = {c: i for i, c in enumerate(fh.readline().rstrip("\n").split("\t"))}
+        # raw PGS-Catalog *_hmPOS_*.txt.gz carry a '#' comment header; normalised_*
+        # files don't. Skip comments, then take the first real line as the header.
+        for header in fh:
+            if not header.startswith("#"):
+                break
+        else:
+            continue                                    # empty / all-comment file
+        ix = {c: i for i, c in enumerate(header.rstrip("\n").split("\t"))}
+        # raw hmPOS files hold GRCh38 coords in hm_chr/hm_pos (chr_name/chr_position are
+        # the ORIGINAL build); normalised_* files already put GRCh38 in chr_name/position.
+        chrom_col = "hm_chr" if "hm_chr" in ix else "chr_name"
+        pos_col = "hm_pos" if "hm_pos" in ix else "chr_position"
         for line in fh:
             f = line.rstrip("\n").split("\t")
-            chrom = f[ix["chr_name"]]
+            try:
+                chrom = f[ix[chrom_col]]
+            except IndexError:
+                continue
             chrom = chrom if chrom.startswith("chr") else "chr" + chrom
             if chrom not in contigs:
                 skip_contig += 1
@@ -55,10 +69,12 @@ for sf in SCOREFILES:
                 skip_sex += 1
                 continue
             try:
-                pos = int(f[ix["chr_position"]])
-            except (ValueError, KeyError):
-                continue
+                pos = int(f[ix[pos_col]])
+            except (ValueError, KeyError, IndexError):
+                continue                                # unmapped variant (blank hm_pos)
             ea, oa = f[ix["effect_allele"]].upper(), f[ix["other_allele"]].upper()
+            if not oa and "hm_inferOtherAllele" in ix:  # raw hmPOS may leave other_allele blank
+                oa = f[ix["hm_inferOtherAllele"]].upper()
             if not ea or not oa or not (set(ea) <= ACGT and set(oa) <= ACGT):
                 skip_nonacgt += 1
                 continue
