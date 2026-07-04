@@ -6,7 +6,7 @@ and that OmniGen consumes. No network/panel needed.
 Importable (validate) + CLI: validate_contract.py [results_dir]  (exit 1 on problems).
 """
 import sys, os, csv
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin"))
 from grade_pgs import CONTRACT_COLS
 
 MATCH_RATE_MIN = 0.75

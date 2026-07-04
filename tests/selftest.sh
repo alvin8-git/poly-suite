@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # poly-suite self-test: all module self-checks + unit tests. No network/BAM/panel.
-# Run: bin/selftest.sh
+# Run: tests/selftest.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -9,7 +9,7 @@ python3 bin/absolute_risk.py
 python3 bin/consensus.py
 
 echo "== unit tests =="
-python3 bin/tests.py
+python3 tests/tests.py
 
 echo "== grader end-to-end on synthetic calibrated fixture =="
 T=$(mktemp -d)/score; mkdir -p "$T"
@@ -25,7 +25,7 @@ for out in pgs_scores.tsv pgs_scores.json provenance.json report.html; do
   [ -s "$(dirname "$T")/$out" ] || { echo "FAIL: $out not produced"; exit 1; }
 done
 echo "  grader emits contract + provenance + html OK"
-python3 bin/validate_contract.py "$(dirname "$T")" >/dev/null
+python3 tests/validate_contract.py "$(dirname "$T")" >/dev/null
 echo "  contract schema + gate invariants OK"
 
 echo "ALL SELFTESTS PASSED"

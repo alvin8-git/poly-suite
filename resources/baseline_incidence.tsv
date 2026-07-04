@@ -1,0 +1,6 @@
+trait	sex	ancestry	horizon	baseline_risk	source_pmid	note
+breast cancer	female	overall	lifetime	0.129	NA	SEER US lifetime risk ~12.9% (women); ancestry-overall placeholder
+prostate cancer	male	overall	lifetime	0.125	NA	SEER US lifetime risk ~12.5% (men)
+coronary artery disease	male	overall	lifetime_from_40	0.49	10430757	Framingham lifetime CHD risk from age 40 (Lloyd-Jones 1999)
+coronary artery disease	female	overall	lifetime_from_40	0.32	10430757	Framingham lifetime CHD risk from age 40
+type 2 diabetes	overall	overall	lifetime	0.40	25411059	Gregg 2014, US lifetime T2D risk ~40%

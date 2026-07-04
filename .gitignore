@@ -26,3 +26,6 @@ __pycache__/
 
 # AI-harness config, not part of the pipeline
 CLAUDE.md
+
+# internal strategy doc (business wedge/competitive analysis) — not for public repo
+docs/pgs-space-review.md

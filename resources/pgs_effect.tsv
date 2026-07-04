@@ -1,0 +1,5 @@
+pgs_id	trait	metric	per_sd	source_pmid	note
+PGS000018	coronary artery disease	HR	1.71	30309464	Inouye 2018 metaGRS_CAD, per-SD HR (illustrative launch value; verify per score release)
+PGS000004	breast cancer	OR	1.61	30554720	Mavaddat 2019 313-variant, per-SD OR (BCAC)
+PGS000662	prostate cancer	OR	1.90	33398198	Conti 2021 multi-ancestry, per-SD OR
+PGS000014	type 2 diabetes	OR	1.50	30104762	Khera 2018 GPS_T2D, per-SD OR

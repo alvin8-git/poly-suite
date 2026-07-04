@@ -1,5 +1,13 @@
 # poly-suite
 
+![tests](https://img.shields.io/badge/tests-16%20passing-brightgreen)
+![python](https://img.shields.io/badge/python-3.8%2B-blue)
+![nextflow](https://img.shields.io/badge/nextflow-%E2%89%A5%2025.10-brightgreen)
+![scoring core](https://img.shields.io/badge/scoring%20core-pgsc__calc-informational)
+![ancestry](https://img.shields.io/badge/ancestry-FRAPOSA-9cf)
+![launch set](https://img.shields.io/badge/launch%20set-61%20traits-orange)
+![license](https://img.shields.io/badge/license-MIT-green)
+
 Standalone polygenic-score pipeline: a raw sample (WGS BAM/VCF) → a graded,
 referenced, ancestry-calibrated PGS deliverable. Sibling to pgx-suite and SVcaller.
 Independent of OmniGen — OmniGen only ever consumes this pipeline's output contract
@@ -8,7 +16,9 @@ Independent of OmniGen — OmniGen only ever consumes this pipeline's output con
 Scoring core is **pgsc_calc** (plink2 scoring + PGS harmonization + FRAPOSA ancestry) —
 not reinvented. The value-add is the pipeline around it: input-robustness, evidence-graded
 score selection, ancestry-validity gating, absolute-risk conversion, QC + honesty grading,
-reproducible/referenced output. Full case: `docs/pgs-space-review.md`, `docs/pgs-pipeline-spec.md`.
+reproducible/referenced output.
+
+**Docs:** [Documentation.md](docs/Documentation.md) — the 101 (science, decisions, architecture) · [pgs-pipeline-spec.md](docs/pgs-pipeline-spec.md) — build spec.
 
 ## Layout
 
@@ -27,12 +37,12 @@ bin/        run.sh            — end-to-end orchestrator (one entry point)
             absolute_risk.py · consensus.py · ensemble.py — actionable + robustness + meta-PGS
             provenance.py · report_html.py  — reproducibility + standalone HTML
             score_selected.sh — score the auto-selected set (calls the stages)
+tests/      tests.py + selftest.sh — 16 unit tests + self-check runner
             validate_contract.py — schema + gate-invariant validation of the output
             validate_calibration.py — calibration self-consistency (reference-panel uniformity)
-            tests.py + selftest.sh — unit tests (13) + self-check runner
 results/    pgsc_calc output + deliverable: pgs_scores.tsv/.json + provenance.json + report.html
 work/       Nextflow work dir
-docs/       spec + space review
+docs/       Documentation.md (the 101) + pgs-pipeline-spec.md
 ```
 
 ## Run (current: scoring core + grading)
@@ -181,8 +191,8 @@ strand-ambiguous SNPs pgsc_calc excludes. Including indels is the next increment
       + a "robustness LOW" caveat when scores disagree.
 - [x] **End-to-end orchestrator** (`bin/run.sh`) — one entry: BAM→harmonize→prep→score→grade→report
       or VCF→score→grade→report; optional `--panel` (ancestry) and `--sex`/auto-infer. `--dry-run` plans.
-- [x] **Test suite** (`bin/tests.py` + `bin/selftest.sh`) — 10 unit tests + module self-checks +
-      grader end-to-end; no network/BAM/panel needed. `bin/selftest.sh` is green.
+- [x] **Test suite** (`tests/tests.py` + `tests/selftest.sh`) — 16 unit tests + module self-checks +
+      grader end-to-end; no network/BAM/panel needed. `tests/selftest.sh` is green.
 - [x] **Scored the auto-selected 8-score set** (`bin/score_selected.sh`) — harmonize → genotype-prep
       at 8.1M autosomal loci → score. Coverage: CAD/breast/T1D/LDL ~100%, T2D 93%, AF 85%, prostate 77%.
       Then calibrated: **8-trait card, all grade A, EUR** (T1D 82nd, AF 4th, LDL 8th, CAD 43rd...). chrX fix noted.
@@ -203,10 +213,10 @@ strand-ambiguous SNPs pgsc_calc excludes. Including indels is the next increment
       calibrated card (HG001, EUR): **CAD 15.7th pct, grade A, ~19% risk (female)**;
       **breast 31.2nd pct, grade C** (73% coverage). Grader adapted to the ancestry output
       schema (`*_pgs.txt.gz` + `pop_summary.csv`, panel rows filtered).
-- [x] **Contract validation** (`bin/validate_contract.py`) — schema (24 cols) + gate invariants
+- [x] **Contract validation** (`tests/validate_contract.py`) — schema (24 cols) + gate invariants
       (grade range, portability boolean, no absolute-risk-without-percentile, low-coverage caveat
       present, ranges) — in `selftest.sh`.
-- [x] **Validation harness** (`bin/validate_calibration.py`) — calibration self-consistency:
+- [x] **Validation harness** (`tests/validate_calibration.py`) — calibration self-consistency:
       the ~3,330 reference-panel samples' ancestry-normalized percentiles must be ~uniform 0-100.
       Verified on real data: all 8 scores mean 50.1, max decile dev 0.001 (FRAPOSA normalization sound).
 - [ ] Nextflow scaffolding — productionization once the flow is validated (bash orchestrator covers it now)

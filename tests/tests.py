@@ -3,7 +3,9 @@
 network, no BAM needed). Run: python3 bin/tests.py  (or bin/selftest.sh).
 """
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_here = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _here)                                 # tests/ (validate_* modules)
+sys.path.insert(0, os.path.join(_here, "..", "bin"))      # bin/ (pipeline modules)
 import absolute_risk as AR
 import consensus as C
 import ensemble as E
