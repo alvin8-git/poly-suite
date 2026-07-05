@@ -14,6 +14,15 @@ sample, WGS BAM), ancestry-calibrated against the HGDP+1kGP panel.
 Files: [`report.html`](report.html) (standalone) · `pgs_scores.tsv` / `.json` (the contract)
 · `provenance.json` (versions + sha256) · `pop_summary.csv` (ancestry call).
 
+**The report** is patient-first: 60 traits grouped by evidence **confidence** (High → Insufficient,
+so grade-D hyperthyroidism sinks to the bottom), each a compact row with a filled organ icon, a
+likelihood bar, and a plain-language verdict that expands to the clinical detail. Two elevated
+grade-A/B traits with a verified effect show an absolute risk as a natural frequency — rheumatoid
+arthritis **~1 in 14 (women)** and IBD **~1 in 31**; the 97th–99th-percentile T1D / Parkinson /
+hypothyroidism cards stay number-less on purpose (no standard per-SD effect or no defensible
+baseline). Each score's clinical row also carries its publication-reported AUROC/C-index/R² beside
+the grade, and links out to the PGS Catalog score, the MONDO disease class, and the source study.
+
 Reproduce with `bin/run.sh … --pgs-meta <select_pgs output>` (see [../../README.md](../../README.md)
 and [docs/Documentation.md §6](../../docs/Documentation.md#6-the-tiered-launch-set)).
 Research/educational output — not a diagnostic test.

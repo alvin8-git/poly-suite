@@ -13,6 +13,39 @@ Extracted from the README `## Status` section. Open work first, shipped features
 
 ## Shipped
 
+- [x] **Patient-first report redesign** (`bin/report_html.py`) — a lay-reader-first
+      `report.html` that scales to 60+ traits. Traits grouped by evidence **confidence**
+      (High/Good/Limited/Insufficient), so a high-percentile grade-D score no longer leads;
+      each trait is a compact 2-line row (filled SVG **organ icon** + likelihood bar +
+      plain-language verdict) that expands via a native `<details>` to a clinical layer.
+      Notable-trait extras: absolute risk as a **natural frequency** ("about 1 in N" + a
+      100-person dot array, sex-labelled "in women/men", gated to grade A/B *with* a verified
+      effect — grade C/D elevated get a "why no number" refusal instead of false precision),
+      "what this means / doesn't mean", a non-prescriptive next step, and a thyroid
+      co-occurrence note. Expand/collapse-all (tiny inline JS; rows work without it). Embedded
+      Space Grotesk heading font. Self-contained, CSS-only styling.
+
+- [x] **Reported performance + evidence-grade legend** (`bin/cache_performance.py`,
+      `resources/pgs_performance.tsv`) — each score's publication-reported discrimination
+      (AUROC → C-index → R², EUR-preferred, median + range; physically out-of-range values
+      dropped) shown beside its grade in the clinical table, plus a legend spelling out A–D
+      (thresholds + downgrades) and that the grade is poly-suite's evidence-strength call, NOT
+      the same as accuracy. `run.sh` auto-fetches after grading (`timeout 180`, best-effort:
+      offline/slow Catalog just leaves "—") to a run-local cache, then re-renders.
+
+- [x] **Outbound provenance links** (`report_html.py`) — each score ID links to its PGS
+      Catalog score page (cohort), a "Learn more" line links the **MONDO disease class**
+      (Monarch; EFO/HP → EBI OLS term page) and the source study (PubMed). Links only, so the
+      report stays a self-contained offline file.
+
+- [x] **Absolute-risk resources expanded + sex-aware risk** — per-SD effects + baselines added
+      for rheumatoid arthritis, IBD, atrial fibrillation, colorectal cancer, Alzheimer
+      (`resources/pgs_effect.tsv`, `baseline_incidence.tsv`, sourced with PMIDs), so real
+      elevated traits get a figure (HG001: RA ~1 in 14, IBD ~1 in 31). T1D/Parkinson/
+      hypothyroidism deliberately left number-less (no standard per-SD OR or no defensible
+      baseline). Sample sex now flows through `provenance.py` (`sample_sex`) → the report labels
+      sex-specific figures.
+
 - [x] **`run.sh --pgs-meta FILE`** — copies the run's `select_pgs` metadata into the score
       dir so `grade_pgs` resolves trait names + evidence grades for custom (non-starter) score
       sets. Fixes the full 61-trait card rendering `trait == pgs_id` (it had fallen back to the

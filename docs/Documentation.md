@@ -125,7 +125,7 @@ reference-panel percentiles must come out uniform on 0 to 100, and they do
                                                      │
                                                      ▼
   [5] OUTPUT CONTRACT + REPORT
-      pgs_scores.tsv/.json + provenance.json + report.html (trait-grouped, consensus badges)
+      pgs_scores.tsv/.json + provenance.json + report.html (patient-first, grouped by confidence)
 ```
 
 `bin/run.sh` is the single orchestrator that composes all of this.
@@ -176,6 +176,21 @@ the **odds scale**, not by multiplying the baseline: linear `baseline × RR`
 overshoots for common diseases (a 2× RR on a 49% CAD baseline gave an impossible
 99.9%; the odds-scale model gives 66.8%).
 
+**The report is patient-first, with a clinical layer underneath.** The same contract
+renders for a lay reader: traits grouped by evidence confidence (a high-percentile
+grade-D score sinks to the bottom instead of leading), each a compact row (organ icon +
+likelihood bar + plain verdict) that expands to the detail. Absolute risk is shown as a
+natural frequency ("about 1 in N", sex-labelled) *only* for grade A/B traits with a
+verified effect + baseline; a grade C/D "elevated" score gets an explicit refusal, not a
+number. The clinical layer links out to the PGS Catalog score, the MONDO disease class,
+and the source study.
+
+**Evidence grade is not predictive accuracy.** The A–D grade rates the *strength of the
+evidence* (GWAS size + ancestry evaluation, from Catalog metadata — poly-suite's own
+call, not the Catalog's). It is distinct from *discrimination*: the report shows each
+score's publication-reported AUROC / C-index / R² next to its grade so the two aren't
+conflated (a grade-A score can still have a modest AUROC).
+
 **Raw caller output is never a reportable finding.** Every tier has a gate. See §6.
 
 **Bash orchestrator, not a Nextflow rewrite (for now).** pgsc_calc is already a
@@ -201,7 +216,9 @@ applies gates before anything is shown:
 | Evidence grade | always | A (large multi-ancestry GWAS) … D (thin/unreplicated) |
 | Controlled vocabulary | always | `allowed_statement`: no "you will get X"; "explains ~Y% of variance; not diagnostic" |
 
-Every claim traces to a source, a grade, and a confidence.
+Every claim traces to a source, a grade, and a confidence. The report also surfaces each
+score's publication-reported discrimination (AUROC / C-index / R²) beside its grade, so
+evidence *strength* and predictive *accuracy* are never conflated.
 
 ---
 
@@ -345,7 +362,8 @@ bin/     pipeline (run once, orchestrated by run.sh)
   consensus.py        multi-score per-trait concordance (robustness flag)
   ensemble.py         meta-PGS (linear combination of standardized scores)
   provenance.py       reproducibility record (versions, ref, sha256)
-  report_html.py      self-contained trait-grouped HTML report
+  report_html.py      self-contained patient-first HTML report (confidence tiers, links, perf)
+  cache_performance.py  cache reported AUROC/C-index/R² per score (PGS Catalog perf API)
   make_pgen.sh · cache_scorefiles.py · fetch_panel.py · resolve_traits.py  (helpers/caching)
 tests/   validation (no network/BAM/panel needed unless noted)
   tests.py            16 unit tests · selftest.sh  suite runner
@@ -353,6 +371,7 @@ tests/   validation (no network/BAM/panel needed unless noted)
   validate_calibration.py  calibration self-consistency (reference-panel uniformity)
 conf/    rootless.config (Docker rootless fix)
 resources/  pgs_effect.tsv, baseline_incidence.tsv (absolute-risk inputs, sourced)
+            pgs_performance.tsv (reported AUROC/C-index/R² per score, PGS Catalog)
 docs/    this file + pgs-pipeline-spec.md
 ```
 
@@ -411,5 +430,8 @@ docs/    this file + pgs-pipeline-spec.md
   the WGS force-genotype path is the current focus.
 - **Absolute-risk inputs are illustrative launch values** (per-SD effects and
   baseline incidences) that need per-score verification against source publications.
+- **Reported performance metrics are publication-reported, not computed here.** The
+  AUROC / C-index / R² shown come from each score's PGS Catalog performance records
+  (median across mixed cohorts/ancestries, EUR-preferred), not evaluated on the sample.
 - **Not a diagnostic test.** Educational / research use. Discuss anything actionable
   with a clinician or genetic counselor.

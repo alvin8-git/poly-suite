@@ -28,16 +28,18 @@ reproducible/referenced output.
 data/       samplesheet.csv + localized test input (GIAB HG001)
 conf/       rootless.config — Docker rootless fix (see Gotchas)
 resources/  pgs_effect.tsv, baseline_incidence.tsv — absolute-risk inputs (sourced)
+            pgs_performance.tsv — reported AUROC/C-index/R² per score (PGS Catalog)
 bin/        run.sh            — end-to-end orchestrator (one entry point)
             select_pgs.py     — evidence-graded, TIERED PGS selection (PGS Catalog API)
             resolve_traits.py — resolve trait names -> Catalog ids + score counts
             make_pgen.sh      — pre-convert cached prep to plink2 .pgen (pfile fast path)
             cache_scorefiles.py — cache PGS Catalog harmonized scorefiles (--scorefile, skip download)
+            cache_performance.py — cache reported AUROC/C-index/R² per score (PGS Catalog perf API)
             scoring_targets.py + genotype_prep.sh — force-genotype at scoring loci
             infer_sex.py      — X/Y-coverage sex inference
             grade_pgs.py      — QC/ancestry/grade gates -> the output contract
             absolute_risk.py · consensus.py · ensemble.py — actionable + robustness + meta-PGS
-            provenance.py · report_html.py  — reproducibility + standalone HTML
+            provenance.py · report_html.py  — reproducibility + patient-first standalone HTML report
             score_selected.sh — score the auto-selected set (calls the stages)
 tests/      tests.py + selftest.sh — 16 unit tests + self-check runner
             validate_contract.py — schema + gate-invariant validation of the output
@@ -92,6 +94,17 @@ A future Nextflow scaffold folds this into one DAG.
 `results/pgs_scores.tsv` (+ `.json`) — the stable schema OmniGen consumes — applying
 the QC gate (coverage/match-rate), the ancestry/portability gate, evidence grade, and
 controlled-vocab caveats.
+
+**The report** (`report_html.py`) renders that contract as a patient-first
+`report.html`: traits grouped by evidence **confidence** (grade-D outliers sink to
+the bottom), each a compact row — filled organ icon + likelihood bar + plain-language
+verdict — that expands to a clinical layer. Expanded, a notable trait shows the risk
+as a **natural frequency** ("about 1 in N", sex-labelled, only for grade A/B with a
+verified effect size), what it means / doesn't mean, a next step, the per-score table
+with the **publication-reported AUROC / C-index / R²** beside each grade, an evidence-grade
+legend, and outbound links to the PGS Catalog score, the MONDO disease class, and the
+source study. After grading, `run.sh` fetches the reported metrics (bounded, best-effort)
+and re-renders. Self-contained: inline CSS + an embedded display font, no external assets.
 
 ## Gotchas (learned on this box)
 
