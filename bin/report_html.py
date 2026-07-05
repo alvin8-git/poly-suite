@@ -56,6 +56,18 @@ def _best_pct(rows):
     return max(vals) if vals else -1.0
 
 
+def _font_css():
+    """The base64-embedded heading @font-face (keeps the report self-contained).
+    Missing resource -> "" and headings fall back to the system stack."""
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     "..", "resources", "heading-font.css")
+    try:
+        with open(p) as f:
+            return f.read()
+    except OSError:
+        return ""
+
+
 def render(results_dir, out=None):
     contract = os.path.join(results_dir, "pgs_scores.tsv")
     if not os.path.exists(contract):
@@ -140,16 +152,17 @@ def render(results_dir, out=None):
     pops = sorted({str(r.get("most_similar_pop", "")).strip() for r in rows
                    if str(r.get("most_similar_pop", "")).strip() not in ("", "—")})
     anc = f" · ancestry {html.escape(', '.join(pops))}" if pops else ""
+    font_face = _font_css()
 
     doc = f"""<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>poly-suite PGS report — {sample}</title>
 <style>
- body{{font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;max-width:880px;margin:2rem auto;padding:0 1rem;color:#1f2328}}
- h1{{font-size:1.4rem;margin:0 0 .2rem}} .sub{{color:#57606a;margin:0 0 1.5rem}}
+{font_face} body{{font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;max-width:880px;margin:2rem auto;padding:0 1rem;color:#1f2328}}
+ h1{{font-family:"Report Display",-apple-system,Segoe UI,Roboto,sans-serif;font-size:1.55rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .2rem}} .sub{{color:#57606a;margin:0 0 1.5rem}}
  .card{{border:1px solid #d0d7de;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}}
  .head{{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}}
- .head h2{{font-size:1.1rem;margin:0;flex:1;text-transform:capitalize}}
+ .head h2{{font-family:"Report Display",-apple-system,Segoe UI,Roboto,sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;margin:0;flex:1;text-transform:capitalize}}
  .pop{{color:#57606a;font-family:ui-monospace,monospace;font-size:.8rem}}
  .cbadge{{font-size:.75rem;font-weight:600;padding:.15rem .55rem;border-radius:2rem}}
  .cbadge.ok{{background:#dafbe1;color:#1a7f37;border:1px solid #4ac26b}}
