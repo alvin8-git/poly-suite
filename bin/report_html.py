@@ -393,6 +393,8 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .sources b{{color:var(--soft)}} .sources a{{color:var(--accent);text-decoration:none}}
 .sources a:hover{{text-decoration:underline}} .sources .lmute{{color:var(--faint)}}
 .gb{{color:#fff;font-weight:600;font-size:.72rem;padding:.03rem .38rem;border-radius:2rem}}
+.gb.A{{background:#1a7f37}} .gb.B{{background:#9a6700}} .gb.C{{background:#bc4c00}} .gb.D{{background:#82071e}}
+.ctab-wrap{{overflow-x:auto}}
 .cav{{background:#fff8c5;border:1px solid #eac54f;border-radius:6px;padding:.45rem .65rem;font-size:.82rem;color:#4d3800;margin:.55rem 0 0}}
 .tested{{font-size:.8rem;color:var(--faint);margin:.7rem 0 0}}
 .tested b{{color:var(--soft)}}
@@ -400,6 +402,10 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .key h2{{font-size:.92rem;font-weight:600;margin:0 0 .6rem}}
 .key dl{{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;margin:0;font-size:.86rem}}
 .key dt{{font-weight:600;color:var(--accent)}} .key dd{{margin:0;color:var(--soft)}}
+.gradekey ul{{list-style:none;margin:.2rem 0 .55rem;padding:0;display:grid;gap:.4rem}}
+.gradekey li{{display:flex;gap:.55rem;align-items:flex-start;font-size:.86rem;color:var(--soft)}}
+.gradekey li .gb{{flex:none;margin-top:.12rem}}
+.gk-note{{font-size:.82rem;color:var(--faint);margin:.2rem 0 0}}
 footer{{color:var(--faint);font-size:.78rem;margin-top:1.6rem;border-top:1px solid var(--line);padding-top:.8rem;font-family:ui-monospace,monospace}}
 @media (max-width:560px){{.means{{grid-template-columns:1fr}} .lbar{{max-width:110px}}}}
 </style></head><body>
@@ -434,6 +440,16 @@ Tap any row for the full clinical detail.</p>
     <dt>Coverage</dt><dd>How much of the score we could measure in your data. Completeness, not quality.</dd>
   </dl>
 </section>
+<section class="key gradekey">
+  <h2>Evidence grades &amp; performance</h2>
+  <ul>
+    <li><span class="gb A">A</span><span><b>High</b> — large, replicated GWAS (N&nbsp;≥&nbsp;100k) with a multi-ancestry check.</span></li>
+    <li><span class="gb B">B</span><span><b>Good</b> — solid GWAS (N&nbsp;≥&nbsp;50k) with an ancestry evaluation.</span></li>
+    <li><span class="gb C">C</span><span><b>Limited</b> — smaller GWAS (N&nbsp;≥&nbsp;10k) or limited evaluation.</span></li>
+    <li><span class="gb D">D</span><span><b>Insufficient</b> — small/unreplicated or uncalibrated; also assigned when a stronger score is downgraded for low coverage or an ancestry mismatch.</span></li>
+  </ul>
+  <p class="gk-note">The grade rates the <em>strength of the evidence</em> — set by poly-suite from PGS Catalog metadata (GWAS size + ancestry evaluation), not by the Catalog. It is <b>not</b> the same as predictive accuracy: the <b>reported perf</b> in each score's Clinical detail is the publication-reported <em>discrimination</em> (AUROC / C-index / R²; AUROC&nbsp;0.5&nbsp;=&nbsp;coin-flip, higher = better at separating cases from controls) in a specific cohort, not computed on your data.</p>
+</section>
 <footer>{ptxt}</footer>
 </body></html>"""
     with open(out, "w") as fh:
@@ -445,6 +461,37 @@ Tap any row for the full clinical detail.</p>
 # separately (Monarch). A malformed id (non-numeric local part) falls to search.
 _OBO_OLS = {"EFO": "efo", "HP": "hp", "ORPHANET": "ordo", "ORPHA": "ordo",
             "DOID": "doid", "NCIT": "ncit", "GO": "go", "OBA": "oba"}
+
+
+_PERF = None
+
+
+def _load_perf():
+    """{pgs_id: {metric,value,n_reports,lo,hi}} from resources/pgs_performance.tsv."""
+    global _PERF
+    if _PERF is None:
+        _PERF = {}
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "..", "resources", "pgs_performance.tsv")
+        try:
+            with open(p) as fh:
+                for r in csv.DictReader(fh, delimiter="\t"):
+                    if r.get("value") not in (None, "", "NA"):
+                        _PERF[r["pgs_id"]] = r
+        except OSError:
+            pass
+    return _PERF
+
+
+def _perf_cell(pgs_id):
+    """Compact publication-reported discrimination metric for the clinical table."""
+    r = _load_perf().get((pgs_id or "").split("_")[0])
+    if not r:
+        return "—"
+    lab = {"AUROC": "AUROC", "C-index": "C-idx", "R2": "R²"}.get(r["metric"], r["metric"])
+    tip = (f"publication-reported {r['metric']}: median of {r['n_reports']} value(s)"
+           f", range {r['lo']}–{r['hi']}")
+    return f"<span title='{html.escape(tip)}'>{lab}&nbsp;{html.escape(str(r['value']))}</span>"
 
 
 def _onto_url(eid):
@@ -556,16 +603,19 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
         crows.append(
             f"<tr><td>{sid_html}</td>"
             f"<td><span class='gb' style='background:{GRADE_COLOR.get(rg,'#57606a')}'>{rg}</span></td>"
+            f"<td>{_perf_cell(r.get('pgs_id'))}</td>"
             f"<td>{_fmt(r.get('percentile'))}</td><td>{_fmt(r.get('z_score'))}</td>"
             f"<td>{_fmt(r.get('risk_ratio'))}</td>"
             f"<td>{_fmt(r.get('absolute_risk'), pct=True)}</td>"
             f"<td>{_fmt(r.get('match_rate'), pct=True)}</td></tr>")
     cav = _trait_caveat(trows)
     cav_row = (f'<p class="cav">{html.escape(cav)}</p>') if cav else ""
-    clinical = (f'<div class="cdt"><h3>Clinical detail</h3><table class="ctab">'
-                f'<tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th>'
+    clinical = (f'<div class="cdt"><h3>Clinical detail</h3><div class="ctab-wrap"><table class="ctab">'
+                f'<tr><th>score</th><th>grade</th><th title="publication-reported '
+                f'discrimination — AUROC/C-index/R², not computed here">reported perf</th>'
+                f'<th>percentile</th><th>Z</th>'
                 f'<th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr>'
-                f'{"".join(crows)}</table>{cav_row}</div>')
+                f'{"".join(crows)}</table></div>{cav_row}</div>')
 
     # authoritative links: the MONDO disease class + the study behind the top score.
     # Per-score cohorts are reachable via the linked PGS Catalog score IDs above.
