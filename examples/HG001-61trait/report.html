@@ -1,0 +1,571 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>poly-suite PGS report — SPL250502092712</title>
+<style>
+ body{font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;max-width:880px;margin:2rem auto;padding:0 1rem;color:#1f2328}
+ h1{font-size:1.4rem;margin:0 0 .2rem} .sub{color:#57606a;margin:0 0 1.5rem}
+ .card{border:1px solid #d0d7de;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}
+ .head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+ .head h2{font-size:1.1rem;margin:0;flex:1;text-transform:capitalize}
+ .pop{color:#57606a;font-family:ui-monospace,monospace;font-size:.8rem}
+ .cbadge{font-size:.75rem;font-weight:600;padding:.15rem .55rem;border-radius:2rem}
+ .cbadge.ok{background:#dafbe1;color:#1a7f37;border:1px solid #4ac26b}
+ .cbadge.low{background:#ffebe9;color:#cf222e;border:1px solid #ff8182}
+ .badge.sm{color:#fff;font-weight:600;font-size:.72rem;padding:.05rem .4rem;border-radius:2rem}
+ table.scores{border-collapse:collapse;margin:.7rem 0 0;width:100%;font-size:.9rem}
+ table.scores th{text-align:left;color:#57606a;font-weight:500;font-size:.78rem;border-bottom:1px solid #d0d7de;padding:.2rem .5rem}
+ table.scores td{padding:.28rem .5rem;border-bottom:1px solid #eaeef2}
+ td.pgs{font-family:ui-monospace,monospace;font-size:.82rem;color:#57606a}
+ .caveat{background:#fff8c5;border:1px solid #eac54f;border-radius:6px;padding:.5rem .7rem;font-size:.84rem;color:#4d3800;margin:.6rem 0 0}
+ footer{color:#57606a;font-size:.8rem;margin-top:2rem;border-top:1px solid #d0d7de;padding-top:.8rem;font-family:ui-monospace,monospace}
+ .disc{background:#ddf4ff;border:1px solid #54aeff;border-radius:6px;padding:.6rem .8rem;font-size:.85rem;margin:0 0 1.2rem}
+</style></head><body>
+<h1>Polygenic risk report — SPL250502092712</h1>
+<p class="sub">poly-suite · 60 traits · educational / research use only</p>
+<p class="disc"><b>Not a diagnostic test.</b> Polygenic scores estimate relative predisposition
+from common variants; they explain only a fraction of trait risk and are less accurate outside
+the training ancestry. Where two scores were run per trait, the <b>consensus</b> badge shows
+whether they agree. Discuss anything actionable with a clinician or genetic counselor.</p>
+
+        <section class="card">
+          <div class="head"><h2>bladder cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000071</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>38.8</td><td>—</td><td>67%</td></tr><tr><td class='pgs'>PGS000782</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>28.2</td><td>—</td><td>67%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (67% of 15 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>schizophrenia</h2><span class="cbadge ok">consensus: concordant (0.976)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000135</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>83.1</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS000136</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>80.7</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>coeliac disease</h2><span class="cbadge ok">consensus: concordant (0.877)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000316</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>74.2</td><td>—</td><td>62%</td></tr><tr><td class='pgs'>PGS002067</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>86.5</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (62% of 53 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>autism spectrum disorder</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000327</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>55.2</td><td>—</td><td>78%</td></tr><tr><td class='pgs'>PGS002790</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>87</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.682, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>ovarian cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000351</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>73.3</td><td>—</td><td>67%</td></tr><tr><td class='pgs'>PGS005086</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39.1</td><td>—</td><td>80%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (67% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 34, concordance 0.658, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>melanoma</h2><span class="cbadge ok">consensus: concordant (0.977)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000417</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>62.8</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS000419</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>65.1</td><td>—</td><td>83%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>basal cell carcinoma</h2><span class="cbadge ok">consensus: concordant (1.0)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000456</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>92.4</td><td>—</td><td>73%</td></tr><tr><td class='pgs'>PGS000457</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>92.4</td><td>—</td><td>73%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (73% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>breast cancer</h2><span class="cbadge ok">consensus: concordant (0.713)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000492</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>66.3</td><td>14% (vs 13%)</td><td>90%</td></tr><tr><td class='pgs'>PGS000500</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.6</td><td>10% (vs 13%)</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>testicular cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000599</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>66.7</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS000600</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>39.6</td><td>—</td><td>76%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (74% of 31 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 27, concordance 0.729, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>lipoprotein(a)</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000667</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>5.6</td><td>—</td><td>72%</td></tr><tr><td class='pgs'>PGS000752</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>88.8</td><td>—</td><td>93%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (72% of 43 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 83, concordance 0.168, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>chronic kidney disease</h2><span class="cbadge ok">consensus: concordant (0.862)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000728</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>40.2</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS004889</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>54</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>lung cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000740</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>91.6</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS004884</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>6.4</td><td>—</td><td>89%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (74% of 128 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 85, concordance 0.148, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>multiple sclerosis</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000809</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>57.6</td><td>—</td><td>87%</td></tr><tr><td class='pgs'>PGS004700</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>69.2</td><td>—</td><td>17%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.884, different risk tertiles) — treat as uncertain | low variant coverage (17% of 12 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>Parkinson disease</h2><span class="cbadge ok">consensus: concordant (0.838)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS000902</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>97.9</td><td>—</td><td>80%</td></tr><tr><td class='pgs'>PGS000903</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>81.7</td><td>—</td><td>93%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>asthma</h2><span class="cbadge ok">consensus: concordant (0.857)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS001782</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>31.5</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS005148</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.2</td><td>—</td><td>94%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>chronic obstructive pulmonary disease</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS001783</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>67.2</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS001788</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>45.7</td><td>—</td><td>94%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.785, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>gout</h2><span class="cbadge ok">consensus: concordant (0.927)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS001789</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>53.7</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS002762</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>61</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>glaucoma</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS001792</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>9.9</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS002761</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39.4</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.705, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>hyperthyroidism</h2><span class="cbadge ok">consensus: concordant (1.0)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS001815</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>99.4</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002023</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>99.4</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>venous thromboembolism</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002235</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>32.9</td><td>—</td><td>78%</td></tr><tr><td class='pgs'>PGS003332</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>47.1</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.858, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>colorectal cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002252</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>30.4</td><td>—</td><td>81%</td></tr><tr><td class='pgs'>PGS012583</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.9</td><td>—</td><td>84%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 8, concordance 0.925, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>fatty liver disease</h2><span class="cbadge ok">consensus: concordant (0.922)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002282</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>4.2</td><td>—</td><td>75%</td></tr><tr><td class='pgs'>PGS002283</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>12</td><td>—</td><td>80%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>HbA1c</h2><span class="cbadge ok">consensus: concordant (0.853)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002331</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>84.3</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002697</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>69.6</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>psoriasis</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002344</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>25</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002710</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.86, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>waist-hip ratio</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002356</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.7</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003484</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>14.2</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 38, concordance 0.625, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>ischemic stroke</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002724</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.3</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004942</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.9</td><td>—</td><td>94%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>pancreatic cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002740</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>19.5</td><td>—</td><td>77%</td></tr><tr><td class='pgs'>PGS004693</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>49.2</td><td>—</td><td>94%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.703, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>ADHD</h2><span class="cbadge ok">consensus: concordant (0.882)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002746</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>39.9</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS003753</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>51.7</td><td>—</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>osteoarthritis</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002763</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>52.2</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004882</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>88</td><td>—</td><td>89%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 36, concordance 0.642, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>osteoporosis</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002768</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>9.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS005155</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>74.7</td><td>—</td><td>92%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 65, concordance 0.349, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>HDL cholesterol</h2><span class="cbadge ok">consensus: concordant (0.985)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002781</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>64</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003879</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>65.5</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>triglycerides</h2><span class="cbadge ok">consensus: concordant (0.944)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002784</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>42.3</td><td>—</td><td>81%</td></tr><tr><td class='pgs'>PGS003881</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>36.7</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>bipolar disorder</h2>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002786</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>88</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>height</h2><span class="cbadge ok">consensus: concordant (0.891)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002802</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>62.5</td><td>—</td><td>83%</td></tr><tr><td class='pgs'>PGS005281</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.6</td><td>—</td><td>83%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>C-reactive protein</h2><span class="cbadge ok">consensus: concordant (0.946)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS002867</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.1</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS005251</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>11.7</td><td>—</td><td>77%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>major depressive disorder</h2><span class="cbadge ok">consensus: concordant (0.894)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003333</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>72.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003442</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>83.2</td><td>—</td><td>88%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>endometrial cancer</h2><span class="cbadge ok">consensus: concordant (0.944)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003381</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>4.3</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS004244</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>9.9</td><td>—</td><td>81%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>ankylosing spondylitis</h2><span class="cbadge ok">consensus: concordant (0.838)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003420</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>92.4</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS003423</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>76.2</td><td>—</td><td>87%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>atopic dermatitis</h2><span class="cbadge ok">consensus: concordant (0.869)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003459</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>47.4</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS003486</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>34.3</td><td>—</td><td>70%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (74% of 170 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | low variant coverage (70% of 71 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>intelligence</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003724</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>33.9</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS004427</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>15.9</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 18, concordance 0.82, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>systemic lupus erythematosus</h2><span class="cbadge ok">consensus: concordant (1.0)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003755</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>23.4</td><td>—</td><td>63%</td></tr><tr><td class='pgs'>PGS003756</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>23.4</td><td>—</td><td>69%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (63% of 122 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | low variant coverage (69% of 112 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>prostate cancer</h2><span class="cbadge ok">consensus: concordant (0.914)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003765</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>8.8</td><td>5% (vs 12%)</td><td>71%</td></tr><tr><td class='pgs'>PGS003766</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.4</td><td>6% (vs 12%)</td><td>77%</td></tr>
+          </table>
+          <p class="caveat">low variant coverage (71% of 451 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>LDL cholesterol</h2><span class="cbadge ok">consensus: concordant (0.933)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003873</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>13.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003978</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>6.9</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>Alzheimer disease</h2><span class="cbadge ok">consensus: concordant (0.874)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003958</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.9</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS004590</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>15.3</td><td>—</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>abdominal aortic aneurysm</h2><span class="cbadge ok">consensus: concordant (0.985)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003972</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>4.5</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003973</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>3</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>inflammatory bowel disease</h2><span class="cbadge ok">consensus: concordant (0.974)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003981</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>94</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004151</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>96.6</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>type 1 diabetes</h2><span class="cbadge ok">consensus: concordant (0.94)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003993</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>97.2</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS012555</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>91.2</td><td>—</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>rheumatoid arthritis</h2><span class="cbadge ok">consensus: concordant (0.96)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS003994</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>93.3</td><td>—</td><td>89%</td></tr><tr><td class='pgs'>PGS004163</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>97.3</td><td>—</td><td>89%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>hypertension</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS004456</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>16</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004526</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>51.3</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 35, concordance 0.647, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>age-related macular degeneration</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS004606</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>33</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004952</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>42.4</td><td>—</td><td>79%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 9, concordance 0.906, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>migraine</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS004798</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>44.4</td><td>—</td><td>82%</td></tr><tr><td class='pgs'>PGS004799</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>22.3</td><td>—</td><td>69%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.779, different risk tertiles) — treat as uncertain | low variant coverage (69% of 4,319,950 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>type 2 diabetes</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS004923</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.3</td><td>35% (vs 40%)</td><td>83%</td></tr><tr><td class='pgs'>PGS005333</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.4</td><td>32% (vs 40%)</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 10, concordance 0.901, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>coronary artery disease</h2><span class="cbadge ok">consensus: concordant (0.955)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS004941</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.6</td><td>29% (vs 32%)</td><td>94%</td></tr><tr><td class='pgs'>PGS005091</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>56.1</td><td>31% (vs 32%)</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>heart failure</h2>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005097</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>19.8</td><td>—</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>body mass index</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005102</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS005103</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>48.4</td><td>—</td><td>91%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 21, concordance 0.786, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>cataract</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005142</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>40.2</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS005149</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>72.7</td><td>—</td><td>92%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.675, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>gallstones</h2><span class="cbadge ok">consensus: concordant (0.895)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005150</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>21.9</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS012582</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>11.4</td><td>—</td><td>92%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>thyroid cancer</h2><span class="cbadge low">consensus: robustness LOW</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005258</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>68.2</td><td>—</td><td>75%</td></tr><tr><td class='pgs'>PGS005259</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>56.4</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic | multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.882, different risk tertiles) — treat as uncertain</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>hypothyroidism</h2><span class="cbadge ok">consensus: concordant (0.989)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS005267</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>99.3</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS005268</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>98.2</td><td>—</td><td>90%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+        <section class="card">
+          <div class="head"><h2>atrial fibrillation</h2><span class="cbadge ok">consensus: concordant (0.997)</span>
+            <span class="pop">pop EUR</span></div>
+          <table class="scores">
+            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
+            <tr><td class='pgs'>PGS012532</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>8.1</td><td>—</td><td>80%</td></tr><tr><td class='pgs'>PGS012533</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>7.8</td><td>—</td><td>80%</td></tr>
+          </table>
+          <p class="caveat">explains only a fraction of trait variance; reduced accuracy outside training ancestry; screening context only, not diagnostic</p>
+        </section>
+<footer>poly-suite v0.1 · calibrated · build GRCh38 · generated 2026-07-04T17:17:14.208224+00:00 · contract sha f9307c5d254a</footer>
+</body></html>
