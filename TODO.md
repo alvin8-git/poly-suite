@@ -13,6 +13,11 @@ Extracted from the README `## Status` section. Open work first, shipped features
 
 ## Shipped
 
+- [x] **`run.sh --pgs-meta FILE`** — copies the run's `select_pgs` metadata into the score
+      dir so `grade_pgs` resolves trait names + evidence grades for custom (non-starter) score
+      sets. Fixes the full 61-trait card rendering `trait == pgs_id` (it had fallen back to the
+      36-entry starter meta). Replaces the manual `cp meta results/<run>/score/pgs_catalog_meta.json`.
+
 - [x] **Full 61-trait launch run (HG001)** — `select_pgs.py … all` → 119 scorefiles at top-2,
       force-genotyped at the **union of 12.6M autosomal loci** (99.9% genotyped), scored +
       ancestry-calibrated + graded. Runs on the fully-optimized path (scorefile-cache →

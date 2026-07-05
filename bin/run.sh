@@ -13,7 +13,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SCOREFILE_CACHE=
+SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SCOREFILE_CACHE= PGS_META=
 REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
 NF=/home/alvin/bin/nextflow
 while [ $# -gt 0 ]; do
@@ -24,6 +24,7 @@ while [ $# -gt 0 ]; do
     --sex) SEX=$2; shift 2;; --ref) REF=$2; shift 2;;
     --bootstrap-vcf) BOOT=$2; shift 2;; --reuse-prep) REUSE_PREP=$2; shift 2;;
     --work-cache) WORK_CACHE=$2; shift 2;; --scorefile-cache) SCOREFILE_CACHE=$2; shift 2;;
+    --pgs-meta) PGS_META=$2; shift 2;;
     --dry-run) DRY=1; shift;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
@@ -38,6 +39,7 @@ OUTDIR=$(readlink -f "$OUTDIR")
 [ -n "$BOOT" ] && BOOT=$(readlink -f "$BOOT")
 [ -n "$PANEL" ] && PANEL=$(readlink -f "$PANEL")
 [ -n "$REUSE_PREP" ] && REUSE_PREP=$(readlink -f "$REUSE_PREP")
+[ -n "$PGS_META" ] && PGS_META=$(readlink -f "$PGS_META")
 ANC=(); [ -n "$PANEL" ] && ANC=(--run_ancestry "$PANEL")
 FMT=vcf   # score-input format; reuse-prep upgrades to pfile when a .pgen exists (skips VCF->pgen)
 
@@ -133,5 +135,9 @@ NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
   -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" > "$OUTDIR/score.log" 2>&1
 
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"
+# grade_pgs reads pgs_catalog_meta.json from the score dir for trait names + evidence
+# grades; drop the run's own select_pgs metadata there so custom-named metas resolve
+# (without this, a non-default score set falls back to the starter meta -> trait==pgs_id).
+[ -n "$PGS_META" ] && cp -f "$PGS_META" "$OUTDIR/score/pgs_catalog_meta.json"
 python3 bin/grade_pgs.py "$OUTDIR/score"
 echo "RUN_DONE -> $OUTDIR/score  (pgs_scores.tsv/.json + provenance.json + report.html)"
