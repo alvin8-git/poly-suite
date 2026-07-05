@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Render the poly-suite graded contract to a self-contained HTML report
 (spec §2 standalone deliverable). No external dependencies — inline CSS + an
-embedded heading font; no JavaScript.
+embedded heading font. The only JS is two inline onclick handlers for
+expand/collapse-all; every row is a native <details> that works without it.
 
 Written for a NON-scientific reader, tuned for scanning 60+ traits:
  - a top summary of the few high-confidence elevated findings,
@@ -17,6 +18,9 @@ Importable (render) and runnable: python3 bin/report_html.py [results_dir]
 """
 import os, sys, csv, json, html
 from collections import OrderedDict, Counter
+import absolute_risk
+
+SEX_WORD = {"female": "women", "male": "men"}
 
 GRADE_COLOR = {"A": "#1a7f37", "B": "#9a6700", "C": "#bc4c00", "D": "#82071e"}
 GRADE_RANK = {"A": 4, "B": 3, "C": 2, "D": 1}
@@ -39,22 +43,23 @@ SYS = {
     "renal": "#8a5a3c", "skin": "#c0745a", "cancer": "#7a4fb0", "anthro": "#6b7a8c",
     "default": "#64748b",
 }
-# 24x24 stroke glyphs (Lucide-ish), fill:none stroke:currentColor. Emblematic,
-# not anatomical — they read at ~20px as a category anchor, not a diagram.
+# 24x24 FILLED, cartoon-ish organ glyphs (fill:currentColor + white highlights)
+# so they read as little illustrations, not line icons. The gut (tube) and DNA
+# fall back to thick strokes where a silhouette wouldn't read.
 SVG = {
-    "cardio": '<path d="M12 20s-7-4.6-9.2-9C1.4 8.3 3 4.8 6.2 4.8c1.9 0 3 1.1 5.8 3.9 2.8-2.8 3.9-3.9 5.8-3.9 3.2 0 4.8 3.5 3.4 6.2C19 15.4 12 20 12 20z"/>',
-    "neuro": '<path d="M8.5 4.5A3 3 0 0 0 6 9a3 3 0 0 0-1 5.6A3 3 0 0 0 8 19a3 3 0 0 0 4 1 3 3 0 0 0 4-1 3 3 0 0 0 3-4.4A3 3 0 0 0 18 9a3 3 0 0 0-2.5-4.5A3 3 0 0 0 12 4a3 3 0 0 0-3.5.5z"/><path d="M12 4v16"/>',
-    "resp": '<path d="M12 4v7"/><path d="M12 11c-.6-1.8-2.6-2.4-4-1.4C6.3 10.9 5.5 14 6 17c.2 1.4 1.6 2 3 1.6 1-.3 1.8-1.2 1.8-2.4V11"/><path d="M12 11c.6-1.8 2.6-2.4 4-1.4 1.7 1.3 2.5 4.4 2 7.4-.2 1.4-1.6 2-3 1.6-1-.3-1.8-1.2-1.8-2.4V11"/>',
-    "msk": '<path d="M6.5 5.2a1.9 1.9 0 0 1 2.7 2.7l7 7a1.9 1.9 0 1 1-2.7 2.7 1.9 1.9 0 1 1-2.7-2.7l-7-7a1.9 1.9 0 0 1 2.7-2.7z"/>',
-    "metab": '<path d="M12 3.5s5 5.8 5 9.5a5 5 0 0 1-10 0c0-3.7 5-9.5 5-9.5z"/>',
-    "endo": '<path d="M12 9c-.9-2.6-3.4-3.9-5.6-2.9C4.4 7 4 9.8 5.2 11.6 6 12.8 7.4 13.5 9 13.5c1.6 0 2.6-1.6 3-4.5.4 2.9 1.4 4.5 3 4.5 1.6 0 3-.7 3.8-1.9 1.2-1.8.8-4.6-1.2-5.5C17.4 5.1 14.9 6.4 14 9"/><path d="M12 9v9"/>',
-    "gut": '<path d="M8 4v3a3 3 0 0 0 6 0"/><path d="M14 7v3a3 3 0 0 1-6 0"/><path d="M8 10v3.5a3 3 0 0 0 6 0"/><path d="M14 13.5V17a3 3 0 0 1-6 0"/>',
-    "eye": '<path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/>',
-    "renal": '<path d="M14 5c-4 0-7 3-7 7.2S9.6 19 12.6 19c1.9 0 3-1.1 3-2.9 0-1.4-.9-2-.9-3.4S15.7 11 16.7 10 18.5 8 18.5 6.7C18.5 5.4 16 5 14 5z"/>',
-    "skin": '<path d="M12 3 3.5 7.8l8.5 4.7 8.5-4.7L12 3z"/><path d="M3.5 12.2 12 17l8.5-4.8"/><path d="M3.5 16.5 12 21l8.5-4.5"/>',
-    "cancer": '<path d="M9.5 13.5 6.5 21l5.5-3.2L17.5 21l-3-7.5"/><path d="M12 15c-3-2.8-5-5-5-8a5 5 0 0 1 10 0c0 3-2 5.2-5 8z"/>',
-    "anthro": '<path d="M3.5 15.8 15.8 3.5l4.7 4.7L8.2 20.5z"/><path d="M8 12l1.6 1.6"/><path d="M11 9l1.6 1.6"/><path d="M14 6l1.6 1.6"/>',
-    "default": '<path d="M8 4c0 4 8 4 8 8s-8 4-8 8"/><path d="M16 4c0 4-8 4-8 8s8 4 8 8"/><path d="M9 7.5h6"/><path d="M9 16.5h6"/>',
+    "cardio": '<path d="M12 20.6 4.4 13C2.5 11 2.5 8 4.4 6.1a4.4 4.4 0 0 1 6.3 0l1.3 1.3 1.3-1.3a4.4 4.4 0 0 1 6.3 0c1.9 1.9 1.9 4.9 0 6.9L12 20.6z"/><path fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.1" stroke-linecap="round" d="M6.9 7.6a2.4 2.4 0 0 0-.5 2.7"/>',
+    "neuro": '<path d="M9.2 4.3A2.8 2.8 0 0 0 6.4 6 2.5 2.5 0 0 0 4.9 8.4 2.6 2.6 0 0 0 4.7 12a2.6 2.6 0 0 0 .7 3.5A2.5 2.5 0 0 0 7.3 18.7 2.7 2.7 0 0 0 9.9 20c.5.2 1.3.3 2.1.3s1.6-.1 2.1-.3a2.7 2.7 0 0 0 2.6-1.3 2.5 2.5 0 0 0 1.9-2.7 2.6 2.6 0 0 0 .7-3.5 2.6 2.6 0 0 0-.2-3.6A2.5 2.5 0 0 0 17.6 6 2.8 2.8 0 0 0 14.8 4.3 2.9 2.9 0 0 0 12 3.9a2.9 2.9 0 0 0-2.8.4z"/><path fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" stroke-linecap="round" d="M12 4.6v14.8M9 8.2c-1 .4-1.1 2 0 2.6M15 8.2c1 .4 1.1 2 0 2.6M9.6 13c-1 .5-1 2.1 0 2.7M14.4 13c1 .5 1 2.1 0 2.7"/>',
+    "resp": '<path d="M11.25 4.2a.75.75 0 0 1 1.5 0v5.3c.7-.5 1.6-.6 2.4-.2 1.7.9 2.8 3.4 3.05 5.8.2 1.9-.3 3.6-2 4.1-1.8.5-3.9-.6-4.7-2.5-.15-.4-.25-.8-.25-1.2V4.2z"/><path d="M12.75 4.2a.75.75 0 0 0-1.5 0v5.3c-.7-.5-1.6-.6-2.4-.2-1.7.9-2.8 3.4-3.05 5.8-.2 1.9.3 3.6 2 4.1 1.8.5 3.9-.6 4.7-2.5.15-.4.25-.8.25-1.2V4.2z"/>',
+    "msk": '<path d="M8.2 4.6a2 2 0 0 1 2.6 3l5.6 5.6a2 2 0 1 1 .6 3.4 2 2 0 1 1-3.4.6l-5.6-5.6a2 2 0 0 1-3-.6 2 2 0 0 1 .6-2.6 2 2 0 0 1 .6-3.4 2 2 0 0 1 2 .6z"/>',
+    "metab": '<path d="M12 3.4c-.3 0-.5.1-.7.3C10 5.3 6 10 6 13.2A6 6 0 0 0 18 13.2c0-3.2-4-7.9-5.3-9.5-.2-.2-.4-.3-.7-.3z"/><path fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.1" stroke-linecap="round" d="M9.3 13.5a2.7 2.7 0 0 0 2.5 2.7"/>',
+    "endo": '<path d="M11.3 9.3C10.4 7.3 8.6 6 6.8 6.3 5.1 6.6 4.2 8.2 4.5 10.1c.3 2.2 2.1 4.1 4.3 4.1 1.6 0 2.6-1.3 3-3.2v3.6c0 .3.4.5.9.5s.9-.2.9-.5v-3.6c.4 1.9 1.4 3.2 3 3.2 2.2 0 4-1.9 4.3-4.1.3-1.9-.6-3.5-2.3-3.8-1.8-.3-3.6 1-4.5 3z"/><path fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".9" stroke-linecap="round" d="M7.6 8.6c-.5.6-.7 1.4-.5 2.2M16.4 8.6c.5.6.7 1.4.5 2.2"/>',
+    "gut": '<path fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" d="M7 18V9.5a3 3 0 0 1 6 0v5a3 3 0 0 0 6 0V8"/>',
+    "eye": '<path d="M12 5.6C6.6 5.6 3.2 11.4 3 11.8a.5.5 0 0 0 0 .4C3.2 12.6 6.6 18.4 12 18.4s8.8-5.8 9-6.2a.5.5 0 0 0 0-.4C20.8 11.4 17.4 5.6 12 5.6z"/><circle cx="12" cy="12" r="3.3" fill="#fff"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="13.2" cy="10.9" r=".6" fill="#fff"/>',
+    "renal": '<path d="M14.5 5C10.4 5 7 8.4 7 12.5S10 20 13 20c1.9 0 3.1-1.2 3.1-3 0-1.4-.9-2.1-.9-3.5S16.4 11 17.5 10s2-2 2-3.4C19.5 5.5 16.6 5 14.5 5z"/>',
+    "skin": '<path d="M8.5 3.8 3.8 8.5a3 3 0 0 0 0 4.2l6.5 6.5a3 3 0 0 0 4.2 0l4.7-4.7a3 3 0 0 0 0-4.2l-6.5-6.5a3 3 0 0 0-4.2 0z"/><g fill="#fff" fill-opacity=".55"><circle cx="10.2" cy="12" r=".7"/><circle cx="12" cy="10.2" r=".7"/><circle cx="12" cy="13.8" r=".7"/><circle cx="13.8" cy="12" r=".7"/></g>',
+    "cancer": '<path fill-rule="evenodd" d="M12 3.5a3.6 3.6 0 0 0-3 5.6l1.9 2.8-3.6 6.8a.6.6 0 0 0 .8.8l3.9-2.1 3.9 2.1a.6.6 0 0 0 .8-.8l-3.6-6.8 1.9-2.8A3.6 3.6 0 0 0 12 3.5zm0 2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/>',
+    "anthro": '<path d="M3.8 14.4 14.4 3.8a1 1 0 0 1 1.4 0l4.4 4.4a1 1 0 0 1 0 1.4L9.6 20.2a1 1 0 0 1-1.4 0l-4.4-4.4a1 1 0 0 1 0-1.4z"/><path fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1" stroke-linecap="round" d="M7.3 11.1 8.7 12.5M9.8 8.6l1.4 1.4M12.3 6.1l1.4 1.4"/>',
+    "default": '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 4c0 4 8 4 8 8s-8 4-8 8M16 4c0 4-8 4-8 8s8 4 8 8"/><path fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" d="M9.2 7h5.6M9.2 17h5.6M8.5 9.5h7M8.5 14.5h7"/>',
 }
 # first substring hit wins — cancer routes ahead of organ so "thyroid cancer" -> cancer
 _KW = [
@@ -221,6 +226,18 @@ def render(results_dir, out=None):
     tnames = {t.strip().lower() for t in by_trait}
     thyroid_pair = {"hypothyroidism", "hyperthyroidism"} <= tnames
 
+    # sample sex (for labelling sex-specific risk figures) + which traits carry a
+    # sex-specific baseline (so we only annotate "in women/men" where it matters).
+    sample_sex = prov.get("sample_sex")
+    if not sample_sex:
+        sp = os.path.join(results_dir, "sample_sex.txt")
+        if os.path.exists(sp):
+            sample_sex = open(sp).read().strip() or None
+    base = absolute_risk.load_baselines()
+    sexspec = ({t for (t, sx, a) in base if sx in ("male", "female")}
+               - {t for (t, sx, a) in base if sx == "overall"})
+    sexinfo = (SEX_WORD.get((sample_sex or "").lower()), sexspec)
+
     # ---- summary -------------------------------------------------------------------
     # one grade per trait (its representative score) so this reconciles with the
     # per-trait tier counts below; the raw per-score count lives in the header.
@@ -259,7 +276,7 @@ def render(results_dir, out=None):
         if not items:
             continue
         rows_html = "".join(
-            _row(trait, trows, rep, thyroid_pair) for trait, trows, rep in items)
+            _row(trait, trows, rep, thyroid_pair, sexinfo) for trait, trows, rep in items)
         n = len(items)
         sections.append(
             f'<h2 class="tier"><span class="tdot" style="background:{GRADE_COLOR[g]}"></span>'
@@ -310,6 +327,10 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .tier .tn{{margin-left:auto;font-family:ui-sans-serif,system-ui;font-size:.8rem;font-weight:500;color:var(--faint)}}
 .tblurb{{margin:.1rem 0 .5rem 1.12rem;font-size:.8rem;color:var(--faint)}}
 .tbody{{display:flex;flex-direction:column;gap:.5rem}}
+.tools{{display:flex;gap:.5rem;margin:.7rem 0 0}}
+.tbtn{{font:inherit;font-size:.78rem;font-weight:600;color:var(--accent);background:var(--panel);
+  border:1px solid var(--line);border-radius:2rem;padding:.24rem .8rem;cursor:pointer}}
+.tbtn:hover{{background:var(--raise);border-color:var(--accent)}}
 /* ---- compact trait row (details/summary, no JS) ---- */
 .t{{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;--stripe:var(--line)}}
 .t.elevated{{--stripe:var(--up)}} .t.protective{{--stripe:var(--dn)}}
@@ -359,6 +380,8 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .means{{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line2)}}
 .means h3{{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 0 .25rem}}
 .means p{{margin:0;font-size:.87rem;color:var(--soft)}}
+.todo{{background:#f0f9f4;border:1px solid #bfe6cd;border-radius:8px;padding:.55rem .8rem;font-size:.85rem;color:#123a25;margin:.8rem 0 0}}
+.todo b{{color:#0b5132}}
 .cdt{{margin:1rem 0 0;padding-top:.85rem;border-top:1px solid var(--line2)}}
 .cdt h3{{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 0 .35rem}}
 .ctab{{width:100%;border-collapse:collapse;font-size:.82rem;font-variant-numeric:tabular-nums}}
@@ -392,6 +415,7 @@ or genetic counselor.</p>
 </section>
 <p class="sub" style="margin:.2rem 0 0">Traits are grouped by how much to trust the score — most trustworthy first.
 Tap any row for the full clinical detail.</p>
+<div class="tools"><button type="button" class="tbtn" onclick="document.querySelectorAll('details.t').forEach(function(d){{d.open=true}})">Expand all</button><button type="button" class="tbtn" onclick="document.querySelectorAll('details.t').forEach(function(d){{d.open=false}})">Collapse all</button></div>
 {''.join(sections)}
 <section class="key">
   <h2>How to read every row</h2>
@@ -414,15 +438,16 @@ Tap any row for the full clinical detail.</p>
 
 
 def _sys_icon(s, cls="ig"):
-    """Inline SVG glyph for a body system (currentColor, sized by CSS class)."""
-    return (f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-            f'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" '
+    """Inline filled SVG glyph for a body system (currentColor, sized by CSS class)."""
+    return (f'<svg class="{cls}" viewBox="0 0 24 24" fill="currentColor" '
             f'aria-hidden="true">{SVG.get(s, SVG["default"])}</svg>')
 
 
-def _row(trait, trows, rep, thyroid_pair):
+def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
     """One compact, collapsible trait row (summary = 2 lines; body = clinical layer)."""
     cat, p = _category(rep)
+    sex_word, sexspec = sexinfo
+    sexlab = f' in {sex_word}' if (sex_word and trait.strip().lower() in sexspec) else ''
     g = rep.get("evidence_grade", "D")
     clabel, ccls = CONFIDENCE.get(g, ("—", "none"))
     anc = html.escape(str(rep.get("most_similar_pop") or rep.get("training_ancestry") or "—"))
@@ -451,7 +476,7 @@ def _row(trait, trows, rep, thyroid_pair):
     if cat == ELEV:
         extra = ""
         if ar_n:
-            extra = (f' · about <b>1 in {ar_n}</b> lifetime'
+            extra = (f' · about <b>1 in {ar_n}</b> lifetime{sexlab}'
                      + (f' <span class="vs">(vs 1 in {base_n} typical)</span>' if base_n else ''))
         interp = (f'Genetic likelihood <b class="up">higher than average</b> — '
                   f'{_rank_phrase(p)} for {anc} ancestry{extra}')
@@ -482,7 +507,7 @@ def _row(trait, trows, rep, thyroid_pair):
                   f'<span>your added likelihood</span></p>' if base_n else '')
         risk = (f'<div class="risk"><div class="array">{_dot_array(you, avg)}</div>'
                 f'<p class="big">about <b>1 in {ar_n}</b></p>'
-                f'<p class="rsub">estimated lifetime chance{base_txt}</p>{legend}</div>')
+                f'<p class="rsub">estimated lifetime chance{sexlab}{base_txt}</p>{legend}</div>')
     elif cat == WEAKHI:
         risk = ('<div class="notinterp"><b>Why no number?</b> This score comes from small or '
                 'unreplicated studies (grade D). Turning a confident-looking rank from weak '
@@ -518,6 +543,11 @@ def _row(trait, trows, rep, thyroid_pair):
               f'{"scores" if nsc != 1 else "score"} for {html.escape(trait)}, '
               f'{anc}-ancestry GWAS; {cov} of variants measured.</p>')
 
+    # one-line, non-prescriptive next step for high-confidence elevated findings
+    todo = ('<p class="todo"><b>What to do:</b> nothing urgent — this is background '
+            'likelihood, not a diagnosis. Worth mentioning to your doctor or a genetic '
+            'counsellor, especially if it runs in your family.</p>' if cat == ELEV else '')
+
     rich = cat in (ELEV, PROT, WEAKHI)
     return (f'<details class="t {cat}" style="--sys:{syscol}">'
             f'<summary><span class="ico" role="img" aria-label="{_SYSNAME.get(s,s)} icon">{_sys_icon(s)}</span>'
@@ -525,7 +555,7 @@ def _row(trait, trows, rep, thyroid_pair):
             f'{lbar}<span class="conf {ccls}"><span class="cdot"></span>{clabel}</span></span>'
             f'<span class="interp">{interp}</span>'
             f'<span class="tri">▶</span></summary>'
-            f'<div class="body">{thy}{risk if rich else ""}{means if rich else ""}'
+            f'<div class="body">{thy}{risk if rich else ""}{means if rich else ""}{todo}'
             f'{clinical}{tested}</div></details>')
 
 

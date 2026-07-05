@@ -295,7 +295,7 @@ def main():
 
     # standalone deliverable: provenance record + self-contained HTML report
     sample = rows[0].get("sample") if rows else None
-    provenance.write(RESULTS, sample=sample,
+    provenance.write(RESULTS, sample=sample, sample_sex=_SEX,
                      ref_fasta="/data/alvin/ref/GRCh38/hg38.canonical.fa")
     report_html.render(RESULTS)
 

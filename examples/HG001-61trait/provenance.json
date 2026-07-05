@@ -143,5 +143,6 @@
   "parameters": {
     "min_overlap": 0.1,
     "target_build": "GRCh38"
-  }
+  },
+  "sample_sex": "female"
 }

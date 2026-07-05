@@ -56,7 +56,8 @@ def _contract_scores(contract):
     return sorted(set(scores)), calibrated
 
 
-def build(results_dir, ref_fasta=None, panel=None, sample=None, bam=None, params=None):
+def build(results_dir, ref_fasta=None, panel=None, sample=None, bam=None, params=None,
+          sample_sex=None):
     contract = os.path.join(results_dir, "pgs_scores.tsv")
     scores, calibrated = _contract_scores(contract)
     return {
@@ -64,6 +65,7 @@ def build(results_dir, ref_fasta=None, panel=None, sample=None, bam=None, params
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "target_build": "GRCh38",
         "sample": sample,
+        "sample_sex": sample_sex,
         "input_bam": bam,
         "reference_fasta": ref_fasta,
         "ancestry_panel": (panel if calibrated
