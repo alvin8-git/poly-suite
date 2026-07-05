@@ -5,7 +5,7 @@
 ![nextflow](https://img.shields.io/badge/nextflow-%E2%89%A5%2025.10-brightgreen)
 ![scoring core](https://img.shields.io/badge/scoring%20core-pgsc__calc-informational)
 ![ancestry](https://img.shields.io/badge/ancestry-FRAPOSA-9cf)
-![launch set](https://img.shields.io/badge/launch%20set-61%20traits-orange)
+![launch set](https://img.shields.io/badge/launch%20set-70%20traits-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
 Standalone polygenic-score pipeline: a raw sample (WGS BAM/VCF) → a graded,
@@ -20,7 +20,7 @@ reproducible/referenced output.
 
 **Docs:** [Documentation.md](docs/Documentation.md) — the 101 (science, decisions, architecture) · [pgs-pipeline-spec.md](docs/pgs-pipeline-spec.md) — build spec.
 
-**Example output:** [`examples/HG001-61trait/`](examples/HG001-61trait/) — the full calibrated 61-trait launch-set card for GIAB HG001 (118 scores, EUR-calibrated, 73 A / 15 B / 16 C / 14 D) · [`examples/HG001-18trait/`](examples/HG001-18trait/) — the earlier 18-trait card. Each: report.html + pgs_scores.tsv/.json + provenance.
+**Example output:** [`examples/HG001-70trait/`](examples/HG001-70trait/) — the full calibrated 70-trait launch-set card for GIAB HG001 (135 scores across 69 scored traits — PCOS has no Catalog PGS; EUR-calibrated; 48 A / 9 B / 7 C / 5 D by trait) · [`examples/HG001-61trait/`](examples/HG001-61trait/) — the earlier 61-trait card. Each: report.html + pgs_scores.tsv/.json + provenance.
 
 ## Layout
 
