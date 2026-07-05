@@ -30,17 +30,31 @@ TIERS = [("A", "High confidence", "Large, replicated, ancestry-checked scores.")
 ELEV, PROT, AVGC, WEAKHI, WEAK, UNCAL = (
     "elevated", "protective", "average", "weak-high", "weak", "uncalibrated")
 
-# --- organ / body-system icon per trait (ponytail: keyword heuristic, emoji so
-# the file stays a single offline asset; swap for an SVG sprite if pixel-exact
-# cross-platform rendering ever matters). (emoji, chip tint). ------------------
+# --- organ / body-system icon per trait (ponytail: keyword heuristic; inline
+# SVG glyphs so the file stays one offline asset AND renders identically on
+# every OS, themeable via currentColor). chip tint per system. -----------------
 SYS = {
-    "neuro": ("\U0001F9E0", "#6d5ae0"), "cardio": ("\U0001FAC0", "#d6455c"),
-    "resp": ("\U0001FAC1", "#4aa3c7"), "msk": ("\U0001F9B4", "#b07a3c"),
-    "metab": ("\U0001FA78", "#c68a2e"), "endo": ("\U0001F98B", "#2fa6a0"),
-    "gut": ("\U0001F9A0", "#4c8c5a"), "eye": ("\U0001F441️", "#3c6db0"),
-    "renal": ("\U0001FAD8", "#8a5a3c"), "skin": ("\U0001FA79", "#c0745a"),
-    "cancer": ("\U0001F397️", "#7a4fb0"), "anthro": ("\U0001F4CF", "#6b7a8c"),
-    "default": ("\U0001F9EC", "#64748b"),
+    "neuro": "#6d5ae0", "cardio": "#d6455c", "resp": "#4aa3c7", "msk": "#b07a3c",
+    "metab": "#c68a2e", "endo": "#2fa6a0", "gut": "#4c8c5a", "eye": "#3c6db0",
+    "renal": "#8a5a3c", "skin": "#c0745a", "cancer": "#7a4fb0", "anthro": "#6b7a8c",
+    "default": "#64748b",
+}
+# 24x24 stroke glyphs (Lucide-ish), fill:none stroke:currentColor. Emblematic,
+# not anatomical — they read at ~20px as a category anchor, not a diagram.
+SVG = {
+    "cardio": '<path d="M12 20s-7-4.6-9.2-9C1.4 8.3 3 4.8 6.2 4.8c1.9 0 3 1.1 5.8 3.9 2.8-2.8 3.9-3.9 5.8-3.9 3.2 0 4.8 3.5 3.4 6.2C19 15.4 12 20 12 20z"/>',
+    "neuro": '<path d="M8.5 4.5A3 3 0 0 0 6 9a3 3 0 0 0-1 5.6A3 3 0 0 0 8 19a3 3 0 0 0 4 1 3 3 0 0 0 4-1 3 3 0 0 0 3-4.4A3 3 0 0 0 18 9a3 3 0 0 0-2.5-4.5A3 3 0 0 0 12 4a3 3 0 0 0-3.5.5z"/><path d="M12 4v16"/>',
+    "resp": '<path d="M12 4v7"/><path d="M12 11c-.6-1.8-2.6-2.4-4-1.4C6.3 10.9 5.5 14 6 17c.2 1.4 1.6 2 3 1.6 1-.3 1.8-1.2 1.8-2.4V11"/><path d="M12 11c.6-1.8 2.6-2.4 4-1.4 1.7 1.3 2.5 4.4 2 7.4-.2 1.4-1.6 2-3 1.6-1-.3-1.8-1.2-1.8-2.4V11"/>',
+    "msk": '<path d="M6.5 5.2a1.9 1.9 0 0 1 2.7 2.7l7 7a1.9 1.9 0 1 1-2.7 2.7 1.9 1.9 0 1 1-2.7-2.7l-7-7a1.9 1.9 0 0 1 2.7-2.7z"/>',
+    "metab": '<path d="M12 3.5s5 5.8 5 9.5a5 5 0 0 1-10 0c0-3.7 5-9.5 5-9.5z"/>',
+    "endo": '<path d="M12 9c-.9-2.6-3.4-3.9-5.6-2.9C4.4 7 4 9.8 5.2 11.6 6 12.8 7.4 13.5 9 13.5c1.6 0 2.6-1.6 3-4.5.4 2.9 1.4 4.5 3 4.5 1.6 0 3-.7 3.8-1.9 1.2-1.8.8-4.6-1.2-5.5C17.4 5.1 14.9 6.4 14 9"/><path d="M12 9v9"/>',
+    "gut": '<path d="M8 4v3a3 3 0 0 0 6 0"/><path d="M14 7v3a3 3 0 0 1-6 0"/><path d="M8 10v3.5a3 3 0 0 0 6 0"/><path d="M14 13.5V17a3 3 0 0 1-6 0"/>',
+    "eye": '<path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/>',
+    "renal": '<path d="M14 5c-4 0-7 3-7 7.2S9.6 19 12.6 19c1.9 0 3-1.1 3-2.9 0-1.4-.9-2-.9-3.4S15.7 11 16.7 10 18.5 8 18.5 6.7C18.5 5.4 16 5 14 5z"/>',
+    "skin": '<path d="M12 3 3.5 7.8l8.5 4.7 8.5-4.7L12 3z"/><path d="M3.5 12.2 12 17l8.5-4.8"/><path d="M3.5 16.5 12 21l8.5-4.5"/>',
+    "cancer": '<path d="M9.5 13.5 6.5 21l5.5-3.2L17.5 21l-3-7.5"/><path d="M12 15c-3-2.8-5-5-5-8a5 5 0 0 1 10 0c0 3-2 5.2-5 8z"/>',
+    "anthro": '<path d="M3.5 15.8 15.8 3.5l4.7 4.7L8.2 20.5z"/><path d="M8 12l1.6 1.6"/><path d="M11 9l1.6 1.6"/><path d="M14 6l1.6 1.6"/>',
+    "default": '<path d="M8 4c0 4 8 4 8 8s-8 4-8 8"/><path d="M16 4c0 4-8 4-8 8s8 4 8 8"/><path d="M9 7.5h6"/><path d="M9 16.5h6"/>',
 }
 # first substring hit wins — cancer routes ahead of organ so "thyroid cancer" -> cancer
 _KW = [
@@ -208,7 +222,9 @@ def render(results_dir, out=None):
     thyroid_pair = {"hypothyroidism", "hyperthyroidism"} <= tnames
 
     # ---- summary -------------------------------------------------------------------
-    tally = Counter(r.get("evidence_grade", "D") for r in rows)
+    # one grade per trait (its representative score) so this reconciles with the
+    # per-trait tier counts below; the raw per-score count lives in the header.
+    tally = Counter(_rep(trows).get("evidence_grade", "D") for trows in by_trait.values())
     tally_html = " ".join(
         f'<span class="tg"><i class="dot" style="background:{GRADE_COLOR.get(g, "#57606a")}">'
         f'</i>{tally[g]}&nbsp;{g}</span>'
@@ -217,7 +233,9 @@ def render(results_dir, out=None):
     for trait, trows in by_trait.items():
         cat, p = _category(_rep(trows))
         if cat == ELEV:
-            chips.append((p, f'<span class="chip"><span class="ci">{_sys_icon(_sys(trait))}</span>'
+            s = _sys(trait)
+            chips.append((p, f'<span class="chip"><span class="ci" style="color:'
+                          f'{SYS.get(s, SYS["default"])}">{_sys_icon(s)}</span>'
                           f'{html.escape(trait)} <b>{_rank_phrase(p)}</b></span>'))
         elif cat in (WEAKHI, WEAK):
             n_uninterp += 1
@@ -280,7 +298,9 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .summary h2{{font-size:1rem;font-weight:600;margin:0 0 .5rem}}
 .chips{{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .2rem}}
 .chip{{display:inline-flex;align-items:center;gap:.32rem;background:var(--raise);border:1px solid var(--line);border-radius:2rem;padding:.14rem .6rem .14rem .4rem;font-size:.82rem;text-transform:capitalize}}
-.chip .ci{{font-size:.9rem;line-height:1}} .chip b{{color:var(--up)}} .muted{{color:var(--soft)}}
+.chip .ci{{display:inline-flex;align-items:center;line-height:1}} .chip .ci .ig{{width:1rem;height:1rem}}
+.chip b{{color:var(--up)}} .muted{{color:var(--soft)}}
+.glbl{{color:var(--soft);font-weight:500}}
 .tally{{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.82rem;color:var(--soft);margin-top:.85rem;padding-top:.75rem;border-top:1px solid var(--line2)}}
 .tally b{{color:var(--ink)}} .grades{{display:flex;gap:1rem;flex-wrap:wrap;font-weight:600;margin-top:.5rem;font-size:.82rem}}
 .tg{{display:inline-flex;align-items:center;gap:.35rem}} .dot{{width:.58rem;height:.58rem;border-radius:50%}}
@@ -300,8 +320,9 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .t>summary::-webkit-details-marker{{display:none}}
 .t>summary:hover{{background:var(--raise)}}
 .ico{{grid-row:1/3;justify-self:center;width:2.35rem;height:2.35rem;margin-left:.7rem;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:1.2rem;line-height:1;
-  background:color-mix(in srgb,var(--sys) 15%,#fff);border:1px solid color-mix(in srgb,var(--sys) 30%,transparent)}}
+  display:flex;align-items:center;justify-content:center;color:var(--sys);
+  background:color-mix(in srgb,var(--sys) 14%,#fff);border:1px solid color-mix(in srgb,var(--sys) 30%,transparent)}}
+.ico .ig{{width:1.4rem;height:1.4rem}}
 .r1{{grid-column:2;grid-row:1;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;min-width:0}}
 .tname{{font-weight:600;font-size:1.02rem;text-transform:capitalize;letter-spacing:-.01em}}
 .lbar{{position:relative;flex:1;min-width:80px;max-width:150px;height:7px;border-radius:5px;
@@ -356,7 +377,7 @@ footer{{color:var(--faint);font-size:.78rem;margin-top:1.6rem;border-top:1px sol
 @media (max-width:560px){{.means{{grid-template-columns:1fr}} .lbar{{max-width:110px}}}}
 </style></head><body>
 <h1>What your genetic results suggest — {sample}</h1>
-<p class="sub">poly-suite · {len(by_trait)} traits{anc_txt} · educational / research use only</p>
+<p class="sub">poly-suite · {len(by_trait)} traits · {len(rows)} scores{anc_txt} · educational / research use only</p>
 <p class="disc"><b>Not a diagnostic test.</b> Polygenic scores estimate <em>genetic likelihood</em>
 from common variants; they explain only a fraction of trait risk and are less accurate outside the
 training ancestry. Genetics is one factor among many. Discuss anything actionable with a clinician
@@ -367,7 +388,7 @@ or genetic counselor.</p>
   <div class="tally"><span><b>{n_notable}</b> worth attention (high confidence &amp; elevated)</span>
     <span><b>{n_other}</b> around average or not notable</span>
     <span><b>{n_uninterp}</b> shown but not reliable enough to interpret</span></div>
-  <div class="grades">{tally_html}</div>
+  <div class="grades"><span class="glbl">Evidence grade — one per trait:</span>{tally_html}</div>
 </section>
 <p class="sub" style="margin:.2rem 0 0">Traits are grouped by how much to trust the score — most trustworthy first.
 Tap any row for the full clinical detail.</p>
@@ -392,8 +413,11 @@ Tap any row for the full clinical detail.</p>
     return out
 
 
-def _sys_icon(s):
-    return SYS.get(s, SYS["default"])[0]
+def _sys_icon(s, cls="ig"):
+    """Inline SVG glyph for a body system (currentColor, sized by CSS class)."""
+    return (f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            f'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" '
+            f'aria-hidden="true">{SVG.get(s, SVG["default"])}</svg>')
 
 
 def _row(trait, trows, rep, thyroid_pair):
@@ -403,7 +427,7 @@ def _row(trait, trows, rep, thyroid_pair):
     clabel, ccls = CONFIDENCE.get(g, ("—", "none"))
     anc = html.escape(str(rep.get("most_similar_pop") or rep.get("training_ancestry") or "—"))
     s = _sys(trait)
-    emoji, syscol = SYS.get(s, SYS["default"])
+    syscol = SYS.get(s, SYS["default"])
 
     # consensus badge (>=2 scores)
     n = str(trows[0].get("robustness_n_scores", "1"))
@@ -496,7 +520,7 @@ def _row(trait, trows, rep, thyroid_pair):
 
     rich = cat in (ELEV, PROT, WEAKHI)
     return (f'<details class="t {cat}" style="--sys:{syscol}">'
-            f'<summary><span class="ico" role="img" aria-label="{_SYSNAME.get(s,s)} icon">{emoji}</span>'
+            f'<summary><span class="ico" role="img" aria-label="{_SYSNAME.get(s,s)} icon">{_sys_icon(s)}</span>'
             f'<span class="r1"><span class="tname">{html.escape(trait)}</span>{cbadge}'
             f'{lbar}<span class="conf {ccls}"><span class="cdot"></span>{clabel}</span></span>'
             f'<span class="interp">{interp}</span>'
