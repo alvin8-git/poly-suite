@@ -76,10 +76,10 @@ LAUNCH_SET = [
     ("extended", "basal cell carcinoma", "MONDO_0020804"),
     ("extended", "osteoarthritis", "MONDO_0006629"),
     ("extended", "hyperthyroidism", "MONDO_0010138"),
-    # NB: PCOS has NO scores in the PGS Catalog under any current ontology id
-    # (MONDO_0008559 / EFO_0000660 both return 0), so it silently drops from the
-    # scored set — the launch set nominally counts it but reports resolve to 69, not 70.
-    ("extended", "polycystic ovary syndrome", "MONDO_0008559"),
+    # PCOS dropped: no PGS in the Catalog under any current ontology id
+    # (MONDO_0008559 / EFO_0000660 both return 0). Replaced with multiple myeloma
+    # (grade A, ~1.05M-sample GWAS) — fills the hematologic-cancer gap.
+    ("extended", "multiple myeloma", "MONDO_0009693"),
     ("extended", "cataract", "MONDO_0005129"),
     ("extended", "fatty liver disease", "MONDO_0013209"),
     ("extended", "gallstones", "MONDO_0012672"),

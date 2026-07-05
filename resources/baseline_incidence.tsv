@@ -18,3 +18,4 @@ peripheral arterial disease	overall	overall	lifetime_from_40	0.19	31500474	Matsu
 endometriosis	female	overall	lifetime	0.10	NA	WHO endometriosis fact sheet ~10% of reproductive-age women
 esophageal cancer	overall	overall	lifetime	0.005	NA	SEER US lifetime esophageal cancer risk ~0.5%
 gastric cancer	overall	overall	lifetime	0.008	NA	SEER US lifetime stomach cancer risk ~0.8%
+multiple myeloma	overall	overall	lifetime	0.008	NA	SEER US lifetime myeloma risk ~0.8% (both sexes)

@@ -12,3 +12,4 @@ NA	peripheral arterial disease	OR	1.66	40397457	European UK Biobank per-SD OR (a
 NA	endometriosis	OR	1.28	36303976	UK Biobank per-SD OR (Danish discovery 1.57); women; trait-fallback, illustrative
 NA	esophageal cancer	HR	1.28	40019942	China Kadoorie per-SD HR (mostly ESCC) — ancestry/histology mismatch vs Western adenocarcinoma; illustrative, verify per release
 NA	gastric cancer	HR	1.27	40019942	China Kadoorie Biobank per-SD HR; trait-fallback, illustrative
+NA	multiple myeloma	OR	1.17	32569378	Clay-Gilmour 2020 23-locus MM-PRS, per-SD OR; trait-fallback, illustrative

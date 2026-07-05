@@ -275,7 +275,7 @@ tier is its *posture*, not a fixed grade.
 | psoriasis | MONDO_0005083 | | basal cell carcinoma | MONDO_0020804 |
 | multiple sclerosis | MONDO_0005301 | | osteoarthritis | MONDO_0006629 |
 | systemic lupus erythematosus | MONDO_0007915 | | hyperthyroidism | MONDO_0010138 |
-| ankylosing spondylitis | MONDO_0005306 | | polycystic ovary syndrome | MONDO_0008559 |
+| ankylosing spondylitis | MONDO_0005306 | | multiple myeloma | MONDO_0009693 |
 | asthma | MONDO_0004979 | | cataract | MONDO_0005129 |
 | chronic obstructive pulmonary disease | MONDO_0005002 | | fatty liver disease | MONDO_0013209 |
 | Parkinson disease | MONDO_0005180 | | gallstones | MONDO_0012672 |
@@ -295,7 +295,9 @@ mode (direction + percentile, no "1 in N"): bone mineral density (`EFO_0009270`)
 glomerular filtration rate (`OBA_0003747`), systolic blood pressure (`EFO_0006335`).
 Absolute-risk inputs were curated for PAD / endometriosis / esophageal / gastric; OSA and
 cervical stay percentile-only (no standard per-SD effect; cervical is HPV-driven, with an
-on-card note).
+on-card note). Polycystic ovary syndrome was later **dropped** (no Catalog PGS under any
+ontology id) and replaced with **multiple myeloma** (`MONDO_0009693`, grade A, SEER-baselined)
+to fill the hematologic-cancer gap.
 
 **Gated — 6 (opt-in; sensitive / behavioural — off by default):**
 

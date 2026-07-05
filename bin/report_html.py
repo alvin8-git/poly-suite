@@ -64,6 +64,7 @@ SVG = {
 # first substring hit wins — cancer routes ahead of organ so "thyroid cancer" -> cancer
 _KW = [
     ("cancer", "cancer"), ("carcinoma", "cancer"), ("melanoma", "cancer"),
+    ("myeloma", "cancer"), ("lymphoma", "cancer"), ("leukemia", "cancer"),
     ("thyroid", "endo"),
     ("diabetes", "metab"), ("hba1c", "metab"), ("cholesterol", "metab"),
     ("lipoprotein", "metab"), ("hdl", "metab"), ("ldl", "metab"), ("glucose", "metab"),
