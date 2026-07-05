@@ -4,3 +4,13 @@ prostate cancer	male	overall	lifetime	0.125	NA	SEER US lifetime risk ~12.5% (men
 coronary artery disease	male	overall	lifetime_from_40	0.49	10430757	Framingham lifetime CHD risk from age 40 (Lloyd-Jones 1999)
 coronary artery disease	female	overall	lifetime_from_40	0.32	10430757	Framingham lifetime CHD risk from age 40
 type 2 diabetes	overall	overall	lifetime	0.40	25411059	Gregg 2014, US lifetime T2D risk ~40%
+rheumatoid arthritis	female	overall	lifetime	0.036	21360492	Crowson 2011, lifetime RA risk women ~3.6%
+rheumatoid arthritis	male	overall	lifetime	0.017	21360492	Crowson 2011, lifetime RA risk men ~1.7%
+inflammatory bowel disease	overall	overall	lifetime	0.013	NA	Dahlhamer MMWR 2016 ever-diagnosed prevalence ~1.3% used as lifetime proxy (understates true lifetime risk)
+atrial fibrillation	male	overall	lifetime_from_40	0.26	15313941	Lloyd-Jones 2004 Framingham lifetime AF risk from age 40 (men)
+atrial fibrillation	female	overall	lifetime_from_40	0.23	15313941	Lloyd-Jones 2004 Framingham lifetime AF risk from age 40 (women)
+colorectal cancer	overall	overall	lifetime	0.041	NA	SEER US lifetime colorectal cancer risk ~4.1%
+colorectal cancer	male	overall	lifetime	0.043	NA	SEER US lifetime colorectal cancer risk ~4.3% (men)
+colorectal cancer	female	overall	lifetime	0.039	NA	SEER US lifetime colorectal cancer risk ~3.9% (women)
+alzheimer disease	female	overall	lifetime_from_45	0.20	24418058	Chene 2015 Framingham lifetime AD/dementia risk from age 45 (women ~1 in 5)
+alzheimer disease	male	overall	lifetime_from_45	0.10	24418058	Chene 2015 Framingham lifetime AD/dementia risk from age 45 (men ~1 in 10)

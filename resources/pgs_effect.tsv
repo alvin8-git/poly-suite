@@ -3,3 +3,8 @@ PGS000018	coronary artery disease	HR	1.71	30309464	Inouye 2018 metaGRS_CAD, per-
 PGS000004	breast cancer	OR	1.61	30554720	Mavaddat 2019 313-variant, per-SD OR (BCAC)
 PGS000662	prostate cancer	OR	1.90	33398198	Conti 2021 multi-ancestry, per-SD OR
 PGS000014	type 2 diabetes	OR	1.50	30104762	Khera 2018 GPS_T2D, per-SD OR
+PGS004163	rheumatoid arthritis	OR	1.53	40670424	genome-wide RA PGS (incl. HLA), per-SD OR; illustrative launch value, verify per score release
+PGS004151	inflammatory bowel disease	OR	1.83	38531883	per-SD OR ~ mean of UC/CD subtypes as combined-IBD approx; illustrative, verify per score release
+NA	atrial fibrillation	HR	1.74	41124989	ASPREE per-SD HR (UK Biobank ~1.5/SD; 1.74 mid-range); trait-fallback, not launch-set
+NA	colorectal cancer	OR	1.584	36351667	LDpred2 PGS, UK Biobank (BMJ 2022), per-SD OR; trait-fallback, not launch-set
+NA	alzheimer disease	HR	2.02	40588577	IGAP-2019 AD-PRS INCL. APOE (APOE dominates); non-APOE PRS ~1.21/SD (PMID 36477264). Only valid for an APOE-inclusive score. Trait-fallback, not launch-set
