@@ -237,6 +237,7 @@ def render(results_dir, out=None):
     sexspec = ({t for (t, sx, a) in base if sx in ("male", "female")}
                - {t for (t, sx, a) in base if sx == "overall"})
     sexinfo = (SEX_WORD.get((sample_sex or "").lower()), sexspec)
+    _load_perf(results_dir)   # prefer run-local reported-performance metrics
 
     # ---- summary -------------------------------------------------------------------
     # one grade per trait (its representative score) so this reconciles with the
@@ -466,26 +467,34 @@ _OBO_OLS = {"EFO": "efo", "HP": "hp", "ORPHANET": "ordo", "ORPHA": "ordo",
 _PERF = None
 
 
-def _load_perf():
-    """{pgs_id: {metric,value,n_reports,lo,hi}} from resources/pgs_performance.tsv."""
+def _load_perf(results_dir=None):
+    """{pgs_id: {metric,value,...}} of reported discrimination metrics. Prefer a
+    run-local {results_dir}/pgs_performance.tsv (full set, written by run.sh) over
+    the shipped resources/pgs_performance.tsv."""
     global _PERF
-    if _PERF is None:
-        _PERF = {}
+    p = None
+    if results_dir:
+        rp = os.path.join(results_dir, "pgs_performance.tsv")
+        if os.path.exists(rp):
+            p = rp
+    if p is None:
         p = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                          "..", "resources", "pgs_performance.tsv")
-        try:
-            with open(p) as fh:
-                for r in csv.DictReader(fh, delimiter="\t"):
-                    if r.get("value") not in (None, "", "NA"):
-                        _PERF[r["pgs_id"]] = r
-        except OSError:
-            pass
+    _PERF = {}
+    try:
+        with open(p) as fh:
+            for r in csv.DictReader(fh, delimiter="\t"):
+                if r.get("value") not in (None, "", "NA"):
+                    _PERF[r["pgs_id"]] = r
+    except OSError:
+        pass
     return _PERF
 
 
 def _perf_cell(pgs_id):
     """Compact publication-reported discrimination metric for the clinical table."""
-    r = _load_perf().get((pgs_id or "").split("_")[0])
+    perf = _PERF if _PERF is not None else _load_perf()
+    r = perf.get((pgs_id or "").split("_")[0])
     if not r:
         return "—"
     lab = {"AUROC": "AUROC", "C-index": "C-idx", "R2": "R²"}.get(r["metric"], r["metric"])

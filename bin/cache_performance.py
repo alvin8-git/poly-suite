@@ -93,6 +93,11 @@ def main():
                   for r in csv.DictReader(open(contract), delimiter="\t")
                   if re.match(r"(PGS\d+)", r.get("pgs_id", ""))})
     cache = load(out)
+    # seed from the shipped resource so a run-local out only fetches unseen scores
+    # (and stays a complete, self-contained set for its results dir)
+    if os.path.abspath(out) != os.path.abspath(DEFAULT_OUT):
+        for k, v in load(DEFAULT_OUT).items():
+            cache.setdefault(k, v)
     got = miss = 0
     for pid in ids:
         if pid in cache and cache[pid].get("value") not in (None, "", "NA"):

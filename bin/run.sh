@@ -140,4 +140,15 @@ NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
 # (without this, a non-default score set falls back to the starter meta -> trait==pgs_id).
 [ -n "$PGS_META" ] && cp -f "$PGS_META" "$OUTDIR/score/pgs_catalog_meta.json"
 python3 bin/grade_pgs.py "$OUTDIR/score"
+
+# Reported discrimination (AUROC/C-index/R2) from the PGS Catalog -> run-local
+# cache, then re-render so the report shows it. Bounded + best-effort: a slow or
+# offline Catalog must never fail or hang a completed run (report already exists).
+TO=""; command -v timeout >/dev/null 2>&1 && TO="timeout 180"
+if $TO python3 bin/cache_performance.py "$OUTDIR/score/pgs_scores.tsv" \
+        "$OUTDIR/score/pgs_performance.tsv" 2>>"$OUTDIR/score.log"; then
+  python3 bin/report_html.py "$OUTDIR/score" >/dev/null
+else
+  echo "note: reported-performance fetch skipped (timeout/offline) — report omits 'reported perf'"
+fi
 echo "RUN_DONE -> $OUTDIR/score  (pgs_scores.tsv/.json + provenance.json + report.html)"
