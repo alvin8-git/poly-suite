@@ -1,526 +1,529 @@
-<!doctype html><html><head><meta charset="utf-8">
+<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>poly-suite PGS report — SPL250502092712</title>
 <style>
 /* Space Grotesk (OFL) — SIL Open Font License 1.1. Latin subset, weight 600.
    Embedded so the report stays a single self-contained file (no CDN/offline-safe). */
 @font-face{font-family:'Report Display';font-style:normal;font-weight:600;font-display:swap;src:url(data:font/woff2;base64,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) format('woff2')}
- body{font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;max-width:880px;margin:2rem auto;padding:0 1rem;color:#1f2328}
- h1{font-family:"Report Display",-apple-system,Segoe UI,Roboto,sans-serif;font-size:1.55rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .2rem} .sub{color:#57606a;margin:0 0 1.5rem}
- .card{border:1px solid #d0d7de;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}
- .head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
- .head h2{font-family:"Report Display",-apple-system,Segoe UI,Roboto,sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;margin:0;flex:1;text-transform:capitalize}
- .pop{color:#57606a;font-family:ui-monospace,monospace;font-size:.8rem}
- .cbadge{font-size:.75rem;font-weight:600;padding:.15rem .55rem;border-radius:2rem}
- .cbadge.ok{background:#dafbe1;color:#1a7f37;border:1px solid #4ac26b}
- .cbadge.low{background:#ffebe9;color:#cf222e;border:1px solid #ff8182}
- .badge.sm{color:#fff;font-weight:600;font-size:.72rem;padding:.05rem .4rem;border-radius:2rem}
- table.scores{border-collapse:collapse;margin:.7rem 0 0;width:100%;font-size:.9rem}
- table.scores th{text-align:left;color:#57606a;font-weight:500;font-size:.78rem;border-bottom:1px solid #d0d7de;padding:.2rem .5rem}
- table.scores td{padding:.28rem .5rem;border-bottom:1px solid #eaeef2}
- td.pgs{font-family:ui-monospace,monospace;font-size:.82rem;color:#57606a}
- .caveat{background:#fff8c5;border:1px solid #eac54f;border-radius:6px;padding:.5rem .7rem;font-size:.84rem;color:#4d3800;margin:.6rem 0 0}
- footer{color:#57606a;font-size:.8rem;margin-top:2rem;border-top:1px solid #d0d7de;padding-top:.8rem;font-family:ui-monospace,monospace}
- .disc{background:#ddf4ff;border:1px solid #54aeff;border-radius:6px;padding:.6rem .8rem;font-size:.85rem;margin:0 0 1rem}
- .summary{background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:.8rem 1rem;margin:0 0 1.5rem;display:flex;flex-direction:column;gap:.6rem}
- .tally{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.85rem;font-weight:600}
- .tg{display:inline-flex;align-items:center;gap:.35rem}
- .dot{width:.6rem;height:.6rem;border-radius:50%}
- .notable{display:flex;flex-wrap:wrap;gap:.4rem;align-items:baseline;font-size:.85rem}
- .notable .lbl{color:#57606a;font-weight:600}
- .chip{display:inline-flex;align-items:center;gap:.3rem;background:#fff;border:1px solid #d0d7de;border-radius:2rem;padding:.12rem .5rem;font-size:.8rem;text-transform:capitalize}
- .muted{color:#57606a}
-</style></head><body>
-<h1>Polygenic risk report — SPL250502092712</h1>
-<p class="sub">poly-suite · 60 traits · ancestry EUR · educational / research use only</p>
-<p class="disc"><b>Not a diagnostic test.</b> Polygenic scores estimate relative predisposition
-from common variants; they explain only a fraction of trait risk and are less accurate outside
-the training ancestry. Where two scores were run per trait, the <b>consensus</b> badge shows
-whether they agree. Discuss anything actionable with a clinician or genetic counselor.</p>
-<div class="summary">
-  <div class="tally"><span class="tg"><i class="dot" style="background:#1a7f37"></i>73&nbsp;A</span> <span class="tg"><i class="dot" style="background:#9a6700"></i>15&nbsp;B</span> <span class="tg"><i class="dot" style="background:#bc4c00"></i>16&nbsp;C</span> <span class="tg"><i class="dot" style="background:#82071e"></i>14&nbsp;D</span></div>
-  <div class="notable"><span class="lbl">Notable elevated:</span> <span class="chip">hypothyroidism <b>99th</b><span class="badge sm" style="background:#1a7f37">A</span></span><span class="chip">Parkinson disease <b>98th</b><span class="badge sm" style="background:#1a7f37">A</span></span><span class="chip">rheumatoid arthritis <b>97th</b><span class="badge sm" style="background:#1a7f37">A</span></span><span class="chip">type 1 diabetes <b>97th</b><span class="badge sm" style="background:#9a6700">B</span></span><span class="chip">inflammatory bowel disease <b>97th</b><span class="badge sm" style="background:#9a6700">B</span></span></div>
-</div>
 
-        <section class="card">
-          <div class="head"><h2>hyperthyroidism</h2><span class="cbadge ok">consensus: concordant (1.0)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS001815</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>99.4</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002023</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>99.4</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>hypothyroidism</h2><span class="cbadge ok">consensus: concordant (0.989)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005267</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>99.3</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS005268</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>98.2</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>Parkinson disease</h2><span class="cbadge ok">consensus: concordant (0.838)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000902</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>97.9</td><td>—</td><td>80%</td></tr><tr><td class='pgs'>PGS000903</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>81.7</td><td>—</td><td>93%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>rheumatoid arthritis</h2><span class="cbadge ok">consensus: concordant (0.96)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003994</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>93.3</td><td>—</td><td>89%</td></tr><tr><td class='pgs'>PGS004163</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>97.3</td><td>—</td><td>89%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>type 1 diabetes</h2><span class="cbadge ok">consensus: concordant (0.94)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003993</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>97.2</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS012555</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>91.2</td><td>—</td><td>91%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>inflammatory bowel disease</h2><span class="cbadge ok">consensus: concordant (0.974)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003981</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>94</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004151</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>96.6</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>basal cell carcinoma</h2><span class="cbadge ok">consensus: concordant (1.0)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000456</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>92.4</td><td>—</td><td>73%</td></tr><tr><td class='pgs'>PGS000457</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>92.4</td><td>—</td><td>73%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (73% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>ankylosing spondylitis</h2><span class="cbadge ok">consensus: concordant (0.838)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003420</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>92.4</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS003423</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>76.2</td><td>—</td><td>87%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>lung cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000740</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>91.6</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS004884</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>6.4</td><td>—</td><td>89%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (74% of 128 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 85, concordance 0.148, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>lipoprotein(a)</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000667</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>5.6</td><td>—</td><td>72%</td></tr><tr><td class='pgs'>PGS000752</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>88.8</td><td>—</td><td>93%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (72% of 43 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 83, concordance 0.168, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>osteoarthritis</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002763</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>52.2</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004882</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>88</td><td>—</td><td>89%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 36, concordance 0.642, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>bipolar disorder</h2></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002786</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>88</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>autism spectrum disorder</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000327</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>55.2</td><td>—</td><td>78%</td></tr><tr><td class='pgs'>PGS002790</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>87</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.682, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>coeliac disease</h2><span class="cbadge ok">consensus: concordant (0.877)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000316</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>74.2</td><td>—</td><td>62%</td></tr><tr><td class='pgs'>PGS002067</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>86.5</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (62% of 53 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>HbA1c</h2><span class="cbadge ok">consensus: concordant (0.853)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002331</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>84.3</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002697</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>69.6</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>major depressive disorder</h2><span class="cbadge ok">consensus: concordant (0.894)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003333</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>72.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003442</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>83.2</td><td>—</td><td>88%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>schizophrenia</h2><span class="cbadge ok">consensus: concordant (0.976)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000135</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>83.1</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS000136</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>80.7</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>osteoporosis</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002768</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>9.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS005155</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>74.7</td><td>—</td><td>92%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 65, concordance 0.349, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>ovarian cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000351</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>73.3</td><td>—</td><td>67%</td></tr><tr><td class='pgs'>PGS005086</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39.1</td><td>—</td><td>80%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (67% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 34, concordance 0.658, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>cataract</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005142</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>40.2</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS005149</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>72.7</td><td>—</td><td>92%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.675, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>multiple sclerosis</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000809</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>57.6</td><td>—</td><td>87%</td></tr><tr><td class='pgs'>PGS004700</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>69.2</td><td>—</td><td>17%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.884, different risk tertiles) — treat as uncertain | low variant coverage (17% of 12 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>thyroid cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005258</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>68.2</td><td>—</td><td>75%</td></tr><tr><td class='pgs'>PGS005259</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>56.4</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.882, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>chronic obstructive pulmonary disease</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS001783</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>67.2</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS001788</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>45.7</td><td>—</td><td>94%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.785, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>testicular cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000599</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>66.7</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS000600</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>39.6</td><td>—</td><td>76%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (74% of 31 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 27, concordance 0.729, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>breast cancer</h2><span class="cbadge ok">consensus: concordant (0.713)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000492</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>66.3</td><td>14% (vs 13%)</td><td>90%</td></tr><tr><td class='pgs'>PGS000500</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.6</td><td>10% (vs 13%)</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>HDL cholesterol</h2><span class="cbadge ok">consensus: concordant (0.985)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002781</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>64</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003879</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>65.5</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>melanoma</h2><span class="cbadge ok">consensus: concordant (0.977)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000417</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>62.8</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS000419</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>65.1</td><td>—</td><td>83%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>height</h2><span class="cbadge ok">consensus: concordant (0.891)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002802</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>62.5</td><td>—</td><td>83%</td></tr><tr><td class='pgs'>PGS005281</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.6</td><td>—</td><td>83%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>gout</h2><span class="cbadge ok">consensus: concordant (0.927)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS001789</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>53.7</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS002762</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>61</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>coronary artery disease</h2><span class="cbadge ok">consensus: concordant (0.955)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS004941</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.6</td><td>29% (vs 32%)</td><td>94%</td></tr><tr><td class='pgs'>PGS005091</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>56.1</td><td>31% (vs 32%)</td><td>91%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>chronic kidney disease</h2><span class="cbadge ok">consensus: concordant (0.862)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000728</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>40.2</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS004889</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>54</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>waist-hip ratio</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002356</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>51.7</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003484</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>14.2</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 38, concordance 0.625, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>ADHD</h2><span class="cbadge ok">consensus: concordant (0.882)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002746</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>39.9</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS003753</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>51.7</td><td>—</td><td>91%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>hypertension</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS004456</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>16</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004526</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>51.3</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 35, concordance 0.647, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>pancreatic cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002740</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>19.5</td><td>—</td><td>77%</td></tr><tr><td class='pgs'>PGS004693</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>49.2</td><td>—</td><td>94%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.703, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>body mass index</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005102</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27</td><td>—</td><td>91%</td></tr><tr><td class='pgs'>PGS005103</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>48.4</td><td>—</td><td>91%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 21, concordance 0.786, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>atopic dermatitis</h2><span class="cbadge ok">consensus: concordant (0.869)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003459</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>47.4</td><td>—</td><td>74%</td></tr><tr><td class='pgs'>PGS003486</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>34.3</td><td>—</td><td>70%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (74% of 170 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | low variant coverage (70% of 71 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>venous thromboembolism</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002235</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>32.9</td><td>—</td><td>78%</td></tr><tr><td class='pgs'>PGS003332</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>47.1</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.858, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>migraine</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS004798</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>44.4</td><td>—</td><td>82%</td></tr><tr><td class='pgs'>PGS004799</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>22.3</td><td>—</td><td>69%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.779, different risk tertiles) — treat as uncertain | low variant coverage (69% of 4,319,950 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>age-related macular degeneration</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS004606</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>33</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004952</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>42.4</td><td>—</td><td>79%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 9, concordance 0.906, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>triglycerides</h2><span class="cbadge ok">consensus: concordant (0.944)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002784</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>42.3</td><td>—</td><td>81%</td></tr><tr><td class='pgs'>PGS003881</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>36.7</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>glaucoma</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS001792</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>9.9</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS002761</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39.4</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.705, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>psoriasis</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002344</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>25</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS002710</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>39</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.86, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>bladder cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS000071</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>38.8</td><td>—</td><td>67%</td></tr><tr><td class='pgs'>PGS000782</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>28.2</td><td>—</td><td>67%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (67% of 15 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>colorectal cancer</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002252</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>30.4</td><td>—</td><td>81%</td></tr><tr><td class='pgs'>PGS012583</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.9</td><td>—</td><td>84%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 8, concordance 0.925, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>ischemic stroke</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002724</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.3</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS004942</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.9</td><td>—</td><td>94%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>type 2 diabetes</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS004923</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>37.3</td><td>35% (vs 40%)</td><td>83%</td></tr><tr><td class='pgs'>PGS005333</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.4</td><td>32% (vs 40%)</td><td>91%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 10, concordance 0.901, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>intelligence</h2><span class="cbadge low">consensus: robustness LOW</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003724</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>33.9</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS004427</td><td><span class='badge sm' style='background:#82071e'>D</span></td><td>15.9</td><td>—</td><td>90%</td></tr>
-          </table>
-          <p class="caveat">multi-score robustness LOW: 2 scores disagree (percentile spread 18, concordance 0.82, different risk tertiles) — treat as uncertain</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>asthma</h2><span class="cbadge ok">consensus: concordant (0.857)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS001782</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>31.5</td><td>—</td><td>94%</td></tr><tr><td class='pgs'>PGS005148</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.2</td><td>—</td><td>94%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>Alzheimer disease</h2><span class="cbadge ok">consensus: concordant (0.874)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003958</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>27.9</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS004590</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>15.3</td><td>—</td><td>91%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>systemic lupus erythematosus</h2><span class="cbadge ok">consensus: concordant (1.0)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003755</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>23.4</td><td>—</td><td>63%</td></tr><tr><td class='pgs'>PGS003756</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>23.4</td><td>—</td><td>69%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (63% of 122 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | low variant coverage (69% of 112 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>gallstones</h2><span class="cbadge ok">consensus: concordant (0.895)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005150</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>21.9</td><td>—</td><td>92%</td></tr><tr><td class='pgs'>PGS012582</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>11.4</td><td>—</td><td>92%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>heart failure</h2></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS005097</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>19.8</td><td>—</td><td>91%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>prostate cancer</h2><span class="cbadge ok">consensus: concordant (0.914)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003765</td><td><span class='badge sm' style='background:#bc4c00'>C</span></td><td>8.8</td><td>5% (vs 12%)</td><td>71%</td></tr><tr><td class='pgs'>PGS003766</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.4</td><td>6% (vs 12%)</td><td>77%</td></tr>
-          </table>
-          <p class="caveat">low variant coverage (71% of 451 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p>
-        </section>
-        <section class="card">
-          <div class="head"><h2>C-reactive protein</h2><span class="cbadge ok">consensus: concordant (0.946)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002867</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>17.1</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS005251</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>11.7</td><td>—</td><td>77%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>LDL cholesterol</h2><span class="cbadge ok">consensus: concordant (0.933)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003873</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>13.6</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003978</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>6.9</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>fatty liver disease</h2><span class="cbadge ok">consensus: concordant (0.922)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS002282</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>4.2</td><td>—</td><td>75%</td></tr><tr><td class='pgs'>PGS002283</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>12</td><td>—</td><td>80%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>endometrial cancer</h2><span class="cbadge ok">consensus: concordant (0.944)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003381</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>4.3</td><td>—</td><td>79%</td></tr><tr><td class='pgs'>PGS004244</td><td><span class='badge sm' style='background:#9a6700'>B</span></td><td>9.9</td><td>—</td><td>81%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>atrial fibrillation</h2><span class="cbadge ok">consensus: concordant (0.997)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS012532</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>8.1</td><td>—</td><td>80%</td></tr><tr><td class='pgs'>PGS012533</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>7.8</td><td>—</td><td>80%</td></tr>
-          </table>
-          
-        </section>
-        <section class="card">
-          <div class="head"><h2>abdominal aortic aneurysm</h2><span class="cbadge ok">consensus: concordant (0.985)</span></div>
-          <table class="scores">
-            <tr><th>score</th><th>grade</th><th>percentile</th><th>absolute risk</th><th>coverage</th></tr>
-            <tr><td class='pgs'>PGS003972</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>4.5</td><td>—</td><td>90%</td></tr><tr><td class='pgs'>PGS003973</td><td><span class='badge sm' style='background:#1a7f37'>A</span></td><td>3</td><td>—</td><td>90%</td></tr>
-          </table>
-          
-        </section>
+:root{--bg:#f6f8fb;--panel:#fff;--raise:#fbfcfe;--ink:#182430;--soft:#516170;--faint:#7c8b99;
+  --line:#dbe3ec;--line2:#eef2f6;--accent:#2f6f8f;--up:#b45309;--dn:#0f766e;--muted:#64748b;
+  --hi:#0f766e;--ok:#2f6f8f;--low:#b45309;--none:#64748b;
+  --dot-on:#c2703a;--dot-ref:#d9c3ab;--dot-off:#e4eaf0;--shadow:0 1px 2px rgba(20,40,60,.04),0 3px 12px rgba(20,40,60,.05)}
+*{box-sizing:border-box}
+body{font:15.5px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);max-width:840px;margin:0 auto;padding:2rem 1.1rem 4rem;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.eyebrow,.big{font-family:"Report Display",ui-sans-serif,system-ui,sans-serif}
+h1{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}
+.sub{color:var(--soft);margin:0 0 1.1rem;font-size:.95rem}
+.disc{background:#eef6ff;border:1px solid #bcd9f5;border-radius:8px;padding:.6rem .85rem;font-size:.86rem;margin:0 0 1.1rem;color:#1d3b57}
+.summary{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.25rem;margin:0 0 1.4rem;box-shadow:var(--shadow)}
+.summary h2{font-size:1rem;font-weight:600;margin:0 0 .5rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .2rem}
+.chip{background:var(--raise);border:1px solid var(--line);border-radius:2rem;padding:.14rem .6rem;font-size:.82rem;text-transform:capitalize}
+.chip b{color:var(--up)} .muted{color:var(--soft)}
+.tally{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.82rem;color:var(--soft);margin-top:.85rem;padding-top:.75rem;border-top:1px solid var(--line2)}
+.tally b{color:var(--ink)} .grades{display:flex;gap:1rem;flex-wrap:wrap;font-weight:600;margin-top:.5rem;font-size:.82rem}
+.tg{display:inline-flex;align-items:center;gap:.35rem} .dot{width:.58rem;height:.58rem;border-radius:50%}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.25rem;margin:.85rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--stripe,var(--line))}
+.card.elevated{--stripe:var(--up)} .card.protective{--stripe:var(--dn)}
+.card.weak-high,.card.weak,.card.uncalibrated{--stripe:var(--muted)} .card.average{--stripe:var(--line)}
+.head{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+.head h2{font-size:1.12rem;font-weight:600;margin:0;flex:1;text-transform:capitalize;letter-spacing:-.01em}
+.conf{display:inline-flex;align-items:center;gap:.32rem;font-size:.75rem;font-weight:600;padding:.14rem .5rem;border-radius:2rem;border:1px solid var(--line);white-space:nowrap}
+.conf .cdot{width:.48rem;height:.48rem;border-radius:50%}
+.conf.hi{color:var(--hi);border-color:color-mix(in srgb,var(--hi) 40%,transparent)} .conf.hi .cdot{background:var(--hi)}
+.conf.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)} .conf.ok .cdot{background:var(--ok)}
+.conf.low{color:var(--low);border-color:color-mix(in srgb,var(--low) 40%,transparent)} .conf.low .cdot{background:var(--low)}
+.conf.none{color:var(--none)} .conf.none .cdot{background:var(--none)}
+.cbadge{font-size:.72rem;font-weight:600;padding:.12rem .5rem;border-radius:2rem}
+.cbadge.ok{background:#dafbe1;color:#1a7f37} .cbadge.low{background:#ffebe9;color:#cf222e}
+.verdict{margin:.6rem 0 0;font-size:1rem} .verdict.mute{color:var(--soft)}
+.verdict b.up{color:var(--up)} .verdict b.dn{color:var(--dn)}
+.posrow{margin:.85rem 0 .2rem}
+.posbar{position:relative;height:8px;border-radius:5px;background:linear-gradient(90deg,#e7edf3,#eef2f6)}
+.posbar .avg{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--faint);opacity:.5}
+.posbar .mk{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--panel);box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.poslab{display:flex;justify-content:space-between;font-size:.74rem;color:var(--faint);margin-top:.3rem}
+.poslab span:nth-child(2){color:var(--soft);font-weight:600}
+.risk{text-align:center;margin:1rem auto 0;max-width:280px}
+.array{display:grid;grid-template-columns:repeat(20,1fr);gap:2px;max-width:230px;margin:0 auto}
+.array .d{aspect-ratio:1;border-radius:50%} .array .on{background:var(--dot-on)} .array .base{background:var(--dot-ref)} .array .off{background:var(--dot-off)}
+.big{font-size:1.25rem;font-weight:600;margin:.5rem 0 0} .big b{color:var(--up)}
+.sub{font-size:.82rem;color:var(--soft)}
+.lgd{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:.3rem;align-items:center;font-size:.75rem;color:var(--faint);margin-top:.3rem}
+.lgd i{width:.58rem;height:.58rem;border-radius:50%}
+.notinterp{background:var(--raise);border:1px dashed var(--line);border-radius:10px;padding:.75rem .9rem;color:var(--soft);font-size:.88rem;margin:.9rem 0 0}
+.notinterp b{color:var(--ink)}
+.means{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line2)}
+.means h3{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 0 .25rem}
+.means p{margin:0;font-size:.88rem;color:var(--soft)}
+details.clinical{margin:.85rem 0 0}
+details.clinical>summary{cursor:pointer;font-size:.8rem;font-weight:600;color:var(--accent);list-style:none;display:inline-flex;align-items:center;gap:.3rem}
+details.clinical>summary::-webkit-details-marker{display:none}
+details.clinical>summary::before{content:"▸"} details.clinical[open]>summary::before{content:"▾"}
+.ctab{width:100%;border-collapse:collapse;margin:.6rem 0 0;font-size:.82rem;font-variant-numeric:tabular-nums}
+.ctab th{text-align:left;color:var(--faint);font-weight:500;font-size:.76rem;padding:.2rem .5rem;border-bottom:1px solid var(--line)}
+.ctab td{padding:.26rem .5rem;border-bottom:1px solid var(--line2)}
+.ctab .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;color:var(--soft)}
+.gb{color:#fff;font-weight:600;font-size:.72rem;padding:.03rem .38rem;border-radius:2rem}
+.cav{background:#fff8c5;border:1px solid #eac54f;border-radius:6px;padding:.45rem .65rem;font-size:.82rem;color:#4d3800;margin:.55rem 0 0}
+.tested{font-size:.8rem;color:var(--faint);margin:.85rem 0 0;padding-top:.65rem;border-top:1px solid var(--line2)}
+.tested b{color:var(--soft)}
+.key{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;margin:1.4rem 0 0}
+.key h2{font-size:.92rem;font-weight:600;margin:0 0 .6rem}
+.key dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;margin:0;font-size:.86rem}
+.key dt{font-weight:600;color:var(--accent)} .key dd{margin:0;color:var(--soft)}
+footer{color:var(--faint);font-size:.78rem;margin-top:1.6rem;border-top:1px solid var(--line);padding-top:.8rem;font-family:ui-monospace,monospace}
+@media (max-width:560px){.means{grid-template-columns:1fr}}
+</style></head><body>
+<h1>What your genetic results suggest — SPL250502092712</h1>
+<p class="sub">poly-suite · 60 traits · EUR ancestry · educational / research use only</p>
+<p class="disc"><b>Not a diagnostic test.</b> Polygenic scores estimate <em>genetic likelihood</em>
+from common variants; they explain only a fraction of trait risk and are less accurate outside the
+training ancestry. Genetics is one factor among many. Discuss anything actionable with a clinician
+or genetic counselor.</p>
+<section class="summary">
+  <h2>The results worth your attention</h2>
+  <div class="chips"><span class="chip">hypothyroidism <b>top 1%</b></span><span class="chip">Parkinson disease <b>top 2%</b></span><span class="chip">rheumatoid arthritis <b>top 3%</b></span><span class="chip">type 1 diabetes <b>top 9%</b></span><span class="chip">inflammatory bowel disease <b>top 3%</b></span></div>
+  <div class="tally"><span><b>5</b> worth attention (high confidence &amp; elevated)</span>
+    <span><b>43</b> around average or not notable</span>
+    <span><b>12</b> shown but not reliable enough to interpret</span></div>
+  <div class="grades"><span class="tg"><i class="dot" style="background:#1a7f37"></i>73&nbsp;A</span> <span class="tg"><i class="dot" style="background:#9a6700"></i>15&nbsp;B</span> <span class="tg"><i class="dot" style="background:#bc4c00"></i>16&nbsp;C</span> <span class="tg"><i class="dot" style="background:#82071e"></i>14&nbsp;D</span></div>
+</section>
+
+        <article class="card weak-high">
+          <div class="head"><h2>hyperthyroidism</h2><span class="cbadge ok">2 scores agree (1.0)</span>
+            <span class="conf none"><span class="cdot"></span>Insufficient evidence</span></div>
+          <p class="verdict mute">This score ranks high (top 1%), but the evidence behind it is <b>too weak to interpret</b> as a risk.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:99.0%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 1%</span><span>higher</span></div></div><div class="notinterp"><b>Why no number?</b> This score comes from small or unreplicated studies (grade D). Turning a confident-looking rank from weak science into "1 in X" would be false precision, so we don't. Raw values are in the clinical detail below.</div><div class="means"><div><h3>What this means</h3><p>Nothing actionable yet. If larger, replicated studies appear, this can be re-scored.</p></div><div><h3>What it doesn't mean</h3><p>The high rank is noise from a low-quality score, not evidence of raised risk.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS001815</td><td><span class='gb' style='background:#82071e'>D</span></td><td>99.4</td><td>2.8508</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS002023</td><td><span class='gb' style='background:#82071e'>D</span></td><td>99.4</td><td>3.0206</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for hyperthyroidism, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card elevated">
+          <div class="head"><h2>hypothyroidism</h2><span class="cbadge ok">2 scores agree (0.989)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="up">higher than most people</b> — around the <b class="up">top 1%</b> for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:99.0%;background:var(--up)"></span></div><div class="poslab"><span>lower</span><span>you: top 1%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A raised <em>baseline</em> genetic likelihood over your lifetime. Genetics is one factor among many — age, sex and lifestyle also matter.</p></div><div><h3>What it doesn't mean</h3><p>Not a diagnosis and not a certainty. Most people at this rank never develop it.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005267</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>99.3</td><td>2.5792</td><td>—</td><td>—</td><td>79%</td></tr><tr><td class='mono'>PGS005268</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>98.2</td><td>1.9951</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for hypothyroidism, EUR-ancestry GWAS; 79% of variants measured.</p>
+        </article>
+        <article class="card elevated">
+          <div class="head"><h2>Parkinson disease</h2><span class="cbadge ok">2 scores agree (0.838)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="up">higher than most people</b> — around the <b class="up">top 2%</b> for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:97.9%;background:var(--up)"></span></div><div class="poslab"><span>lower</span><span>you: top 2%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A raised <em>baseline</em> genetic likelihood over your lifetime. Genetics is one factor among many — age, sex and lifestyle also matter.</p></div><div><h3>What it doesn't mean</h3><p>Not a diagnosis and not a certainty. Most people at this rank never develop it.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000902</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>97.9</td><td>2.1384</td><td>—</td><td>—</td><td>80%</td></tr><tr><td class='mono'>PGS000903</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>81.7</td><td>0.8932</td><td>—</td><td>—</td><td>93%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for Parkinson disease, EUR-ancestry GWAS; 80% of variants measured.</p>
+        </article>
+        <article class="card elevated">
+          <div class="head"><h2>rheumatoid arthritis</h2><span class="cbadge ok">2 scores agree (0.96)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="up">higher than most people</b> — around the <b class="up">top 3%</b> for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:97.3%;background:var(--up)"></span></div><div class="poslab"><span>lower</span><span>you: top 3%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A raised <em>baseline</em> genetic likelihood over your lifetime. Genetics is one factor among many — age, sex and lifestyle also matter.</p></div><div><h3>What it doesn't mean</h3><p>Not a diagnosis and not a certainty. Most people at this rank never develop it.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004163</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>97.3</td><td>2.0451</td><td>—</td><td>—</td><td>89%</td></tr><tr><td class='mono'>PGS003994</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>93.3</td><td>1.5026</td><td>—</td><td>—</td><td>89%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for rheumatoid arthritis, EUR-ancestry GWAS; 89% of variants measured.</p>
+        </article>
+        <article class="card elevated">
+          <div class="head"><h2>type 1 diabetes</h2><span class="cbadge ok">2 scores agree (0.94)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="up">higher than most people</b> — around the <b class="up">top 9%</b> for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:91.2%;background:var(--up)"></span></div><div class="poslab"><span>lower</span><span>you: top 9%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A raised <em>baseline</em> genetic likelihood over your lifetime. Genetics is one factor among many — age, sex and lifestyle also matter.</p></div><div><h3>What it doesn't mean</h3><p>Not a diagnosis and not a certainty. Most people at this rank never develop it.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003993</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>97.2</td><td>2.2337</td><td>—</td><td>—</td><td>91%</td></tr><tr><td class='mono'>PGS012555</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>91.2</td><td>1.4006</td><td>—</td><td>—</td><td>91%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for type 1 diabetes, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card elevated">
+          <div class="head"><h2>inflammatory bowel disease</h2><span class="cbadge ok">2 scores agree (0.974)</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="up">higher than most people</b> — around the <b class="up">top 3%</b> for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:96.6%;background:var(--up)"></span></div><div class="poslab"><span>lower</span><span>you: top 3%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A raised <em>baseline</em> genetic likelihood over your lifetime. Genetics is one factor among many — age, sex and lifestyle also matter.</p></div><div><h3>What it doesn't mean</h3><p>Not a diagnosis and not a certainty. Most people at this rank never develop it.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004151</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>96.6</td><td>1.7067</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS003981</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>94</td><td>1.5005</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for inflammatory bowel disease, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card weak-high">
+          <div class="head"><h2>basal cell carcinoma</h2><span class="cbadge ok">2 scores agree (1.0)</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">This score ranks high (top 8%), but the evidence behind it is <b>too weak to interpret</b> as a risk.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:92.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 8%</span><span>higher</span></div></div><div class="notinterp"><b>Why no number?</b> This score comes from small or unreplicated studies (grade D). Turning a confident-looking rank from weak science into "1 in X" would be false precision, so we don't. Raw values are in the clinical detail below.</div><div class="means"><div><h3>What this means</h3><p>Nothing actionable yet. If larger, replicated studies appear, this can be re-scored.</p></div><div><h3>What it doesn't mean</h3><p>The high rank is noise from a low-quality score, not evidence of raised risk.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000456</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>92.4</td><td>1.3559</td><td>—</td><td>—</td><td>73%</td></tr><tr><td class='mono'>PGS000457</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>92.4</td><td>1.3559</td><td>—</td><td>—</td><td>73%</td></tr></table><p class="cav">low variant coverage (73% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for basal cell carcinoma, EUR-ancestry GWAS; 73% of variants measured.</p>
+        </article>
+        <article class="card weak-high">
+          <div class="head"><h2>ankylosing spondylitis</h2><span class="cbadge ok">2 scores agree (0.838)</span>
+            <span class="conf none"><span class="cdot"></span>Insufficient evidence</span></div>
+          <p class="verdict mute">This score ranks high (top 8%), but the evidence behind it is <b>too weak to interpret</b> as a risk.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:92.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 8%</span><span>higher</span></div></div><div class="notinterp"><b>Why no number?</b> This score comes from small or unreplicated studies (grade D). Turning a confident-looking rank from weak science into "1 in X" would be false precision, so we don't. Raw values are in the clinical detail below.</div><div class="means"><div><h3>What this means</h3><p>Nothing actionable yet. If larger, replicated studies appear, this can be re-scored.</p></div><div><h3>What it doesn't mean</h3><p>The high rank is noise from a low-quality score, not evidence of raised risk.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003420</td><td><span class='gb' style='background:#82071e'>D</span></td><td>92.4</td><td>1.4501</td><td>—</td><td>—</td><td>91%</td></tr><tr><td class='mono'>PGS003423</td><td><span class='gb' style='background:#82071e'>D</span></td><td>76.2</td><td>0.5777</td><td>—</td><td>—</td><td>87%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for ankylosing spondylitis, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card protective">
+          <div class="head"><h2>lung cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="dn">lower than most people</b> — around the bottom 6% for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:6.4%;background:var(--dn)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 6%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A lower-than-average genetic likelihood — reassuring, but not protective on its own.</p></div><div><h3>What it doesn't mean</h3><p>Low genetic likelihood does not rule it out; other risk factors still apply.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000740</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>91.6</td><td>1.4093</td><td>—</td><td>—</td><td>74%</td></tr><tr><td class='mono'>PGS004884</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>6.4</td><td>-1.2449</td><td>—</td><td>—</td><td>89%</td></tr></table><p class="cav">low variant coverage (74% of 128 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 85, concordance 0.148, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for lung cancer, EUR-ancestry GWAS; 89% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>lipoprotein(a)</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 89th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:88.8%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 11%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000752</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>88.8</td><td>1.1773</td><td>—</td><td>—</td><td>93%</td></tr><tr><td class='mono'>PGS000667</td><td><span class='gb' style='background:#82071e'>D</span></td><td>5.6</td><td>-0.9109</td><td>—</td><td>—</td><td>72%</td></tr></table><p class="cav">low variant coverage (72% of 43 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 83, concordance 0.168, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for lipoprotein(a), EUR-ancestry GWAS; 93% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>osteoarthritis</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 88th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:88.0%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 12%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004882</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>88</td><td>0.6892</td><td>—</td><td>—</td><td>89%</td></tr><tr><td class='mono'>PGS002763</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>52.2</td><td>0.076</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 36, concordance 0.642, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for osteoarthritis, EUR-ancestry GWAS; 89% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>bipolar disorder</h2>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:88.0%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 12%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002786</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>88</td><td>1.1876</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 1 published score for bipolar disorder, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>autism spectrum disorder</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:87.0%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 13%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002790</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>87</td><td>1.1189</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS000327</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>55.2</td><td>0.146</td><td>—</td><td>—</td><td>78%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.682, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for autism spectrum disorder, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>coeliac disease</h2><span class="cbadge ok">2 scores agree (0.877)</span>
+            <span class="conf none"><span class="cdot"></span>Insufficient evidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:86.5%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 14%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002067</td><td><span class='gb' style='background:#82071e'>D</span></td><td>86.5</td><td>1.1586</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS000316</td><td><span class='gb' style='background:#82071e'>D</span></td><td>74.2</td><td>0.6217</td><td>—</td><td>—</td><td>62%</td></tr></table><p class="cav">low variant coverage (62% of 53 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for coeliac disease, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>HbA1c</h2><span class="cbadge ok">2 scores agree (0.853)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 84th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:84.3%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 16%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002331</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>84.3</td><td>1.0133</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS002697</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>69.6</td><td>0.4958</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for HbA1c, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>major depressive disorder</h2><span class="cbadge ok">2 scores agree (0.894)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 83th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:83.2%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 17%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003442</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>83.2</td><td>0.9554</td><td>—</td><td>—</td><td>88%</td></tr><tr><td class='mono'>PGS003333</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>72.6</td><td>0.5979</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for major depressive disorder, EUR-ancestry GWAS; 88% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>schizophrenia</h2><span class="cbadge ok">2 scores agree (0.976)</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 83th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:83.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 17%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000135</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>83.1</td><td>0.9244</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS000136</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>80.7</td><td>0.8365</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for schizophrenia, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>osteoporosis</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 75th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:74.7%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 25%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005155</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>74.7</td><td>0.6459</td><td>—</td><td>—</td><td>92%</td></tr><tr><td class='mono'>PGS002768</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>9.6</td><td>-1.3357</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 65, concordance 0.349, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for osteoporosis, EUR-ancestry GWAS; 92% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>ovarian cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 39th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:39.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 39%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000351</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>73.3</td><td>0.5543</td><td>—</td><td>—</td><td>67%</td></tr><tr><td class='mono'>PGS005086</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>39.1</td><td>-0.294</td><td>—</td><td>—</td><td>80%</td></tr></table><p class="cav">low variant coverage (67% of 30 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 34, concordance 0.658, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for ovarian cancer, EUR-ancestry GWAS; 80% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>cataract</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 73th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:72.7%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 27%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005149</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>72.7</td><td>0.5674</td><td>—</td><td>—</td><td>92%</td></tr><tr><td class='mono'>PGS005142</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>40.2</td><td>-0.2431</td><td>—</td><td>—</td><td>92%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 32, concordance 0.675, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for cataract, EUR-ancestry GWAS; 92% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>multiple sclerosis</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 58th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:57.6%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 42%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004700</td><td><span class='gb' style='background:#82071e'>D</span></td><td>69.2</td><td>0.6278</td><td>—</td><td>—</td><td>17%</td></tr><tr><td class='mono'>PGS000809</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>57.6</td><td>0.1735</td><td>—</td><td>—</td><td>87%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.884, different risk tertiles) — treat as uncertain | low variant coverage (17% of 12 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for multiple sclerosis, EUR-ancestry GWAS; 87% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>thyroid cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 68th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:68.2%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 32%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005258</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>68.2</td><td>0.4311</td><td>—</td><td>—</td><td>75%</td></tr><tr><td class='mono'>PGS005259</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>56.4</td><td>0.1274</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 12, concordance 0.882, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for thyroid cancer, EUR-ancestry GWAS; 75% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>chronic obstructive pulmonary disease</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 67th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:67.2%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 33%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS001783</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>67.2</td><td>0.4557</td><td>—</td><td>—</td><td>94%</td></tr><tr><td class='mono'>PGS001788</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>45.7</td><td>-0.1034</td><td>—</td><td>—</td><td>94%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.785, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for chronic obstructive pulmonary disease, EUR-ancestry GWAS; 94% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>testicular cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 40th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:39.6%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 40%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000599</td><td><span class='gb' style='background:#82071e'>D</span></td><td>66.7</td><td>0.3766</td><td>—</td><td>—</td><td>74%</td></tr><tr><td class='mono'>PGS000600</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>39.6</td><td>-0.2903</td><td>—</td><td>—</td><td>76%</td></tr></table><p class="cav">low variant coverage (74% of 31 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 27, concordance 0.729, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for testicular cancer, EUR-ancestry GWAS; 76% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>breast cancer</h2><span class="cbadge ok">2 scores agree (0.713)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 66th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:66.3%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 34%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000492</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>66.3</td><td>0.4393</td><td>1.09</td><td>14%</td><td>90%</td></tr><tr><td class='mono'>PGS000500</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>37.6</td><td>-0.2931</td><td>0.768</td><td>10%</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for breast cancer, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>HDL cholesterol</h2><span class="cbadge ok">2 scores agree (0.985)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 66th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:65.5%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 34%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003879</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>65.5</td><td>0.3364</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS002781</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>64</td><td>0.3148</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for HDL cholesterol, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>melanoma</h2><span class="cbadge ok">2 scores agree (0.977)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 65th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:65.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 35%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000419</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>65.1</td><td>0.0839</td><td>—</td><td>—</td><td>83%</td></tr><tr><td class='mono'>PGS000417</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>62.8</td><td>0.3383</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for melanoma, EUR-ancestry GWAS; 83% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>height</h2><span class="cbadge ok">2 scores agree (0.891)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 62th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:62.5%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 38%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002802</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>62.5</td><td>0.3864</td><td>—</td><td>—</td><td>83%</td></tr><tr><td class='mono'>PGS005281</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>51.6</td><td>0.0609</td><td>—</td><td>—</td><td>83%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for height, EUR-ancestry GWAS; 83% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>gout</h2><span class="cbadge ok">2 scores agree (0.927)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 61th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:61.0%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 39%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002762</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>61</td><td>0.277</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS001789</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>53.7</td><td>0.087</td><td>—</td><td>—</td><td>94%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for gout, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>coronary artery disease</h2><span class="cbadge ok">2 scores agree (0.955)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 56th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:56.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 44%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005091</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>56.1</td><td>0.1869</td><td>0.94</td><td>31%</td><td>91%</td></tr><tr><td class='mono'>PGS004941</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>51.6</td><td>-0.0116</td><td>0.884</td><td>29%</td><td>94%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for coronary artery disease, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>chronic kidney disease</h2><span class="cbadge ok">2 scores agree (0.862)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 54th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:54.0%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 46%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004889</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>54</td><td>0.1227</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS000728</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>40.2</td><td>-0.2213</td><td>—</td><td>—</td><td>92%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for chronic kidney disease, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>waist-hip ratio</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 52th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:51.7%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 48%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002356</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>51.7</td><td>0.0216</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS003484</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>14.2</td><td>-1.0731</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 38, concordance 0.625, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for waist-hip ratio, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>ADHD</h2><span class="cbadge ok">2 scores agree (0.882)</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 52th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:51.7%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: top 48%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003753</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>51.7</td><td>0.0528</td><td>—</td><td>—</td><td>91%</td></tr><tr><td class='mono'>PGS002746</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>39.9</td><td>-0.2115</td><td>—</td><td>—</td><td>79%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for ADHD, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>hypertension</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf none"><span class="cdot"></span>Insufficient evidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:51.3%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: top 49%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004526</td><td><span class='gb' style='background:#82071e'>D</span></td><td>51.3</td><td>-0.0006</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS004456</td><td><span class='gb' style='background:#82071e'>D</span></td><td>16</td><td>-0.9961</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 35, concordance 0.647, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for hypertension, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>pancreatic cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 49th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:49.2%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 49%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004693</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>49.2</td><td>-0.0394</td><td>—</td><td>—</td><td>94%</td></tr><tr><td class='mono'>PGS002740</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>19.5</td><td>-0.8152</td><td>—</td><td>—</td><td>77%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.703, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for pancreatic cancer, EUR-ancestry GWAS; 94% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>body mass index</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 48th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:48.4%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 48%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005103</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>48.4</td><td>-0.0541</td><td>—</td><td>—</td><td>91%</td></tr><tr><td class='mono'>PGS005102</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>27</td><td>-0.6235</td><td>—</td><td>—</td><td>91%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 21, concordance 0.786, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for body mass index, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>atopic dermatitis</h2><span class="cbadge ok">2 scores agree (0.869)</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:47.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 47%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003459</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>47.4</td><td>-0.1237</td><td>—</td><td>—</td><td>74%</td></tr><tr><td class='mono'>PGS003486</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>34.3</td><td>-0.4307</td><td>—</td><td>—</td><td>70%</td></tr></table><p class="cav">low variant coverage (74% of 170 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | low variant coverage (70% of 71 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for atopic dermatitis, EUR-ancestry GWAS; 74% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>venous thromboembolism</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 47th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:47.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 47%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003332</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>47.1</td><td>-0.1092</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS002235</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>32.9</td><td>-0.4633</td><td>—</td><td>—</td><td>78%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.858, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for venous thromboembolism, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>migraine</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf none"><span class="cdot"></span>Insufficient evidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:44.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 44%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004798</td><td><span class='gb' style='background:#82071e'>D</span></td><td>44.4</td><td>-0.1525</td><td>—</td><td>—</td><td>82%</td></tr><tr><td class='mono'>PGS004799</td><td><span class='gb' style='background:#82071e'>D</span></td><td>22.3</td><td>-0.7506</td><td>—</td><td>—</td><td>69%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 22, concordance 0.779, different risk tertiles) — treat as uncertain | low variant coverage (69% of 4,319,950 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for migraine, EUR-ancestry GWAS; 82% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>age-related macular degeneration</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:42.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 42%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004952</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>42.4</td><td>-0.2024</td><td>—</td><td>—</td><td>79%</td></tr><tr><td class='mono'>PGS004606</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>33</td><td>-0.4082</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 9, concordance 0.906, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for age-related macular degeneration, EUR-ancestry GWAS; 79% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>triglycerides</h2><span class="cbadge ok">2 scores agree (0.944)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 42th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:42.3%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 42%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002784</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>42.3</td><td>-0.2039</td><td>—</td><td>—</td><td>81%</td></tr><tr><td class='mono'>PGS003881</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>36.7</td><td>-0.3322</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for triglycerides, EUR-ancestry GWAS; 81% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>glaucoma</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 39th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:39.4%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 39%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002761</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>39.4</td><td>-0.2595</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS001792</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>9.9</td><td>-1.3663</td><td>—</td><td>—</td><td>94%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 30, concordance 0.705, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for glaucoma, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>psoriasis</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 39th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:39.0%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 39%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002710</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>39</td><td>-0.2588</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS002344</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>25</td><td>-0.6916</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 14, concordance 0.86, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for psoriasis, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>bladder cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:38.8%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 39%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS000071</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>38.8</td><td>-0.2134</td><td>—</td><td>—</td><td>67%</td></tr><tr><td class='mono'>PGS000782</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>28.2</td><td>-0.5588</td><td>—</td><td>—</td><td>67%</td></tr></table><p class="cav">low variant coverage (67% of 15 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for bladder cancer, EUR-ancestry GWAS; 67% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>colorectal cancer</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 38th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:37.9%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 38%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS012583</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>37.9</td><td>-0.3094</td><td>—</td><td>—</td><td>84%</td></tr><tr><td class='mono'>PGS002252</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>30.4</td><td>-0.5188</td><td>—</td><td>—</td><td>81%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 8, concordance 0.925, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for colorectal cancer, EUR-ancestry GWAS; 84% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>ischemic stroke</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 38th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:37.9%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 38%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004942</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>37.9</td><td>-0.3059</td><td>—</td><td>—</td><td>94%</td></tr><tr><td class='mono'>PGS002724</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>27.3</td><td>-0.6395</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 11, concordance 0.894, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for ischemic stroke, EUR-ancestry GWAS; 94% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>type 2 diabetes</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 37th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:37.3%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 37%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004923</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>37.3</td><td>-0.3349</td><td>0.808</td><td>35%</td><td>83%</td></tr><tr><td class='mono'>PGS005333</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>27.4</td><td>-0.6257</td><td>0.722</td><td>32%</td><td>91%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 10, concordance 0.901, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for type 2 diabetes, EUR-ancestry GWAS; 83% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>intelligence</h2><span class="cbadge low">2 scores disagree</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 34th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:33.9%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 34%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003724</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>33.9</td><td>-0.4183</td><td>—</td><td>—</td><td>79%</td></tr><tr><td class='mono'>PGS004427</td><td><span class='gb' style='background:#82071e'>D</span></td><td>15.9</td><td>-1.0146</td><td>—</td><td>—</td><td>90%</td></tr></table><p class="cav">multi-score robustness LOW: 2 scores disagree (percentile spread 18, concordance 0.82, different risk tertiles) — treat as uncertain</p></details><p class="tested"><b>Tested:</b> 2 published scores for intelligence, EUR-ancestry GWAS; 79% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>asthma</h2><span class="cbadge ok">2 scores agree (0.857)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 32th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:31.5%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 32%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS001782</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>31.5</td><td>-0.5142</td><td>—</td><td>—</td><td>94%</td></tr><tr><td class='mono'>PGS005148</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>17.2</td><td>-0.9293</td><td>—</td><td>—</td><td>94%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for asthma, EUR-ancestry GWAS; 94% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>Alzheimer disease</h2><span class="cbadge ok">2 scores agree (0.874)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 28th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:27.9%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 28%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003958</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>27.9</td><td>-0.644</td><td>—</td><td>—</td><td>92%</td></tr><tr><td class='mono'>PGS004590</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>15.3</td><td>-0.9884</td><td>—</td><td>—</td><td>91%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for Alzheimer disease, EUR-ancestry GWAS; 92% of variants measured.</p>
+        </article>
+        <article class="card weak">
+          <div class="head"><h2>systemic lupus erythematosus</h2><span class="cbadge ok">2 scores agree (1.0)</span>
+            <span class="conf low"><span class="cdot"></span>Limited confidence</span></div>
+          <p class="verdict mute">The evidence behind this score is <b>insufficient to interpret</b>.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:23.4%;background:var(--muted)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 23%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003755</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>23.4</td><td>-0.7077</td><td>—</td><td>—</td><td>63%</td></tr><tr><td class='mono'>PGS003756</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>23.4</td><td>-0.7077</td><td>—</td><td>—</td><td>69%</td></tr></table><p class="cav">low variant coverage (63% of 122 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS | low variant coverage (69% of 112 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for systemic lupus erythematosus, EUR-ancestry GWAS; 63% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>gallstones</h2><span class="cbadge ok">2 scores agree (0.895)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 22th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:21.9%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 22%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005150</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>21.9</td><td>-0.7488</td><td>—</td><td>—</td><td>92%</td></tr><tr><td class='mono'>PGS012582</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>11.4</td><td>-1.1309</td><td>—</td><td>—</td><td>92%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for gallstones, EUR-ancestry GWAS; 92% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>heart failure</h2>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 20th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:19.8%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 20%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS005097</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>19.8</td><td>-0.8925</td><td>—</td><td>—</td><td>91%</td></tr></table></details><p class="tested"><b>Tested:</b> 1 published score for heart failure, EUR-ancestry GWAS; 91% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>prostate cancer</h2><span class="cbadge ok">2 scores agree (0.914)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 17th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:17.4%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 17%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003766</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>17.4</td><td>-0.9429</td><td>0.445</td><td>6%</td><td>77%</td></tr><tr><td class='mono'>PGS003765</td><td><span class='gb' style='background:#bc4c00'>C</span></td><td>8.8</td><td>-1.4103</td><td>0.342</td><td>5%</td><td>71%</td></tr></table><p class="cav">low variant coverage (71% of 451 scoring variants matched) — input is not full-genotype; raw score is biased and NOT a valid PRS</p></details><p class="tested"><b>Tested:</b> 2 published scores for prostate cancer, EUR-ancestry GWAS; 77% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>C-reactive protein</h2><span class="cbadge ok">2 scores agree (0.946)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 17th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:17.1%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 17%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002867</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>17.1</td><td>-0.9342</td><td>—</td><td>—</td><td>79%</td></tr><tr><td class='mono'>PGS005251</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>11.7</td><td>-1.222</td><td>—</td><td>—</td><td>77%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for C-reactive protein, EUR-ancestry GWAS; 79% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>LDL cholesterol</h2><span class="cbadge ok">2 scores agree (0.933)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 14th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:13.6%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 14%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003873</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>13.6</td><td>-1.0733</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS003978</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>6.9</td><td>-1.4637</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for LDL cholesterol, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+        <article class="card average">
+          <div class="head"><h2>fatty liver disease</h2><span class="cbadge ok">2 scores agree (0.922)</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Around <b>typical</b> genetic likelihood (about the 12th percentile).</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:12.0%;background:var(--accent)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 12%</span><span>higher</span></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS002283</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>12</td><td>-1.1684</td><td>—</td><td>—</td><td>80%</td></tr><tr><td class='mono'>PGS002282</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>4.2</td><td>-1.7043</td><td>—</td><td>—</td><td>75%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for fatty liver disease, EUR-ancestry GWAS; 80% of variants measured.</p>
+        </article>
+        <article class="card protective">
+          <div class="head"><h2>endometrial cancer</h2><span class="cbadge ok">2 scores agree (0.944)</span>
+            <span class="conf ok"><span class="cdot"></span>Good confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="dn">lower than most people</b> — around the bottom 10% for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:9.9%;background:var(--dn)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 10%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A lower-than-average genetic likelihood — reassuring, but not protective on its own.</p></div><div><h3>What it doesn't mean</h3><p>Low genetic likelihood does not rule it out; other risk factors still apply.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS004244</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>9.9</td><td>-1.366</td><td>—</td><td>—</td><td>81%</td></tr><tr><td class='mono'>PGS003381</td><td><span class='gb' style='background:#9a6700'>B</span></td><td>4.3</td><td>-1.7163</td><td>—</td><td>—</td><td>79%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for endometrial cancer, EUR-ancestry GWAS; 81% of variants measured.</p>
+        </article>
+        <article class="card protective">
+          <div class="head"><h2>atrial fibrillation</h2><span class="cbadge ok">2 scores agree (0.997)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="dn">lower than most people</b> — around the bottom 8% for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:8.1%;background:var(--dn)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 8%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A lower-than-average genetic likelihood — reassuring, but not protective on its own.</p></div><div><h3>What it doesn't mean</h3><p>Low genetic likelihood does not rule it out; other risk factors still apply.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS012532</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>8.1</td><td>-1.2823</td><td>—</td><td>—</td><td>80%</td></tr><tr><td class='mono'>PGS012533</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>7.8</td><td>-1.3843</td><td>—</td><td>—</td><td>80%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for atrial fibrillation, EUR-ancestry GWAS; 80% of variants measured.</p>
+        </article>
+        <article class="card protective">
+          <div class="head"><h2>abdominal aortic aneurysm</h2><span class="cbadge ok">2 scores agree (0.985)</span>
+            <span class="conf hi"><span class="cdot"></span>High confidence</span></div>
+          <p class="verdict ">Your genetic likelihood is <b class="dn">lower than most people</b> — around the bottom 4% for EUR ancestry.</p>
+          <div class="posrow"><div class="posbar"><span class="avg"></span><span class="mk" style="left:4.5%;background:var(--dn)"></span></div><div class="poslab"><span>lower</span><span>you: bottom 4%</span><span>higher</span></div></div><div class="means"><div><h3>What this means</h3><p>A lower-than-average genetic likelihood — reassuring, but not protective on its own.</p></div><div><h3>What it doesn't mean</h3><p>Low genetic likelihood does not rule it out; other risk factors still apply.</p></div></div>
+          <details class="clinical"><summary>Clinical detail</summary><table class="ctab"><tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th><th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr><tr><td class='mono'>PGS003972</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>4.5</td><td>-1.7119</td><td>—</td><td>—</td><td>90%</td></tr><tr><td class='mono'>PGS003973</td><td><span class='gb' style='background:#1a7f37'>A</span></td><td>3</td><td>-1.9011</td><td>—</td><td>—</td><td>90%</td></tr></table></details><p class="tested"><b>Tested:</b> 2 published scores for abdominal aortic aneurysm, EUR-ancestry GWAS; 90% of variants measured.</p>
+        </article>
+<section class="key">
+  <h2>How to read every card</h2>
+  <dl>
+    <dt>Percentile</dt><dd>Your <em>rank</em> vs others of the same ancestry — not your chance of the
+      disease. "Top 1%" = higher score than 99 of 100 people.</dd>
+    <dt>Confidence</dt><dd>How much to trust the number. <b>High</b> = large, replicated, ancestry-checked
+      studies. <b>Insufficient</b> = thin science; we don't translate it into a risk.</dd>
+    <dt>Lifetime chance</dt><dd>The percentile turned into an actual probability using the disease's
+      effect size and how common it is — shown only when confidence allows.</dd>
+    <dt>Coverage</dt><dd>How much of the score we could measure in your data. Completeness, not quality.</dd>
+  </dl>
+</section>
 <footer>poly-suite v0.1 · calibrated · build GRCh38 · generated 2026-07-04T17:17:14.208224+00:00 · contract sha f9307c5d254a</footer>
 </body></html>
