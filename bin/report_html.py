@@ -388,6 +388,10 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .ctab th{{text-align:left;color:var(--faint);font-weight:500;font-size:.76rem;padding:.2rem .5rem;border-bottom:1px solid var(--line)}}
 .ctab td{{padding:.26rem .5rem;border-bottom:1px solid var(--line2)}}
 .ctab .mono{{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;color:var(--soft)}}
+.ctab a.mono{{color:var(--accent);text-decoration:none}} .ctab a.mono:hover{{text-decoration:underline}}
+.sources{{font-size:.8rem;color:var(--soft);margin:.7rem 0 0}}
+.sources b{{color:var(--soft)}} .sources a{{color:var(--accent);text-decoration:none}}
+.sources a:hover{{text-decoration:underline}} .sources .lmute{{color:var(--faint)}}
 .gb{{color:#fff;font-weight:600;font-size:.72rem;padding:.03rem .38rem;border-radius:2rem}}
 .cav{{background:#fff8c5;border:1px solid #eac54f;border-radius:6px;padding:.45rem .65rem;font-size:.82rem;color:#4d3800;margin:.55rem 0 0}}
 .tested{{font-size:.8rem;color:var(--faint);margin:.7rem 0 0}}
@@ -435,6 +439,17 @@ Tap any row for the full clinical detail.</p>
     with open(out, "w") as fh:
         fh.write(doc)
     return out
+
+
+def _onto_url(eid):
+    """(url, label) for a trait ontology id -> Monarch for MONDO (disease-class
+    definition), OLS search otherwise. None if absent."""
+    if not eid or eid in ("NA", "—"):
+        return None, None
+    lab = eid.replace("_", ":")
+    if eid.startswith("MONDO_"):
+        return f"https://monarchinitiative.org/{lab}", lab
+    return f"https://www.ebi.ac.uk/ols4/search?q={html.escape(eid)}", lab
 
 
 def _sys_icon(s, cls="ig"):
@@ -523,8 +538,12 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
     crows = []
     for r in sorted(trows, key=lambda r: _f(r.get("percentile")) or -1, reverse=True):
         rg = r.get("evidence_grade", "D")
+        sid = html.escape(r.get("pgs_id", "?"))
+        sid_html = (f"<a class='mono' href='https://www.pgscatalog.org/score/{sid}/' "
+                    f"target='_blank' rel='noopener noreferrer'>{sid}</a>"
+                    if sid.startswith("PGS") else f"<span class='mono'>{sid}</span>")
         crows.append(
-            f"<tr><td class='mono'>{html.escape(r.get('pgs_id','?'))}</td>"
+            f"<tr><td>{sid_html}</td>"
             f"<td><span class='gb' style='background:{GRADE_COLOR.get(rg,'#57606a')}'>{rg}</span></td>"
             f"<td>{_fmt(r.get('percentile'))}</td><td>{_fmt(r.get('z_score'))}</td>"
             f"<td>{_fmt(r.get('risk_ratio'))}</td>"
@@ -536,6 +555,20 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
                 f'<tr><th>score</th><th>grade</th><th>percentile</th><th>Z</th>'
                 f'<th>risk ratio</th><th>abs. risk</th><th>coverage</th></tr>'
                 f'{"".join(crows)}</table>{cav_row}</div>')
+
+    # authoritative links: the MONDO disease class + the study behind the top score.
+    # Per-score cohorts are reachable via the linked PGS Catalog score IDs above.
+    ou, olab = _onto_url(rep.get("efo_id") or "")
+    pmid = str(rep.get("source_pmid") or "").strip()
+    lparts = []
+    if ou:
+        lparts.append(f'<a href="{ou}" target="_blank" rel="noopener noreferrer">{olab}</a>'
+                      f' <span class="lmute">disease class</span>')
+    if pmid and pmid != "NA":
+        lparts.append(f'<a href="https://pubmed.ncbi.nlm.nih.gov/{html.escape(pmid)}/" '
+                      f'target="_blank" rel="noopener noreferrer">study PMID&nbsp;{html.escape(pmid)}</a>')
+    sources = (f'<p class="sources"><b>Learn more:</b> {" · ".join(lparts)}'
+               f' · each score ID above opens its PGS Catalog page.</p>' if lparts else '')
 
     nsc = len(trows)
     cov = _fmt(rep.get("match_rate"), pct=True)
@@ -556,7 +589,7 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
             f'<span class="interp">{interp}</span>'
             f'<span class="tri">▶</span></summary>'
             f'<div class="body">{thy}{risk if rich else ""}{means if rich else ""}{todo}'
-            f'{clinical}{tested}</div></details>')
+            f'{clinical}{sources}{tested}</div></details>')
 
 
 if __name__ == "__main__":
