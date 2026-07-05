@@ -414,6 +414,15 @@ docs/    this file + pgs-pipeline-spec.md
   headerless with GRCh38 already in `chr_name`/`chr_position`. `scoring_targets.py`
   reads both, so the harmonize-skip fast path (feeding cached raw files straight to
   genotype-prep) produces identical targets.
+- **pgsc_calc `FORMAT_SCOREFILES` OOMs under parallel runs.** The step (`pgscatalog-format`)
+  loads *all* selected scorefiles into memory at once; the large biomarker scores (systolic
+  BP / eGFR / BMD, ~135 MB gzipped each) make it **~35 GB per run**. Running the 7 GIAB
+  samples 4-wide OOM-killed three (exit 137). Cap concurrent runs at **≤2 on a 128 GB box**
+  (serial is safest). It's a concurrency/memory limit, not a bug — HG001 solo and genotype-prep
+  are fine. Note `--reuse-prep` does NOT avoid it: `FORMAT_SCOREFILES` is in the *score* step,
+  so a reuse-prep re-run still hits it (reuse-prep only skips harmonize + prep). The failed
+  samples' `*.prepped.vcf.gz` survive, so re-run them with `--reuse-prep … --pgs-meta …` at
+  low concurrency.
 
 ---
 
