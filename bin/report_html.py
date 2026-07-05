@@ -40,7 +40,7 @@ ELEV, PROT, AVGC, WEAKHI, WEAK, UNCAL = (
 SYS = {
     "neuro": "#6d5ae0", "cardio": "#d6455c", "resp": "#4aa3c7", "msk": "#b07a3c",
     "metab": "#c68a2e", "endo": "#2fa6a0", "gut": "#4c8c5a", "eye": "#3c6db0",
-    "renal": "#8a5a3c", "skin": "#c0745a", "cancer": "#7a4fb0", "anthro": "#6b7a8c",
+    "renal": "#8a5a3c", "skin": "#c0745a", "cancer": "#cf4d9b", "anthro": "#6b7a8c",
     "default": "#64748b",
 }
 # 24x24 FILLED, cartoon-ish organ glyphs (fill:currentColor + white highlights)
@@ -57,7 +57,7 @@ SVG = {
     "eye": '<path d="M12 5.6C6.6 5.6 3.2 11.4 3 11.8a.5.5 0 0 0 0 .4C3.2 12.6 6.6 18.4 12 18.4s8.8-5.8 9-6.2a.5.5 0 0 0 0-.4C20.8 11.4 17.4 5.6 12 5.6z"/><circle cx="12" cy="12" r="3.3" fill="#fff"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="13.2" cy="10.9" r=".6" fill="#fff"/>',
     "renal": '<path d="M14.5 5C10.4 5 7 8.4 7 12.5S10 20 13 20c1.9 0 3.1-1.2 3.1-3 0-1.4-.9-2.1-.9-3.5S16.4 11 17.5 10s2-2 2-3.4C19.5 5.5 16.6 5 14.5 5z"/>',
     "skin": '<path d="M8.5 3.8 3.8 8.5a3 3 0 0 0 0 4.2l6.5 6.5a3 3 0 0 0 4.2 0l4.7-4.7a3 3 0 0 0 0-4.2l-6.5-6.5a3 3 0 0 0-4.2 0z"/><g fill="#fff" fill-opacity=".55"><circle cx="10.2" cy="12" r=".7"/><circle cx="12" cy="10.2" r=".7"/><circle cx="12" cy="13.8" r=".7"/><circle cx="13.8" cy="12" r=".7"/></g>',
-    "cancer": '<path fill-rule="evenodd" d="M12 3.5a3.6 3.6 0 0 0-3 5.6l1.9 2.8-3.6 6.8a.6.6 0 0 0 .8.8l3.9-2.1 3.9 2.1a.6.6 0 0 0 .8-.8l-3.6-6.8 1.9-2.8A3.6 3.6 0 0 0 12 3.5zm0 2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/>',
+    "cancer": '<path fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" d="M12 13.4C8.4 11.9 8.4 6.5 12 5.9c3.6.6 3.6 6 0 7.5M11.1 12.7 9.1 20.5M12.9 12.7 14.9 20.5"/>',
     "anthro": '<path d="M3.8 14.4 14.4 3.8a1 1 0 0 1 1.4 0l4.4 4.4a1 1 0 0 1 0 1.4L9.6 20.2a1 1 0 0 1-1.4 0l-4.4-4.4a1 1 0 0 1 0-1.4z"/><path fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1" stroke-linecap="round" d="M7.3 11.1 8.7 12.5M9.8 8.6l1.4 1.4M12.3 6.1l1.4 1.4"/>',
     "default": '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 4c0 4 8 4 8 8s-8 4-8 8M16 4c0 4-8 4-8 8s8 4 8 8"/><path fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" d="M9.2 7h5.6M9.2 17h5.6M8.5 9.5h7M8.5 14.5h7"/>',
 }
