@@ -25,8 +25,8 @@ TIER = sys.argv[3] if len(sys.argv) > 3 else "extended"   # core | extended | al
 # resolved via bin/resolve_traits.py; evidence grade is the final data-sufficiency
 # filter, so thin traits self-downgrade rather than being hard-excluded.
 #   core     ~25  grade-A-capable, actionable (headline)
-#   extended ~35  grade>=B, informative (default suite = core+extended)
-#   gated     ~7  sensitive/low-actionability (opt-in only)
+#   extended ~39  grade>=B, informative (default suite = core+extended)
+#   gated     ~6  sensitive/low-actionability (opt-in only)
 LAUNCH_SET = [
     # --- core ---
     ("core", "coronary artery disease", "MONDO_0005010"),
@@ -85,6 +85,16 @@ LAUNCH_SET = [
     ("extended", "HbA1c", "EFO_0004541"),
     ("extended", "height", "OBA_VT0001253"),
     ("extended", "waist-hip ratio", "EFO_0004343"),
+    # --- next tranche (2026-07): well-powered disease/cancer + biomarker (see docs/candidate-traits.md) ---
+    ("extended", "peripheral arterial disease", "MONDO_0005386"),
+    ("extended", "endometriosis", "MONDO_0005133"),
+    ("extended", "obstructive sleep apnea", "MONDO_0005296"),
+    ("extended", "esophageal cancer", "MONDO_0007576"),
+    ("extended", "gastric cancer", "MONDO_0001056"),
+    ("extended", "cervical cancer", "MONDO_0005131"),
+    ("extended", "bone mineral density", "EFO_0009270"),
+    ("extended", "estimated glomerular filtration rate", "OBA_0003747"),
+    ("extended", "systolic blood pressure", "EFO_0006335"),
     # --- gated (opt-in; sensitive / low-actionability) ---
     ("gated", "schizophrenia", "MONDO_0005090"),
     ("gated", "major depressive disorder", "MONDO_0002009"),

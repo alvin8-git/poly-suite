@@ -13,6 +13,17 @@ Extracted from the README `## Status` section. Open work first, shipped features
 
 ## Shipped
 
+- [x] **Next-tranche traits (61 → 70)** — added the [candidate-traits.md](docs/candidate-traits.md)
+      recommended set to `select_pgs.py`: peripheral arterial disease, endometriosis, obstructive
+      sleep apnea, esophageal / gastric / cervical cancer, and three **biomarkers** (bone mineral
+      density, eGFR, systolic blood pressure). Biomarkers render in a new **predisposition mode**
+      (direction + percentile, neutral colour, "what this measures" — no "1 in N" / "what to do",
+      excluded from the disease "worth attention" chips). Absolute-risk inputs curated (sourced,
+      PMIDs) for PAD / endometriosis / esophageal / gastric; OSA + cervical stay percentile-only
+      (no standard per-SD effect; cervical is HPV-driven → on-card HPV note via a general
+      `TRAIT_NOTES` mechanism). New icons wired (arterial→heart, apnea→lungs, bone→bone,
+      glomerular→kidney, systolic→heart).
+
 - [x] **Patient-first report redesign** (`bin/report_html.py`) — a lay-reader-first
       `report.html` that scales to 60+ traits. Traits grouped by evidence **confidence**
       (High/Good/Limited/Insufficient), so a high-percentile grade-D score no longer leads;

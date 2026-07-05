@@ -74,14 +74,16 @@ _KW = [
     ("intelligence", "neuro"), ("cognitive", "neuro"),
     ("coronary", "cardio"), ("atrial", "cardio"), ("hypertension", "cardio"),
     ("heart", "cardio"), ("venous thrombo", "cardio"), ("stroke", "cardio"),
-    ("aortic", "cardio"), ("aneurysm", "cardio"),
-    ("chronic obstructive", "resp"), ("pulmonary", "resp"), ("copd", "resp"), ("asthma", "resp"),
+    ("aortic", "cardio"), ("aneurysm", "cardio"), ("arterial", "cardio"),
+    ("blood pressure", "cardio"), ("systolic", "cardio"),
+    ("chronic obstructive", "resp"), ("pulmonary", "resp"), ("copd", "resp"),
+    ("asthma", "resp"), ("apnea", "resp"),
     ("rheumatoid", "msk"), ("osteoarthritis", "msk"), ("osteoporosis", "msk"),
-    ("ankylosing", "msk"), ("arthritis", "msk"),
+    ("ankylosing", "msk"), ("arthritis", "msk"), ("bone", "msk"),
     ("inflammatory bowel", "gut"), ("coeliac", "gut"), ("celiac", "gut"),
     ("crohn", "gut"), ("colitis", "gut"), ("gallstone", "gut"), ("gallbladder", "gut"),
     ("lupus", "msk"),
-    ("kidney", "renal"), ("renal", "renal"),
+    ("kidney", "renal"), ("renal", "renal"), ("glomerular", "renal"), ("egfr", "renal"),
     ("macular", "eye"), ("cataract", "eye"), ("glaucoma", "eye"),
     ("dermatitis", "skin"), ("atopic", "skin"), ("psoriasis", "skin"), ("eczema", "skin"),
     ("height", "anthro"), ("body mass", "anthro"), ("waist", "anthro"),
@@ -198,6 +200,24 @@ MEANS = {
            "A low grade is about the science, not your result — treat it as no information."),
 }
 
+# quantitative biomarkers get a "predisposition" framing (direction + percentile),
+# not disease-risk / "1 in N" — the valence (higher = better or worse) varies by trait.
+BIOMARKERS = {"bone mineral density", "estimated glomerular filtration rate",
+              "systolic blood pressure"}
+BIO_MEANS = ("Where your genetics sit for this measurable trait, versus others of the "
+             "same ancestry. A predisposition, not a measurement — your actual value "
+             "depends on age, lifestyle and health too.",
+             "Not a diagnosis and not your current level. A high or low genetic rank "
+             "does not mean your measured value is abnormal.")
+
+# trait-specific caveats surfaced in the expanded body (like the thyroid note)
+TRAIT_NOTES = {
+    "cervical cancer": ("Cervical cancer is caused almost entirely by persistent HPV "
+        "infection. A polygenic score reflects only a small inherited component — it is "
+        "<b>not</b> a substitute for HPV vaccination or Pap/HPV screening, which prevent "
+        "the large majority of cases."),
+}
+
 THYROID_NOTE = (
     "Both hypo- and hyperthyroidism score elevated here — that's expected, not "
     "contradictory. Graves' (over-active) and Hashimoto's (under-active) are both "
@@ -250,7 +270,7 @@ def render(results_dir, out=None):
     chips, n_uninterp = [], 0
     for trait, trows in by_trait.items():
         cat, p = _category(_rep(trows))
-        if cat == ELEV:
+        if cat == ELEV and trait.strip().lower() not in BIOMARKERS:
             s = _sys(trait)
             chips.append((p, f'<span class="chip"><span class="ci" style="color:'
                           f'{SYS.get(s, SYS["default"])}">{_sys_icon(s)}</span>'
@@ -336,6 +356,8 @@ h1{{font-size:1.6rem;font-weight:600;letter-spacing:-.015em;margin:0 0 .25rem}}
 .t{{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;--stripe:var(--line)}}
 .t.elevated{{--stripe:var(--up)}} .t.protective{{--stripe:var(--dn)}}
 .t.weak-high,.t.weak,.t.uncalibrated{{--stripe:var(--muted)}} .t.average{{--stripe:var(--line)}}
+.t.biomarker{{--stripe:var(--accent)}}
+.interp b.bio{{color:var(--accent)}}
 .t>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;
   grid-template-rows:auto auto;column-gap:.7rem;row-gap:.12rem;align-items:center;
   padding:.62rem .85rem .62rem 0;border-left:3px solid var(--stripe)}}
@@ -545,17 +567,31 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
         cbadge = ('<span class="cbadge low">2 disagree</span>' if low
                   else f'<span class="cbadge ok">{n} agree</span>')
 
+    is_bio = trait.strip().lower() in BIOMARKERS   # quantitative trait -> predisposition mode
+
     # likelihood bar
     lbar = ""
     if p is not None:
-        barcol = {ELEV: "var(--up)", PROT: "var(--dn)", AVGC: "var(--accent)"}.get(cat, "var(--muted)")
+        barcol = ("var(--accent)" if is_bio else
+                  {ELEV: "var(--up)", PROT: "var(--dn)", AVGC: "var(--accent)"}.get(cat, "var(--muted)"))
         lbar = (f'<span class="lbar" title="{p:.0f}th percentile"><span class="avg"></span>'
                 f'<span class="mk" style="left:{max(2,min(98,p)):.1f}%;background:{barcol}"></span></span>')
 
     # one-line interpretation
     ar_n = _nat_n(rep.get("absolute_risk"))
     base_n = _nat_n(rep.get("baseline_incidence"))
-    if cat == ELEV:
+    if is_bio:
+        if p is None:
+            interp = 'Not calibrated — needs an ancestry reference panel'
+        elif g not in ("A", "B"):
+            interp = f'Ranks {_rank_phrase(p)} but <b>evidence too weak</b> to interpret'
+        elif p >= 90:
+            interp = f'<b class="bio">Higher</b> genetic predisposition — {_rank_phrase(p)} for {anc} ancestry'
+        elif p <= 10:
+            interp = f'<b class="bio">Lower</b> genetic predisposition — {_rank_phrase(p)} for {anc} ancestry'
+        else:
+            interp = f'<b class="bio">Typical</b> genetic predisposition — {p:.0f}th percentile'
+    elif cat == ELEV:
         extra = ""
         if ar_n:
             extra = (f' · about <b>1 in {ar_n}</b> lifetime{sexlab}'
@@ -575,12 +611,13 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
         interp = 'Not calibrated — needs an ancestry reference panel'
 
     # ---- expanded body ----
-    thy = ""
+    note = TRAIT_NOTES.get(trait.strip().lower())
     if thyroid_pair and trait.strip().lower() in ("hypothyroidism", "hyperthyroidism"):
-        thy = f'<div class="tnote">{THYROID_NOTE}</div>'
+        note = THYROID_NOTE
+    thy = f'<div class="tnote">{note}</div>' if note else ""
 
     risk = ""
-    if cat == ELEV and ar_n:
+    if not is_bio and cat == ELEV and ar_n:
         you = min(100, max(1, round(1 / ar_n * 100)))
         avg = min(you, round(1 / base_n * 100)) if base_n else 0
         base_txt = f' · vs about 1 in {base_n} on average' if base_n else ''
@@ -590,14 +627,18 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
         risk = (f'<div class="risk"><div class="array">{_dot_array(you, avg)}</div>'
                 f'<p class="big">about <b>1 in {ar_n}</b></p>'
                 f'<p class="rsub">estimated lifetime chance{sexlab}{base_txt}</p>{legend}</div>')
-    elif cat == WEAKHI:
+    elif not is_bio and cat == WEAKHI:
         risk = ('<div class="notinterp"><b>Why no number?</b> This score comes from small or '
                 'unreplicated studies (grade D). Turning a confident-looking rank from weak '
                 'science into "1 in X" would be false precision, so we don\'t. Raw values are '
                 'in the table below.</div>')
 
     means = ""
-    if cat in MEANS:
+    if is_bio and p is not None and g in ("A", "B"):
+        mt, mn = BIO_MEANS
+        means = (f'<div class="means"><div><h3>What this measures</h3><p>{mt}</p></div>'
+                 f'<div><h3>What it doesn\'t mean</h3><p>{mn}</p></div></div>')
+    elif not is_bio and cat in MEANS:
         mt, mn = MEANS[cat]
         means = (f'<div class="means"><div><h3>What this means</h3><p>{mt}</p></div>'
                  f'<div><h3>What it doesn\'t mean</h3><p>{mn}</p></div></div>')
@@ -649,10 +690,11 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
     # one-line, non-prescriptive next step for high-confidence elevated findings
     todo = ('<p class="todo"><b>What to do:</b> nothing urgent — this is background '
             'likelihood, not a diagnosis. Worth mentioning to your doctor or a genetic '
-            'counsellor, especially if it runs in your family.</p>' if cat == ELEV else '')
+            'counsellor, especially if it runs in your family.</p>' if cat == ELEV and not is_bio else '')
 
-    rich = cat in (ELEV, PROT, WEAKHI)
-    return (f'<details class="t {cat}" style="--sys:{syscol}">'
+    rich = (is_bio and p is not None) or cat in (ELEV, PROT, WEAKHI)
+    row_cls = "biomarker" if is_bio else cat
+    return (f'<details class="t {row_cls}" style="--sys:{syscol}">'
             f'<summary><span class="ico" role="img" aria-label="{_SYSNAME.get(s,s)} icon">{_sys_icon(s)}</span>'
             f'<span class="r1"><span class="tname">{html.escape(trait)}</span>{cbadge}'
             f'{lbar}<span class="conf {ccls}"><span class="cdot"></span>{clabel}</span></span>'

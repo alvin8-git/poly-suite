@@ -8,3 +8,7 @@ PGS004151	inflammatory bowel disease	OR	1.83	38531883	per-SD OR ~ mean of UC/CD 
 NA	atrial fibrillation	HR	1.74	41124989	ASPREE per-SD HR (UK Biobank ~1.5/SD; 1.74 mid-range); trait-fallback, not launch-set
 NA	colorectal cancer	OR	1.584	36351667	LDpred2 PGS, UK Biobank (BMJ 2022), per-SD OR; trait-fallback, not launch-set
 NA	alzheimer disease	HR	2.02	40588577	IGAP-2019 AD-PRS INCL. APOE (APOE dominates); non-APOE PRS ~1.21/SD (PMID 36477264). Only valid for an APOE-inclusive score. Trait-fallback, not launch-set
+NA	peripheral arterial disease	OR	1.66	40397457	European UK Biobank per-SD OR (ancestry-dependent: AoU ~1.21); trait-fallback, illustrative
+NA	endometriosis	OR	1.28	36303976	UK Biobank per-SD OR (Danish discovery 1.57); women; trait-fallback, illustrative
+NA	esophageal cancer	HR	1.28	40019942	China Kadoorie per-SD HR (mostly ESCC) — ancestry/histology mismatch vs Western adenocarcinoma; illustrative, verify per release
+NA	gastric cancer	HR	1.27	40019942	China Kadoorie Biobank per-SD HR; trait-fallback, illustrative

@@ -14,3 +14,7 @@ colorectal cancer	male	overall	lifetime	0.043	NA	SEER US lifetime colorectal can
 colorectal cancer	female	overall	lifetime	0.039	NA	SEER US lifetime colorectal cancer risk ~3.9% (women)
 alzheimer disease	female	overall	lifetime_from_45	0.20	24418058	Chene 2015 Framingham lifetime AD/dementia risk from age 45 (women ~1 in 5)
 alzheimer disease	male	overall	lifetime_from_45	0.10	24418058	Chene 2015 Framingham lifetime AD/dementia risk from age 45 (men ~1 in 10)
+peripheral arterial disease	overall	overall	lifetime_from_40	0.19	31500474	Matsushita 2019 (6 US cohorts), ABI<0.90 to age 80 (~19% White; ~30% Black) — incl. subclinical
+endometriosis	female	overall	lifetime	0.10	NA	WHO endometriosis fact sheet ~10% of reproductive-age women
+esophageal cancer	overall	overall	lifetime	0.005	NA	SEER US lifetime esophageal cancer risk ~0.5%
+gastric cancer	overall	overall	lifetime	0.008	NA	SEER US lifetime stomach cancer risk ~0.8%

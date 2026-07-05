@@ -287,6 +287,16 @@ tier is its *posture*, not a fixed grade.
 | bladder cancer | MONDO_0004986 | | | |
 | testicular cancer | MONDO_0005447 | | | |
 
+**Next tranche (added 2026-07; see [candidate-traits.md](candidate-traits.md)):** peripheral
+arterial disease (`MONDO_0005386`), endometriosis (`MONDO_0005133`), obstructive sleep apnea
+(`MONDO_0005296`), esophageal cancer (`MONDO_0007576`), gastric cancer (`MONDO_0001056`),
+cervical cancer (`MONDO_0005131`) — plus three **biomarkers** rendered in a *predisposition*
+mode (direction + percentile, no "1 in N"): bone mineral density (`EFO_0009270`), estimated
+glomerular filtration rate (`OBA_0003747`), systolic blood pressure (`EFO_0006335`).
+Absolute-risk inputs were curated for PAD / endometriosis / esophageal / gastric; OSA and
+cervical stay percentile-only (no standard per-SD effect; cervical is HPV-driven, with an
+on-card note).
+
 **Gated — 6 (opt-in; sensitive / behavioural — off by default):**
 
 | Trait | Ontology ID |
