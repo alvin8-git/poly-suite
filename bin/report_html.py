@@ -441,14 +441,25 @@ Tap any row for the full clinical detail.</p>
     return out
 
 
+# OBO prefix -> EBI OLS4 ontology slug, for a direct term page. MONDO is handled
+# separately (Monarch). A malformed id (non-numeric local part) falls to search.
+_OBO_OLS = {"EFO": "efo", "HP": "hp", "ORPHANET": "ordo", "ORPHA": "ordo",
+            "DOID": "doid", "NCIT": "ncit", "GO": "go", "OBA": "oba"}
+
+
 def _onto_url(eid):
-    """(url, label) for a trait ontology id -> Monarch for MONDO (disease-class
-    definition), OLS search otherwise. None if absent."""
+    """(url, label) for a trait ontology id -> the term's own page: Monarch for
+    MONDO, the EBI OLS4 class page for other OBO ontologies; OLS search as a last
+    resort for anything malformed/unknown. None if absent."""
     if not eid or eid in ("NA", "—"):
         return None, None
     lab = eid.replace("_", ":")
     if eid.startswith("MONDO_"):
         return f"https://monarchinitiative.org/{lab}", lab
+    pre, _, loc = eid.partition("_")
+    slug = _OBO_OLS.get(pre.upper())
+    if slug and loc.isdigit():
+        return f"https://www.ebi.ac.uk/ols4/ontologies/{slug}/classes?obo_id={lab}", lab
     return f"https://www.ebi.ac.uk/ols4/search?q={html.escape(eid)}", lab
 
 
