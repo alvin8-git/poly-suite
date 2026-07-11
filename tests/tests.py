@@ -13,6 +13,7 @@ import validate_contract as V
 import validate_calibration as VC
 import select_pgs as SP
 import grade_pgs as G
+import neanderthal as N
 
 
 def test_absolute_risk_monotonic_bounded():
@@ -140,6 +141,97 @@ def test_launch_set_tiers():
     assert 20 <= len(core) <= 30                                # ~25 core
     # tier filter is monotone: core ⊂ extended ⊂ all
     assert SP._TIERS["core"] < SP._TIERS["extended"] < SP._TIERS["all"]
+
+
+def test_launch_set_new_omnigen_traits():
+    """The OmniGen-additions traits are wired into the launch set."""
+    labels = {l for _, l, _ in SP.LAUNCH_SET}
+    for t in ("educational attainment", "chronotype", "neuroticism", "loneliness"):
+        assert t in labels, f"{t} missing from LAUNCH_SET"
+    # height + bone mineral density were already present
+    assert {"height", "bone mineral density"} <= labels
+
+
+def test_pinned_scores_wiring():
+    """Verified/substitute PGS IDs are pinned with a documented note, and every
+    pinned trait is a real launch-set trait."""
+    labels = {l for _, l, _ in SP.LAUNCH_SET}
+    expect = {"height": "PGS002804", "bone mineral density": "PGS000657",
+              "educational attainment": "PGS002231", "chronotype": "PGS002209",
+              "neuroticism": "PGS002213", "loneliness": "PGS001091"}
+    for trait, pid in expect.items():
+        assert trait in SP.PINNED, f"{trait} not pinned"
+        assert SP.PINNED[trait]["pgs_id"] == pid
+        assert SP.PINNED[trait].get("note")            # must carry a rationale/label
+        assert trait in labels                          # pin references a real trait
+    # substitutes must be explicitly labelled as such
+    assert "SUBSTITUTE" in SP.PINNED["educational attainment"]["note"]
+    assert "SUBSTITUTE" in SP.PINNED["chronotype"]["note"]
+
+
+def test_deferred_traits_documented():
+    """23andMe-held traits are documented as deferred, NOT fabricated into the set."""
+    setlabels = {l for _, l, _ in SP.LAUNCH_SET}
+    for t in ("beat/rhythm synchronization", "general risk tolerance"):
+        assert t in SP.DEFERRED and SP.DEFERRED[t].get("reason")
+        assert t not in setlabels                       # not smuggled into the scored set
+
+
+def test_new_pgs_appends_no_schema_change():
+    """A brand-new PGS id (not in the pinned meta table) grades into a contract row
+    with EXACTLY the 24 stable columns — new scores append, schema is unchanged."""
+    G._EFF, G._BASE = AR.load_effects(), AR.load_baselines()
+    G._SEX = None
+    novel = {"iid": "S", "pgs": "PGS002804", "sum": "1.0", "denom": "1000",
+             "percentile": "92.0", "z_score": "1.4", "mostsimilarpop": "EUR"}
+    row = G.grade_row(novel)
+    assert set(G.CONTRACT_COLS) <= set(row.keys())      # all contract cols present
+    assert row["pgs_id"] == "PGS002804"
+    assert row["trait"] == "PGS002804"                  # unknown -> falls back to id (no crash)
+    assert row["percentile"] == 92.0
+    assert row["absolute_risk"] == "NA"                 # no disease baseline -> NA (quantitative-safe)
+    # writing through the contract writer yields the same 24-col header
+    import csv, io
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=G.CONTRACT_COLS, delimiter="\t", extrasaction="ignore")
+    w.writeheader(); w.writerow(row)
+    header = buf.getvalue().splitlines()[0].split("\t")
+    assert header == G.CONTRACT_COLS and len(header) == 24
+
+
+def test_neanderthal_pct_from_counts():
+    calib = {"slope": 3.0, "intercept": 0.0, "clamp_max": 10.0}
+    assert N.pct_from_counts(0, 100, calib) == 0.0
+    assert N.pct_from_counts(2, 100, calib) == round(3.0 * 0.02, 2)
+    # monotonic in archaic count
+    assert N.pct_from_counts(5, 100, calib) > N.pct_from_counts(2, 100, calib)
+    # clamped to clamp_max
+    assert N.pct_from_counts(100, 100, {"slope": 100, "clamp_max": 10.0}) == 10.0
+    # nothing genotyped -> None (honest)
+    assert N.pct_from_counts(0, 0, calib) is None
+
+
+def test_neanderthal_contract_roundtrip(tmp="/tmp/poly_nean_test"):
+    os.makedirs(tmp, exist_ok=True)
+    calib = N.load_calibration()
+    pct = N.pct_from_counts(4, 200, calib)
+    method = N.method_string(10, 8, calib)
+    out = N.write_contract(tmp, "HGTEST", pct, method)
+    rows = N.read_contract(out)
+    assert list(rows[0].keys()) == N.CONTRACT_COLS      # exactly sample, neanderthal_pct, method
+    assert rows[0]["sample"] == "HGTEST"
+    assert rows[0]["neanderthal_pct"] == str(pct)
+    assert "PROVISIONAL" in rows[0]["method"].upper()   # seed-scale panel -> provisional flag
+
+
+def test_neanderthal_seed_panel_loads():
+    panel = N.load_panel()
+    assert len(panel) > 0
+    for (chrom, pos, ref, arch, w) in panel:
+        assert chrom.startswith("chr") and isinstance(pos, int)
+        assert ref and arch and isinstance(w, float)
+    # shipped panel is intentionally seed-scale (provisional)
+    assert len(panel) < N.MIN_PANEL_SITES
 
 
 def test_grade_downgrade():

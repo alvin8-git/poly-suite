@@ -14,6 +14,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SCOREFILE_CACHE= PGS_META=
+BATCH= MAX_BATCH_BYTES=525000000  # --batch: size-aware bins cap peak RSS. 525MB -> ~35GB worst bin (measured: peak_rss=36.3*GB+15.8), safe 2-3 wide. See docs/memory-optimization-plan.md
 REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
 NF=/home/alvin/bin/nextflow
 while [ $# -gt 0 ]; do
@@ -25,6 +26,7 @@ while [ $# -gt 0 ]; do
     --bootstrap-vcf) BOOT=$2; shift 2;; --reuse-prep) REUSE_PREP=$2; shift 2;;
     --work-cache) WORK_CACHE=$2; shift 2;; --scorefile-cache) SCOREFILE_CACHE=$2; shift 2;;
     --pgs-meta) PGS_META=$2; shift 2;;
+    --batch) BATCH=1; shift;; --max-batch-bytes) MAX_BATCH_BYTES=$2; shift 2;;
     --dry-run) DRY=1; shift;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
@@ -116,7 +118,7 @@ rm -rf "$OUTDIR/score"
 
 # --scorefile-cache: use locally-cached harmonized scoring files (--scorefile) instead of
 # --pgs_id, skipping the ~40-58s DOWNLOAD_SCOREFILES step. Falls back to --pgs_id on any miss.
-SCORE_SEL=(--pgs_id "$PGS")
+SCORE_SEL=(--pgs_id "$PGS"); SFDIR=
 if [ -n "$SCOREFILE_CACHE" ]; then
   CACHED_SF=(); mapfile -t CACHED_SF < <(cache_scorefile_paths "$SCOREFILE_CACHE" "$PGS")
   if [ "${#CACHED_SF[@]}" -gt 0 ]; then
@@ -130,15 +132,60 @@ fi
 WORKDIR="$OUTDIR/work"; RESUME=()
 if [ -n "$WORK_CACHE" ]; then WORKDIR=$(readlink -f "$WORK_CACHE"); mkdir -p "$WORKDIR"; RESUME=(-resume)
 else rm -rf "$OUTDIR/work"; fi
-NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
-  --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 "${SCORE_SEL[@]}" --min_overlap 0.1 "${ANC[@]}" \
-  -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" > "$OUTDIR/score.log" 2>&1
+[ -n "$BATCH" ] && [ -z "$SFDIR" ] && echo "[batch] ignored: needs --scorefile-cache (nothing to partition on the --pgs_id path)" >&2
+if [ -n "$BATCH" ] && [ -n "$SFDIR" ]; then
+  # --batch: split the score set into size-aware bins so each pgsc_calc invocation's
+  # peak RSS stays bounded (the full 2.4GB score set drove a 108GB peak -> global OOM).
+  # Bins share ONE per-sample work dir with -resume so the score-independent ancestry
+  # steps (panel extract + FRAPOSA projection) compute in bin 1 and cache-hit in 2..K.
+  # merge_scores.py concatenates the disjoint per-bin score rows back into one score dir.
+  mkdir -p "$WORKDIR"; rm -rf "$OUTDIR/score" "$OUTDIR/score_bins"
+  mapfile -t BINS < <(python3 bin/partition_scores.py "$SFDIR" "$MAX_BATCH_BYTES" 2>>"$OUTDIR/score.log")
+  echo "[batch] ${#BINS[@]} bins (budget $((MAX_BATCH_BYTES/1000000)) MB), shared work dir, -resume ancestry" >&2
+  BIN_OUT=(); k=0
+  for line in "${BINS[@]}"; do
+    k=$((k+1)); bo="$OUTDIR/score_bins/bin_$k"; bsf="$OUTDIR/score_bins/sf_$k"
+    mkdir -p "$bsf"; IFS=$'\t' read -ra FILES <<< "$line"
+    for f in "${FILES[@]}"; do ln -sf "$f" "$bsf/"; done
+    echo "[batch] bin $k/${#BINS[@]}: ${#FILES[@]} scores -> $bo" >&2
+    NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+      --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 --scorefile "$bsf/*.txt.gz" --min_overlap 0.1 "${ANC[@]}" \
+      -c conf/rootless.config --outdir "$bo" -work-dir "$WORKDIR" -resume >> "$OUTDIR/score.log" 2>&1
+    BIN_OUT+=("$bo")
+  done
+  mkdir -p "$OUTDIR/score"
+  python3 bin/merge_scores.py "$OUTDIR/score" "$SAMPLE" "${BIN_OUT[@]}" >> "$OUTDIR/score.log" 2>&1
+else
+  NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+    --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 "${SCORE_SEL[@]}" --min_overlap 0.1 "${ANC[@]}" \
+    -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" > "$OUTDIR/score.log" 2>&1
+fi
 
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"
 # grade_pgs reads pgs_catalog_meta.json from the score dir for trait names + evidence
 # grades; drop the run's own select_pgs metadata there so custom-named metas resolve
 # (without this, a non-default score set falls back to the starter meta -> trait==pgs_id).
 [ -n "$PGS_META" ] && cp -f "$PGS_META" "$OUTDIR/score/pgs_catalog_meta.json"
+
+# Neanderthal-ancestry %: a scoring-style dosage over an archaic-introgression SNP
+# panel -> score/neanderthal.tsv (read by report_html's Deep-ancestry card). Runs
+# BEFORE grade_pgs so its report render picks up the card. Best-effort / non-fatal.
+#   NOTE: the shipped panel is a SEED (below the provisional threshold) -> reports a
+#   PROVISIONAL % only. And the PGS-only prepped VCF does NOT cover the archaic loci,
+#   so a real % needs the panel force-genotyped off the BAM. Production command:
+#     bin/genotype_prep.sh <bam> <ref> <out.panel.vcf.gz>  # over a panel-derived scorefile
+#     python3 bin/neanderthal.py "$OUTDIR/score" --targets <out.panel.vcf.gz>
+NEAN_VCF=
+[ -n "$VCF" ] && NEAN_VCF="$VCF"                                   # full-genotype VCF input
+[ -z "$NEAN_VCF" ] && [ -n "$REUSE_PREP" ] && NEAN_VCF="$REUSE_PREP"
+if [ -n "$NEAN_VCF" ] && [ -f "$NEAN_VCF" ]; then
+  python3 bin/neanderthal.py "$OUTDIR/score" --vcf "$NEAN_VCF" --sample "$SAMPLE" \
+    >>"$OUTDIR/score.log" 2>&1 || echo "note: neanderthal step skipped (see score.log)"
+else
+  python3 bin/neanderthal.py "$OUTDIR/score" --sample "$SAMPLE" \
+    >>"$OUTDIR/score.log" 2>&1 || echo "note: neanderthal wiring stub skipped (see score.log)"
+fi
+
 python3 bin/grade_pgs.py "$OUTDIR/score"
 
 # Reported discrimination (AUROC/C-index/R2) from the PGS Catalog -> run-local

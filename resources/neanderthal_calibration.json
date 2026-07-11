@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "slope": 3.0,
+  "intercept": 0.0,
+  "clamp_max": 10.0,
+  "reference_populations": {
+    "EUR": 1.9,
+    "EAS": 2.4,
+    "SAS": 2.1,
+    "AFR": 0.3
+  },
+  "note": "PROVISIONAL calibration. Maps archaic-allele fraction at panel tag SNPs to a genome-wide Neanderthal-ancestry %% via pct = intercept + slope*fraction, clamped [0, clamp_max]. The slope MUST be re-fit against 1000G super-populations once the full curated panel exists (see resources/neanderthal_panel.tsv recipe). Do not report these percentages as final until then."
+}

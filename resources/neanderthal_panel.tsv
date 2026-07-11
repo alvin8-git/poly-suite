@@ -1,0 +1,42 @@
+# poly-suite archaic-introgression-informative SNP panel  (SEED / ILLUSTRATIVE)
+# =============================================================================
+# STATUS: SEED. This ships the SCHEMA + a construction recipe + a small set of
+#   well-known Neanderthal-introgressed loci. It is deliberately below the
+#   provisional threshold (bin/neanderthal.py MIN_PANEL_SITES=500), so any
+#   percentage computed from it is flagged PROVISIONAL-SEED and must NOT be
+#   interpreted. Replace with the full curated tag-SNP set (recipe below).
+#
+# COLUMNS (tab-separated; first non-comment line is the header):
+#   chrom  pos  ref  archaic_allele  weight  rsid  locus
+#     chrom/pos          GRCh38 coordinates (with or without 'chr' prefix)
+#     ref                GRCh38 reference allele
+#     archaic_allele     Neanderthal-derived allele (the one we count)
+#     weight             per-allele contribution (1.0 = simple count); reserved
+#     rsid, locus        provenance only (ignored by the loader)
+#
+# CONSTRUCTION RECIPE (to build the production panel, few-thousand tag SNPs):
+#   1. Take the high-coverage archaic genomes: Vindija 33.19 + Altai Neanderthal
+#      (Prufer et al. 2017, Max Planck public VCFs).
+#   2. Select sites where the archaic-derived allele is (a) present in Neanderthal,
+#      (b) near-absent in 1000G African samples (YRI/LWK AF < 0.01), and (c) present
+#      in non-Africans — i.e. introgression tag SNPs (Sankararaman 2014 CRF map,
+#      Vernot & Akey 2016 S*, Browning 2018 Sprime, or Chen 2020 IBDmix segments).
+#   3. LD-prune to ~1 tag SNP per introgressed haplotype block.
+#   4. Calibrate the archaic-allele fraction -> genome-wide % against 1000G
+#      super-populations (EUR ~1.8-2.4%, EAS ~2.3-2.6%, AFR ~0.3%); write the
+#      slope/intercept to resources/neanderthal_calibration.json.
+#
+# The rows below are ILLUSTRATIVE canonical introgression loci for wiring/testing.
+# Verify every coordinate/allele against the recipe sources before production use.
+# =============================================================================
+chrom	pos	ref	archaic_allele	weight	rsid	locus
+chr1	154453788	C	T	1.0	rs12405671	introgression-tag (illustrative)
+chr2	109513601	G	A	1.0	rs3771180	introgression-tag (illustrative)
+chr3	45859597	C	T	1.0	rs13098911	introgression-tag (illustrative)
+chr4	38760338	G	A	1.0	rs4833103	TLR6-TLR1-TLR10 (illustrative)
+chr9	16730258	A	G	1.0	rs10967570	introgression-tag (illustrative)
+chr11	61597212	C	T	1.0	rs174546	FADS cluster (illustrative)
+chr12	112919388	T	C	1.0	rs3184504	introgression-tag (illustrative)
+chr15	48426484	A	G	1.0	rs1426654	SLC24A5 region (illustrative)
+chr17	40658533	G	A	1.0	rs11655426	introgression-tag (illustrative)
+chr20	62328625	C	T	1.0	rs6062496	introgression-tag (illustrative)

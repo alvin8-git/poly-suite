@@ -28,6 +28,7 @@ reproducible/referenced output.
 data/       samplesheet.csv + localized test input (GIAB HG001)
 conf/       rootless.config — Docker rootless fix (see Gotchas)
 resources/  pgs_effect.tsv, baseline_incidence.tsv — absolute-risk inputs (sourced)
+            neanderthal_panel.tsv, neanderthal_calibration.json — archaic-ancestry panel (SEED)
             pgs_performance.tsv — reported AUROC/C-index/R² per score (PGS Catalog)
 bin/        run.sh            — end-to-end orchestrator (one entry point)
             select_pgs.py     — evidence-graded, TIERED PGS selection (PGS Catalog API)
@@ -40,6 +41,7 @@ bin/        run.sh            — end-to-end orchestrator (one entry point)
             grade_pgs.py      — QC/ancestry/grade gates -> the output contract
             absolute_risk.py · consensus.py · ensemble.py — actionable + robustness + meta-PGS
             provenance.py · report_html.py  — reproducibility + patient-first standalone HTML report
+            neanderthal.py    — Neanderthal-ancestry % over an archaic-SNP panel -> score/neanderthal.tsv
             score_selected.sh — score the auto-selected set (calls the stages)
 tests/      tests.py + selftest.sh — 16 unit tests + self-check runner
             validate_contract.py — schema + gate-invariant validation of the output
@@ -64,6 +66,22 @@ bin/run.sh --sample HG001 --pgs "PGS000018,PGS000004" --outdir results/hg001 \
 Full launch set (61 traits, 119 scorefiles at top-2): resolve with
 `python3 bin/select_pgs.py results/meta.json 2 all`, then pass the resolved ids as `--pgs`.
 See [Documentation.md §6](docs/Documentation.md#6-the-tiered-launch-set) for the trait list.
+
+**OmniGen additions (2026-07).** The launch set gained quantitative/behavioral traits
+OmniGen renders — height, bone mineral density (both were already in), plus **educational
+attainment, chronotype, neuroticism, loneliness**. `bin/select_pgs.py` `PINNED` fixes the
+verified deployable PGS IDs (Yengo 2022 height `PGS002804`; Forgetta gSOS BMD `PGS000657`;
+Privé LDpred2 `PGS002231`/`PGS002209`/`PGS002213` for EA/chronotype/neuroticism — the latter
+two are documented **substitutes** because EA4/Okbay 2022 and Jones 2019 aren't deposited with
+usable weights; loneliness `PGS001091`). Beat-synchronization (Niarchou 2022) and general risk
+tolerance (Karlsson Linnér 2019) are **deferred** (`SP.DEFERRED`) — 23andMe-held, not in the
+Catalog. New scores flow through the **unchanged 24-column `pgs_scores.tsv`** (quantitative traits
+leave the absolute-risk columns `NA`). A new **Neanderthal-ancestry %** feature
+(`bin/neanderthal.py` + `resources/neanderthal_panel.tsv`) emits `score/neanderthal.tsv`
+(`sample, neanderthal_pct, method`), surfaced as a "Deep ancestry" card in `report.html`. The
+shipped panel is a documented **SEED** → percentages are flagged PROVISIONAL until the full
+curated tag-SNP set is dropped in (recipe in the panel header). See
+[docs/omnigen-additions-plan.md](docs/omnigen-additions-plan.md).
 
 Manual stages:
 ```bash

@@ -98,6 +98,8 @@ LAUNCH_SET = [
     ("extended", "bone mineral density", "EFO_0009270"),
     ("extended", "estimated glomerular filtration rate", "OBA_0003747"),
     ("extended", "systolic blood pressure", "EFO_0006335"),
+    # --- OmniGen additions (2026-07): quantitative / behavioral traits OmniGen renders ---
+    ("extended", "chronotype", "EFO_0008328"),          # benign "fun" trait; morningness/eveningness
     # --- gated (opt-in; sensitive / low-actionability) ---
     ("gated", "schizophrenia", "MONDO_0005090"),
     ("gated", "major depressive disorder", "MONDO_0002009"),
@@ -105,7 +107,58 @@ LAUNCH_SET = [
     ("gated", "ADHD", "MONDO_0007743"),
     ("gated", "autism spectrum disorder", "MONDO_0005258"),
     ("gated", "intelligence", "EFO_0004337"),
+    # behavioral / psych traits carry disclosure + misuse risk -> gated (opt-in) like intelligence
+    ("gated", "educational attainment", "EFO_0011015"),
+    ("gated", "neuroticism", "EFO_0007660"),
+    ("gated", "loneliness", "EFO_0007865"),
 ]
+
+# Pinned best-evidence scores for the OmniGen-additions traits. select_pgs() normally
+# picks the top-graded Catalog score per trait, but for these we pin the specific,
+# verified, deployable PGS ID (resolved live against the PGS Catalog REST API,
+# 2026-07-11). Where the requested landmark study was NOT deposited with usable
+# weights, we pin the documented genome-wide LDpred2 substitute and LABEL it.
+# main() forces the pinned id to rank 1 and records the note in the metadata.
+PINNED = {
+    "height": dict(pgs_id="PGS002804", author="Yengo", year=2022, pmid="36224396",
+                   n_variants=1099005, training_ancestry="European", base_grade="A",
+                   multi_ancestry_eval=True, gwas_n=5380080, method="C+T (GIANT-UKB EUR)",
+                   note="Yengo 2022 GIANT height, EUR weights (PGS002802 = multi-ancestry ALL)"),
+    "bone mineral density": dict(pgs_id="PGS000657", author="Forgetta", year=2020,
+                   pmid="32614825", n_variants=21716, training_ancestry="European",
+                   base_grade="A", multi_ancestry_eval=False, gwas_n=426824,
+                   method="ML gradient-boosted (gSOS)",
+                   note="Forgetta 2020 gSOS heel-BMD proxy (Morris 2019 eBMD not deposited as a weighted score)"),
+    "educational attainment": dict(pgs_id="PGS002231", author="Prive", year=2022,
+                   pmid="34995502", n_variants=950845, training_ancestry="European",
+                   base_grade="A", multi_ancestry_eval=False, gwas_n=391124,
+                   method="LDpred2 (UKB)",
+                   note="SUBSTITUTE: EA4/Okbay 2022 (PMID 35361970) not deposited with usable weights; "
+                        "PGS002231 is the genome-wide UKB LDpred2 reconstruction"),
+    "chronotype": dict(pgs_id="PGS002209", author="Prive", year=2022, pmid="34995502",
+                   n_variants=955439, training_ancestry="European", base_grade="A",
+                   multi_ancestry_eval=False, gwas_n=449734, method="LDpred2 (UKB)",
+                   note="SUBSTITUTE: Jones 2019 (PMID 30696823) not deposited; PGS002209 scores "
+                        "'more_evening' — higher percentile = MORE evening (INVERT for morningness)"),
+    "neuroticism": dict(pgs_id="PGS002213", author="Prive", year=2022, pmid="34995502",
+                   n_variants=950183, training_ancestry="European", base_grade="A",
+                   multi_ancestry_eval=False, gwas_n=380506, method="LDpred2 (UKB)",
+                   note="Prive 2022 UKB LDpred2 neuroticism"),
+    "loneliness": dict(pgs_id="PGS001091", author="Tanigawa", year=2022, pmid="35324888",
+                   n_variants=660, training_ancestry="European", base_grade="C",
+                   multi_ancestry_eval=False, gwas_n=337000, method="Sparse GBE (snpnet)",
+                   note="only Catalog loneliness score; thin (660 variants) -> expect grade C/D self-downgrade"),
+}
+
+# Traits requested for OmniGen but NOT addable via the Catalog: the landmark scores are
+# 23andMe-held and not deposited with weights. Left as documented stubs — do NOT fabricate
+# scorefiles. Add later via the --scorefile-cache path only if licensed weights are obtained.
+DEFERRED = {
+    "beat/rhythm synchronization": dict(author="Niarchou", year=2022, pmid="35618881",
+        reason="23andMe-held; no weighted score in the PGS Catalog"),
+    "general risk tolerance": dict(author="Karlsson Linner", year=2019, pmid="30643258",
+        reason="23andMe-held; general-risk-tolerance weights not deposited in the PGS Catalog"),
+}
 _TIERS = {"core": {"core"}, "extended": {"core", "extended"},
           "all": {"core", "extended", "gated"}, "gated": {"gated"}}
 TRAITS = {label: tid for tier, label, tid in LAUNCH_SET
@@ -191,6 +244,22 @@ def main():
         # best: grade, then GWAS N, then variant count
         graded.sort(key=lambda t: (GRADE_RANK[t[1]], -t[3],
                                     -(t[0].get("variants_number") or 0)))
+        # pinned verified/substitute score -> force to rank 1 (see PINNED above)
+        pin = PINNED.get(label)
+        if pin:
+            pid = pin["pgs_id"]
+            idx = next((i for i, t in enumerate(graded) if t[0].get("id") == pid), None)
+            if idx is not None:
+                graded.insert(0, graded.pop(idx))          # promote the real Catalog record
+            else:                                          # not returned (offline/paginated) -> synthesize
+                synth = ({"id": pid, "method_name": pin.get("method"),
+                          "variants_number": pin.get("n_variants"),
+                          "publication": {"PMID": pin.get("pmid"), "firstauthor": pin.get("author"),
+                                          "pub_year": pin.get("year")}},
+                         pin.get("base_grade", "B"), "pinned (static metadata)",
+                         pin.get("gwas_n", 0), pin.get("training_ancestry", "European"),
+                         pin.get("multi_ancestry_eval", False))
+                graded.insert(0, synth)
         picks = []
         for rank, chosen in enumerate(graded[:TOP_N], 1):    # top-N per trait -> consensus
             s = chosen[0]
@@ -208,6 +277,10 @@ def main():
                 "base_grade": chosen[1], "rationale": chosen[2],
                 "trait_rank": rank, "n_candidates": len(cand),
             }
+            if pin and rank == 1 and pgs_id == pin["pgs_id"]:
+                meta[pgs_id]["pinned"] = True
+                meta[pgs_id]["pin_note"] = pin["note"]
+                meta[pgs_id]["rationale"] = f"{chosen[2]} | PINNED: {pin['note']}"
             picks.append((pgs_id, chosen[1]))
         summary.append((label, ",".join(p for p, _ in picks),
                         f"top-{len(picks)} of {len(cand)} | grades {','.join(g for _, g in picks)}"))

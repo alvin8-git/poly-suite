@@ -73,6 +73,8 @@ _KW = [
     ("multiple sclerosis", "neuro"), ("migraine", "neuro"), ("depress", "neuro"),
     ("bipolar", "neuro"), ("schizo", "neuro"), ("autism", "neuro"), ("adhd", "neuro"),
     ("intelligence", "neuro"), ("cognitive", "neuro"),
+    ("educational", "neuro"), ("neuroticism", "neuro"), ("chronotype", "neuro"),
+    ("loneliness", "neuro"),
     ("coronary", "cardio"), ("atrial", "cardio"), ("hypertension", "cardio"),
     ("heart", "cardio"), ("venous thrombo", "cardio"), ("stroke", "cardio"),
     ("aortic", "cardio"), ("aneurysm", "cardio"), ("arterial", "cardio"),
@@ -204,7 +206,11 @@ MEANS = {
 # quantitative biomarkers get a "predisposition" framing (direction + percentile),
 # not disease-risk / "1 in N" — the valence (higher = better or worse) varies by trait.
 BIOMARKERS = {"bone mineral density", "estimated glomerular filtration rate",
-              "systolic blood pressure"}
+              "systolic blood pressure",
+              # OmniGen additions: quantitative / behavioral traits -> predisposition
+              # framing (direction + percentile, no disease "1 in N")
+              "height", "educational attainment", "chronotype", "neuroticism",
+              "loneliness"}
 BIO_MEANS = ("Where your genetics sit for this measurable trait, versus others of the "
              "same ancestry. A predisposition, not a measurement — your actual value "
              "depends on age, lifestyle and health too.",
@@ -226,6 +232,44 @@ THYROID_NOTE = (
     "often means a high score for the other. One person can have both across a lifetime: "
     "Hashimoto's can begin with a brief over-active phase, and treated Graves' frequently "
     "ends up under-active.")
+
+
+def _deep_ancestry_section(results_dir):
+    """Optional 'Deep ancestry' card from <results_dir>/neanderthal.tsv (sample,
+    neanderthal_pct, method). Returns '' when the contract is absent, so the report
+    is unchanged for runs that didn't compute it. Non-fatal, best-effort."""
+    p = os.path.join(results_dir, "neanderthal.tsv")
+    if not os.path.exists(p):
+        return ""
+    try:
+        with open(p) as fh:
+            rows = list(csv.DictReader(fh, delimiter="\t"))
+    except OSError:
+        return ""
+    if not rows:
+        return ""
+    r = rows[0]
+    pct = r.get("neanderthal_pct", "NA")
+    method = (r.get("method") or "").strip()
+    provisional = ("PROVISIONAL" in method.upper() or pct in ("", "NA", None)
+                   or "NO VCF" in method.upper() or "INSUFFICIENT" in method.upper())
+    val = "—" if pct in ("", "NA", None) else f"{html.escape(str(pct))}%"
+    ref = ("Most people of non-African ancestry carry roughly 1.5–2.5% Neanderthal "
+           "DNA; sub-Saharan African ancestry typically much less.")
+    if provisional:
+        body = (f'<p class="big">{val} <span class="rsub">Neanderthal-derived DNA (provisional)</span></p>'
+                f'<p class="rsub">{ref}</p>'
+                f'<p class="cav">Provisional estimate — computed over a seed archaic-SNP panel '
+                f'(not yet the full curated set). Shown for wiring/QA; <b>not for interpretation</b>. '
+                f'Method: {html.escape(method) or "n/a"}</p>')
+    else:
+        body = (f'<p class="big">{val} <span class="rsub">of your DNA is Neanderthal-derived</span></p>'
+                f'<p class="rsub">{ref}</p>'
+                f'<p class="tested">Method: {html.escape(method)}</p>')
+    return (f'<section class="key"><h2>Deep ancestry — Neanderthal</h2>{body}'
+            f'<p class="gk-note">Estimated from a panel of archaic-introgression-informative '
+            f'SNPs (a scoring-style dosage over known Neanderthal-tag variants), calibrated to '
+            f'1000 Genomes reference populations. Educational / research use only.</p></section>')
 
 
 def render(results_dir, out=None):
@@ -316,6 +360,7 @@ def render(results_dir, out=None):
             f"generated {html.escape(str(prov.get('generated_at','?')))} · "
             f"contract sha {str(prov.get('contract_sha256',''))[:12]}")
     font_face = _font_css()
+    deep_html = _deep_ancestry_section(results_dir)
 
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -451,6 +496,7 @@ or genetic counselor.</p>
 Tap any row for the full clinical detail.</p>
 <div class="tools"><button type="button" class="tbtn" onclick="document.querySelectorAll('details.t').forEach(function(d){{d.open=true}})">Expand all</button><button type="button" class="tbtn" onclick="document.querySelectorAll('details.t').forEach(function(d){{d.open=false}})">Collapse all</button></div>
 {''.join(sections)}
+{deep_html}
 <section class="key">
   <h2>How to read every row</h2>
   <dl>
