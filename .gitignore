@@ -22,12 +22,31 @@ cache/
 logs/
 scratch/
 *.log
+*.tmp
+nohup.out
 __pycache__/
 *.pyc
 .omc/
+
+# large alignment / index binaries — never committed (volume-mounted at runtime)
+*.bam
+*.bai
+*.cram
+*.crai
+
+# stray downloads / installers (e.g. FileZilla*.exe)
+*.exe
+
+# example outputs consolidated to docs/demo/ (single self-contained demo report);
+# the old per-trait-set example cards are generated outputs, kept on disk but untracked.
+examples/
 
 # AI-harness config, not part of the pipeline
 CLAUDE.md
 
 # internal strategy doc (business wedge/competitive analysis) — not for public repo
 docs/pgs-space-review.md
+.gstack/
+
+# manuscript draft for journal submission — local-only, not for public repo
+manuscript/

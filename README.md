@@ -1,6 +1,6 @@
 # poly-suite
 
-![tests](https://img.shields.io/badge/tests-16%20passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-23%20passing-brightgreen)
 ![python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![nextflow](https://img.shields.io/badge/nextflow-%E2%89%A5%2025.10-brightgreen)
 ![scoring core](https://img.shields.io/badge/scoring%20core-pgsc__calc-informational)
@@ -20,7 +20,15 @@ reproducible/referenced output.
 
 **Docs:** [Documentation.md](docs/Documentation.md) — the 101 (science, decisions, architecture) · [pgs-pipeline-spec.md](docs/pgs-pipeline-spec.md) — build spec.
 
-**Example output:** [`examples/HG001-70trait/`](examples/HG001-70trait/) — the full calibrated 70-trait launch-set card for GIAB HG001 (135 scores across 69 scored traits — PCOS has no Catalog PGS; EUR-calibrated; 48 A / 9 B / 7 C / 5 D by trait) · [`examples/HG001-61trait/`](examples/HG001-61trait/) — the earlier 61-trait card. Each: report.html + pgs_scores.tsv/.json + provenance.
+## Demo report
+
+[**`docs/demo/HG002_report.html`**](docs/demo/HG002_report.html) — a full, self-contained per-sample
+report for GIAB HG002 (open it in a browser; inline CSS + embedded font, no external assets). It
+shows the patient-first card: traits grouped by evidence confidence, the new quantitative/behavioral
+traits (height, educational attainment, chronotype, neuroticism, loneliness) in predisposition mode,
+and the **Deep ancestry — Neanderthal** card. Regenerate any sample's report from its contract with
+`python3 bin/report_html.py results/launch70/<S>/score`. (Demo location matches the sibling
+pgx-suite and SVcaller repos: `docs/demo/`.)
 
 ## Layout
 
