@@ -230,16 +230,17 @@ sensitive/thin traits are opt-in. `select_pgs.py OUT TOP_N {core|extended|all|ga
 | Tier | Count | Posture |
 |---|---|---|
 | **core** | 25 | grade-A-capable, actionable (headline) |
-| **extended** | 30 | grade ≥ B, informative |
-| **= default suite** | **55** | core + extended |
-| **gated** | 6 | opt-in (schizophrenia, depression, bipolar, ADHD, autism, cognitive) |
+| **extended** | 40 | grade ≥ B, informative |
+| **= default suite** | **65** | core + extended |
+| **gated** | 9 | opt-in (schizophrenia, depression, bipolar, ADHD, autism, cognitive, educational attainment, neuroticism, loneliness) |
+| **= full set** | **74** | default + gated |
 
 On a real 55-trait selection: 83 of 108 scores graded A, 11 B, and the 14 C/D are
 exactly the thin-evidence traits (AMD, ankylosing spondylitis, coeliac, migraine…),
 auto-caveated rather than hidden or hard-excluded.
 
-At `TOP_N=2` (two scores per trait for consensus), the full 61-trait set resolves to
-**119 PGS scorefiles** (some thin traits have only one usable score). The full-set run
+At `TOP_N=2` (two scores per trait for consensus), the full 74-trait set resolves to
+**142 PGS scorefiles** (some thin traits have only one usable score). The full-set run
 force-genotypes at the union of their loci (**12.6M autosomal sites** on HG001).
 
 ### The full trait list
@@ -266,7 +267,7 @@ tier is its *posture*, not a fixed grade.
 | venous thromboembolism | MONDO_0005399 | | glaucoma | MONDO_0005041 |
 | hypertension | MONDO_0001134 | | | |
 
-**Extended — 30 (grade ≥ B, informative):**
+**Extended — 40 (grade ≥ B, informative):**
 
 | Trait | Ontology ID | | Trait | Ontology ID |
 |---|---|---|---|---|
@@ -299,7 +300,13 @@ on-card note). Polycystic ovary syndrome was later **dropped** (no Catalog PGS u
 ontology id) and replaced with **multiple myeloma** (`MONDO_0009693`, grade A, SEER-baselined)
 to fill the hematologic-cancer gap.
 
-**Gated — 6 (opt-in; sensitive / behavioural — off by default):**
+**OmniGen additions (2026-07; see [omnigen-additions-plan.md](omnigen-additions-plan.md)):**
+one behavioural trait joins **extended** — chronotype / morningness (`EFO_0008328`, pinned
+`PGS002209`) — and three join **gated** (educational attainment, neuroticism, loneliness,
+below). height and bone mineral density were already in the set. These render in
+*predisposition* mode (direction + percentile, no "1 in N"). This is the 70→74 expansion.
+
+**Gated — 9 (opt-in; sensitive / behavioural — off by default):**
 
 | Trait | Ontology ID |
 |---|---|
@@ -309,6 +316,9 @@ to fill the hematologic-cancer gap.
 | ADHD | MONDO_0007743 |
 | autism spectrum disorder | MONDO_0005258 |
 | intelligence | EFO_0004337 |
+| educational attainment | EFO_0011015 |
+| neuroticism | EFO_0007660 |
+| loneliness | EFO_0007865 |
 
 ### On ancestry sources beyond European
 

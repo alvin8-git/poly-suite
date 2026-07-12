@@ -13,6 +13,18 @@ Extracted from the README `## Status` section. Open work first, shipped features
 
 ## Shipped
 
+- [x] **OmniGen trait expansion (70 → 74) + full HG002 launch run** — `select_pgs.py`
+      `LAUNCH_SET` grew to **74 traits** (25 core + 40 extended + 9 gated), resolving to
+      **142 scorefiles** at `TOP_N=2`. Five OmniGen-rendered traits were pinned/added:
+      **multiple myeloma** (`MONDO_0009693`, replacing the dropped PCOS), **chronotype**
+      (`PGS002209`, extended), and **educational attainment** (`PGS002231`), **neuroticism**
+      (`PGS002213`), **loneliness** (`PGS001091`) in the gated tier — height + bone mineral
+      density were already in. Scored end-to-end on GIAB **HG002** (`results/launch74/HG002`,
+      batch mode: 5 bins + ancestry): **74 traits / 141 scores** (of 142 — `PGS005285`, the
+      2nd heart-failure score, dropped on ~1.6% variant overlap; HF still covered by `PGS005097`).
+      All five new traits scored. Demo report regenerated at `docs/demo/HG002_report.html`
+      with the **Deep ancestry — Neanderthal** card. See [docs/CHANGES.md](docs/CHANGES.md).
+
 - [x] **Next-tranche traits (61 → 70)** — added the [candidate-traits.md](docs/candidate-traits.md)
       recommended set to `select_pgs.py`: peripheral arterial disease, endometriosis, obstructive
       sleep apnea, esophageal / gastric / cervical cancer, and three **biomarkers** (bone mineral

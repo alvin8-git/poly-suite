@@ -5,7 +5,7 @@
 ![nextflow](https://img.shields.io/badge/nextflow-%E2%89%A5%2025.10-brightgreen)
 ![scoring core](https://img.shields.io/badge/scoring%20core-pgsc__calc-informational)
 ![ancestry](https://img.shields.io/badge/ancestry-FRAPOSA-9cf)
-![launch set](https://img.shields.io/badge/launch%20set-70%20traits-orange)
+![launch set](https://img.shields.io/badge/launch%20set-74%20traits-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
 Standalone polygenic-score pipeline: a raw sample (WGS BAM/VCF) → a graded,
@@ -27,7 +27,7 @@ report for GIAB HG002 (open it in a browser; inline CSS + embedded font, no exte
 shows the patient-first card: traits grouped by evidence confidence, the new quantitative/behavioral
 traits (height, educational attainment, chronotype, neuroticism, loneliness) in predisposition mode,
 and the **Deep ancestry — Neanderthal** card. Regenerate any sample's report from its contract with
-`python3 bin/report_html.py results/launch70/<S>/score`. (Demo location matches the sibling
+`python3 bin/report_html.py results/launch74/<S>/score`. (Demo location matches the sibling
 pgx-suite and SVcaller repos: `docs/demo/`.)
 
 ## Layout
@@ -71,7 +71,7 @@ bin/run.sh --sample HG001 --pgs "PGS000018,PGS000004" --outdir results/hg001 \
 # add --dry-run to print the plan. Or run the stages manually:
 ```
 
-Full launch set (61 traits, 119 scorefiles at top-2): resolve with
+Full launch set (74 traits, 142 scorefiles at top-2): resolve with
 `python3 bin/select_pgs.py results/meta.json 2 all`, then pass the resolved ids as `--pgs`.
 See [Documentation.md §6](docs/Documentation.md#6-the-tiered-launch-set) for the trait list.
 

@@ -1,6 +1,6 @@
 # Candidate traits — what else can be added, and the tradeoffs
 
-A data-grounded survey of traits **not** in the current 61-trait launch set
+A data-grounded survey of traits **not** in the current 74-trait launch set
 ([Documentation §6](Documentation.md#6-the-tiered-launch-set)), with the real
 PGS Catalog picture and the tradeoff for each group. Grades below are what
 poly-suite's `select_pgs.grade()` would assign the best available score (GWAS

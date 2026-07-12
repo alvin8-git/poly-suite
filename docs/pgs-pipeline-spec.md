@@ -128,6 +128,6 @@ samplesheets (1000G/HGDP samples) as SVcaller ships GIAB ones.
   values in `resources/` are illustrative and need per-score verification.
 - ~~**16 GB ancestry panel**~~ — RESOLVED: `pgsc_HGDP+1kGP_v1.tar.zst` present at
   `ref/pgsc/`, wired via `--panel`/`--run_ancestry` (+ `--work-cache` reuses its extraction).
-- ~~**Which traits/PGS in the launch set**~~ — RESOLVED: 61-trait tiered set
-  (25 core + 30 extended + 6 gated) in `bin/select_pgs.py`; evidence grade is the
+- ~~**Which traits/PGS in the launch set**~~ — RESOLVED: 74-trait tiered set
+  (25 core + 40 extended + 9 gated) in `bin/select_pgs.py`; evidence grade is the
   data-sufficiency filter (thin traits self-downgrade). See Documentation.md §6.
