@@ -56,7 +56,7 @@ PGS_META = {   # pgs_id: dict
 }
 
 CONTRACT_COLS = [
-    "sample", "trait", "efo_id", "pgs_id", "source_pmid", "n_variants",
+    "sample", "trait", "efo_id", "pgs_id", "source_pmid", "source_doi", "n_variants",
     "training_ancestry", "n_matched", "match_rate", "inferred_ancestry",
     "most_similar_pop", "ancestry_distance", "percentile", "z_score",
     "ci_low", "ci_high", "absolute_risk", "baseline_incidence", "risk_ratio",
@@ -146,7 +146,7 @@ def grade_row(r, cov=None):
     pgs = norm_pgs(r.get("pgs") or r.get("pgs_id") or "?")
     m = PGS_META.get(pgs, dict(trait=pgs, efo="", n_variants=None,
                                base_grade="C", training_ancestry="unknown",
-                               pmid="", source="unknown PGS"))
+                               pmid="", doi="", source="unknown PGS"))
     c = (cov or {}).get(pgs)
     if c:  # authoritative coverage from the match summary
         n_matched = c["matched"]
@@ -201,7 +201,13 @@ def grade_row(r, cov=None):
     return {
         "sample": r.get("iid") or r.get("sample") or r.get("sampleset"),
         "trait": m["trait"], "efo_id": m["efo"], "pgs_id": pgs,
-        "source_pmid": m["pmid"], "n_variants": nvar,
+        # Provenance semantics (see docs/CHANGES.md):
+        #   source_pmid non-empty            -> peer-reviewed pub, PubMed ID given
+        #   source_pmid "" + source_doi set  -> provenance IS known but the source
+        #                                       is a preprint/DOI-only record with
+        #                                       no PMID upstream (NOT a fetch failure)
+        #   both ""                          -> provenance could not be resolved
+        "source_pmid": m["pmid"], "source_doi": m.get("doi", ""), "n_variants": nvar,
         "training_ancestry": m["training_ancestry"],
         "n_matched": n_matched,
         "match_rate": round(match_rate, 4) if match_rate is not None else "NA",
@@ -237,6 +243,7 @@ def load_catalog_meta(results_dir):
                     base_grade=m.get("base_grade", "C"),
                     training_ancestry=m.get("training_ancestry", "unknown"),
                     pmid=str(m.get("pmid") or ""),
+                    doi=str(m.get("doi") or ""),
                     source=f"{m.get('author','?')} {m.get('year','')}".strip())
             return len(raw)
     return 0

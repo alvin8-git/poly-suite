@@ -179,7 +179,7 @@ def test_deferred_traits_documented():
 
 def test_new_pgs_appends_no_schema_change():
     """A brand-new PGS id (not in the pinned meta table) grades into a contract row
-    with EXACTLY the 24 stable columns — new scores append, schema is unchanged."""
+    with EXACTLY the 25 stable columns — new scores append, schema is unchanged."""
     G._EFF, G._BASE = AR.load_effects(), AR.load_baselines()
     G._SEX = None
     novel = {"iid": "S", "pgs": "PGS002804", "sum": "1.0", "denom": "1000",
@@ -196,7 +196,50 @@ def test_new_pgs_appends_no_schema_change():
     w = csv.DictWriter(buf, fieldnames=G.CONTRACT_COLS, delimiter="\t", extrasaction="ignore")
     w.writeheader(); w.writerow(row)
     header = buf.getvalue().splitlines()[0].split("\t")
-    assert header == G.CONTRACT_COLS and len(header) == 24
+    assert header == G.CONTRACT_COLS and len(header) == 25
+
+
+def test_provenance_pmid_doi_fallback(tmp="/tmp/poly_prov_test"):
+    """load_catalog_meta must populate source_pmid where a PMID exists, and where
+    it does NOT (preprint/DOI-only score, e.g. PGS004923 on medRxiv) must leave
+    source_pmid empty but carry the DOI in source_doi — so 'genuinely no PMID
+    upstream' (pmid='' + doi set) is distinguishable from 'unresolved' (both '')."""
+    import json
+    os.makedirs(tmp, exist_ok=True)
+    G._EFF, G._BASE, G._SEX = AR.load_effects(), AR.load_baselines(), None
+    meta = {
+        # peer-reviewed: real PMID present
+        "PGS900001": {"trait": "type 2 diabetes", "efo_id": "EFO_0001360",
+                      "n_variants": 100, "pmid": "30104762", "doi": "10.1038/x",
+                      "author": "Khera", "year": 2018, "base_grade": "B",
+                      "training_ancestry": "European"},
+        # preprint: no PMID upstream, but a DOI IS available (the real-world case)
+        "PGS900002": {"trait": "type 2 diabetes", "efo_id": "MONDO_0005148",
+                      "n_variants": 200, "pmid": None, "doi": "10.1101/2024.08.22.24312440",
+                      "author": "Ritchie SC", "year": None, "base_grade": "A",
+                      "training_ancestry": "EUR"},
+    }
+    with open(os.path.join(tmp, "pgs_catalog_meta.json"), "w") as fh:
+        json.dump(meta, fh)
+    assert G.load_catalog_meta(tmp) == 2
+
+    def row(pid):
+        return G.grade_row({"iid": "S", "pgs": pid, "sum": "1.0", "denom": "1000",
+                            "percentile": "90.0", "z_score": "1.3", "mostsimilarpop": "EUR"})
+
+    peer = row("PGS900001")
+    assert peer["source_pmid"] == "30104762"          # PMID populated where one exists
+
+    pre = row("PGS900002")
+    assert pre["source_pmid"] == ""                    # no PMID upstream -> empty
+    assert pre["source_doi"] == "10.1101/2024.08.22.24312440"   # ...but DOI carried
+
+    unresolved = row("PGS999999")                      # never fetched / unknown score
+    assert unresolved["source_pmid"] == "" and unresolved["source_doi"] == ""
+
+    # the whole point: the two empty-PMID cases are NOT the same cell
+    assert (pre["source_pmid"], bool(pre["source_doi"])) != \
+           (unresolved["source_pmid"], bool(unresolved["source_doi"]))
 
 
 def test_neanderthal_pct_from_counts():

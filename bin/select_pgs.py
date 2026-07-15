@@ -254,7 +254,8 @@ def main():
             else:                                          # not returned (offline/paginated) -> synthesize
                 synth = ({"id": pid, "method_name": pin.get("method"),
                           "variants_number": pin.get("n_variants"),
-                          "publication": {"PMID": pin.get("pmid"), "firstauthor": pin.get("author"),
+                          "publication": {"PMID": pin.get("pmid"), "doi": pin.get("doi"),
+                                          "firstauthor": pin.get("author"),
                                           "pub_year": pin.get("year")}},
                          pin.get("base_grade", "B"), "pinned (static metadata)",
                          pin.get("gwas_n", 0), pin.get("training_ancestry", "European"),
@@ -272,7 +273,12 @@ def main():
                 "training_ancestry": chosen[4],
                 "multi_ancestry_eval": chosen[5],
                 "gwas_n": chosen[3],
-                "pmid": pub.get("PMID"), "author": pub.get("firstauthor"),
+                # PMID may be null for preprints (e.g. medRxiv/bioRxiv scores
+                # not yet in PubMed). Keep the DOI + journal so downstream can
+                # still cite honest provenance instead of an empty cell.
+                "pmid": pub.get("PMID"), "doi": pub.get("doi"),
+                "journal": pub.get("journal"),
+                "author": pub.get("firstauthor"),
                 "year": pub.get("pub_year"),
                 "base_grade": chosen[1], "rationale": chosen[2],
                 "trait_rank": rank, "n_candidates": len(cand),

@@ -3,6 +3,42 @@
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
+## 2026-07-15 — honest PMID/DOI provenance (`source_doi` added to the contract)
+
+**Problem.** A handful of scored PGS carried an **empty `source_pmid`** in
+`pgs_scores.tsv` — PGS004923 (type 2 diabetes), PGS005258/PGS005259 (thyroid
+cancer), PGS005267/PGS005268 (hypothyroidism). An empty cell was ambiguous: it
+could mean "the Catalog has no PMID" *or* "we failed to fetch metadata".
+
+**Root cause (not a bug in the fetch).** These five scores are **medRxiv
+preprints** (Ritchie SC 2024; White SL 2025). Their PGS Catalog `publication`
+record genuinely has `PMID: null` — no PubMed ID exists upstream yet — but each
+*does* carry a **DOI** (e.g. `10.1101/2024.08.22.24312440`), plus first author,
+journal and PGP id. `bin/select_pgs.py` only captured `publication.PMID`
+(dropping the DOI), and `bin/grade_pgs.py` had no fallback, so the DOI was lost
+and the cell went blank.
+
+**Fix.**
+- `bin/select_pgs.py` — now also captures `doi` and `journal` from the Catalog
+  `publication` object (previously discarded).
+- `bin/grade_pgs.py` — new **`source_doi`** column in `CONTRACT_COLS` (24 → 25
+  cols; scores append, no other column moved). `load_catalog_meta()` threads the
+  DOI through. Provenance semantics are now explicit and **distinguishable**:
+  - `source_pmid` non-empty → peer-reviewed publication (PubMed ID).
+  - `source_pmid` `""` **+ `source_doi` set** → provenance *is* known but the
+    source is a preprint/DOI-only record with no PMID upstream. **Not** a failure.
+  - both `""` → provenance could not be resolved (unknown score / fetch failure).
+- `bin/report_html.py` — when a score has no PMID it now renders a **`study DOI`**
+  link (`https://doi.org/…`, labelled "preprint — no PMID yet") instead of an
+  empty "Learn more" line.
+- No PMIDs were fabricated. Scores with neither PMID nor DOI upstream stay
+  explicitly blank in both columns (the unresolved case).
+
+Verified against the live Catalog for all five IDs and with a new unit test
+(`test_provenance_pmid_doi_fallback`). Regenerating `pgs_scores.tsv` requires a
+scoring run; existing `pgs_catalog_meta.json` files predate the DOI capture, so
+the `source_doi` column will populate on the next `select_pgs.py` run.
+
 ## 2026-07-12 — 74-trait launch set + full HG002 run
 
 **Trait expansion (70 → 74).** `bin/select_pgs.py` `LAUNCH_SET` now defines **74

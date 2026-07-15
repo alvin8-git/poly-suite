@@ -50,7 +50,10 @@ HTML report and `provenance.json` (mirrors pgx-suite/SVcaller). Columns:
 
 ```
 sample, trait, efo_id,
-pgs_id, pgs_version, source_pmid, n_variants, training_ancestry,      # provenance
+pgs_id, pgs_version, source_pmid, source_doi, n_variants, training_ancestry,  # provenance
+#   source_pmid non-empty            -> peer-reviewed pub (PubMed ID)
+#   source_pmid "" + source_doi set  -> preprint/DOI-only source, no PMID upstream (NOT a failure)
+#   both ""                          -> provenance could not be resolved
 n_matched, match_rate, mean_imputed_frac,                              # QC (the min_overlap lesson)
 inferred_ancestry, most_similar_pop, ancestry_distance,               # FRAPOSA
 percentile, z_score, ci_low, ci_high,                                 # ancestry-adjusted

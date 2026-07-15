@@ -718,6 +718,7 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
     # Per-score cohorts are reachable via the linked PGS Catalog score IDs above.
     ou, olab = _onto_url(rep.get("efo_id") or "")
     pmid = str(rep.get("source_pmid") or "").strip()
+    doi = str(rep.get("source_doi") or "").strip()
     lparts = []
     if ou:
         lparts.append(f'<a href="{ou}" target="_blank" rel="noopener noreferrer">{olab}</a>'
@@ -725,6 +726,11 @@ def _row(trait, trows, rep, thyroid_pair, sexinfo=(None, frozenset())):
     if pmid and pmid != "NA":
         lparts.append(f'<a href="https://pubmed.ncbi.nlm.nih.gov/{html.escape(pmid)}/" '
                       f'target="_blank" rel="noopener noreferrer">study PMID&nbsp;{html.escape(pmid)}</a>')
+    elif doi and doi != "NA":
+        # No PMID upstream (e.g. preprint) — cite the DOI so provenance is not blank.
+        lparts.append(f'<a href="https://doi.org/{html.escape(doi)}" '
+                      f'target="_blank" rel="noopener noreferrer">study DOI&nbsp;{html.escape(doi)}</a>'
+                      f' <span class="lmute">preprint — no PMID yet</span>')
     sources = (f'<p class="sources"><b>Learn more:</b> {" · ".join(lparts)}'
                f' · each score ID above opens its PGS Catalog page.</p>' if lparts else '')
 
