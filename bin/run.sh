@@ -42,6 +42,22 @@ OUTDIR=$(readlink -f "$OUTDIR")
 [ -n "$PANEL" ] && PANEL=$(readlink -f "$PANEL")
 [ -n "$REUSE_PREP" ] && REUSE_PREP=$(readlink -f "$REUSE_PREP")
 [ -n "$PGS_META" ] && PGS_META=$(readlink -f "$PGS_META")
+
+# --- scorefile cache is the DEFAULT path ------------------------------------------
+# A persistent local cache of harmonized hmPOS scorefiles lets us skip pgsc_calc's
+# DOWNLOAD_SCOREFILES step (the PGS-Catalog FTP fetch that hung ~66 min on 2026-07-23,
+# and costs ~13 min even when healthy). If --scorefile-cache was not given, fall back
+# to $POLY_SCOREFILE_CACHE, then to the first known persistent cache dir that exists.
+# cache_scorefile_paths() is all-or-nothing: if the cache does not fully cover $PGS,
+# the run transparently falls back to --pgs_id (download), so outputs never change.
+if [ -z "$SCOREFILE_CACHE" ]; then
+  for d in "${POLY_SCOREFILE_CACHE:-}" "results/launch70/scorefile_cache" "cache/scorefiles"; do
+    [ -n "$d" ] && [ -d "$d" ] && { SCOREFILE_CACHE="$d"; break; }
+  done
+  [ -n "$SCOREFILE_CACHE" ] && echo "[cache] defaulting --scorefile-cache -> $SCOREFILE_CACHE" >&2
+fi
+[ -n "$SCOREFILE_CACHE" ] && SCOREFILE_CACHE=$(readlink -f "$SCOREFILE_CACHE")
+
 ANC=(); [ -n "$PANEL" ] && ANC=(--run_ancestry "$PANEL")
 FMT=vcf   # score-input format; reuse-prep upgrades to pfile when a .pgen exists (skips VCF->pgen)
 
@@ -103,9 +119,26 @@ elif [ -n "$BAM" ]; then
     [ -n "$SCOREFILE_CACHE" ] && echo "[harmonize] scorefile-cache miss -> running harmonize" >&2
     printf 'sampleset,path_prefix,chrom,format\n%s,%s,,vcf\n' "$SAMPLE" "${BOOT%.vcf.gz}" > "$OUTDIR/hm.samplesheet.csv"
     rm -rf "$OUTDIR/hm" "$OUTDIR/work_hm"
-    NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
-      --input "$OUTDIR/hm.samplesheet.csv" --target_build GRCh38 --pgs_id "$PGS" --min_overlap 0.1 \
-      -c conf/rootless.config --outdir "$OUTDIR/hm" -work-dir "$OUTDIR/work_hm" > "$OUTDIR/harmonize.log" 2>&1
+    # The harmonize run is the only DOWNLOAD_SCOREFILES-triggering step left once the
+    # scorefile cache is the default (the scoring run below uses --scorefile on a hit).
+    # A stalled PGS-Catalog FTP connection makes DOWNLOAD_SCOREFILES hang with no exit
+    # (observed ~66 min idle), and Nextflow's local executor does not enforce the
+    # process `time` directive — so bound the whole harmonize run with GNU `timeout`
+    # and a small retry budget. It fails LOUD instead of hanging indefinitely.
+    HM_TIMEOUT=${HM_TIMEOUT:-1500}   # seconds per attempt (25 min); healthy fetch << this
+    HM_RETRIES=${HM_RETRIES:-2}
+    TO=""; command -v timeout >/dev/null 2>&1 && TO="timeout -k 30 ${HM_TIMEOUT}s"
+    hm_rc=1
+    for hm_try in $(seq 1 $((HM_RETRIES + 1))); do
+      [ "$hm_try" -gt 1 ] && echo "[harmonize] attempt $hm_try/$((HM_RETRIES + 1)) after timeout/failure" >&2
+      $TO env NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+        --input "$OUTDIR/hm.samplesheet.csv" --target_build GRCh38 --pgs_id "$PGS" --min_overlap 0.1 \
+        -c conf/rootless.config --outdir "$OUTDIR/hm" -work-dir "$OUTDIR/work_hm" > "$OUTDIR/harmonize.log" 2>&1
+      hm_rc=$?
+      [ "$hm_rc" -eq 0 ] && break
+      [ "$hm_rc" -eq 124 ] && echo "[harmonize] attempt $hm_try TIMED OUT after ${HM_TIMEOUT}s (likely DOWNLOAD_SCOREFILES hang)" >&2
+    done
+    [ "$hm_rc" -eq 0 ] || { echo "harmonize failed/timed out (rc=$hm_rc) — check $OUTDIR/harmonize.log"; exit 1; }
     mapfile -t SF < <(python3 -c "import glob,os;s={};[s.setdefault(os.path.basename(p),p) for p in glob.glob('$OUTDIR/work_hm/**/normalised_*_hmPOS_GRCh38.txt.gz',recursive=True)];print(chr(10).join(sorted(s.values())))")
     [ "${#SF[@]}" -ge 1 ] || { echo "no harmonized scorefiles — check $OUTDIR/harmonize.log"; exit 1; }
   fi

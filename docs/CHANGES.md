@@ -3,6 +3,53 @@
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
+## 2026-07-24 — Class-A runtime optimizations (rigor-preserving; outputs unchanged)
+
+Faster runs **without changing any score or output**. Baseline: THAL1/THAL2
+(2026-07-23), ~3.5 h each, from an intact Nextflow trace. Nothing here touches the
+scorefile set/count, scoring parameters, or the graded contract — only where time
+is spent. Validated statically (`bash -n bin/run.sh`, `--dry-run` plan, and a
+`nextflow config` parse of `conf/rootless.config`); **no scoring run was launched.**
+
+**1. `DOWNLOAD_SCOREFILES` hang fixed + scorefile cache is now the default path.**
+- *Symptom.* pgsc_calc's `DOWNLOAD_SCOREFILES` fetches scorefiles over the
+  PGS-Catalog FTP with no per-file timeout. A stalled connection makes the process
+  hang with **no exit status** (observed ~66 min idle on 2026-07-23). Nextflow's
+  process `time` directive is **not enforced by the local executor**, so it cannot
+  kill the hang; and `errorStrategy 'retry'` only fires on non-zero exits, so a
+  silent stall never retries either.
+- *(b) Cache-as-default (`bin/run.sh`).* A persistent local cache of harmonized
+  hmPOS scorefiles already existed behind `--scorefile-cache`; it is now the
+  **default**. When the flag is omitted, run.sh falls back to `$POLY_SCOREFILE_CACHE`,
+  then to the first existing known cache dir (`results/launch70/scorefile_cache`,
+  136 ids, or `cache/scorefiles`). The cache lookup is **all-or-nothing**: if it does
+  not fully cover the requested `--pgs`, the run transparently reverts to `--pgs_id`
+  (download), so **outputs are identical** either way. On a full hit,
+  `DOWNLOAD_SCOREFILES` is skipped entirely (both the harmonize and scoring runs).
+- *(a) Bounded timeout + retry (`bin/run.sh`).* The residual download path is the
+  cache-miss harmonize run. It is now wrapped in `timeout -k 30 ${HM_TIMEOUT:-1500}s`
+  with `${HM_RETRIES:-2}` retries. A hung fetch is killed after 25 min/attempt and
+  **fails loud** (`rc=124`) instead of hanging indefinitely.
+- *Config net (`conf/rootless.config`).* `withName:'.*DOWNLOAD_SCOREFILES'` gets
+  `errorStrategy 'retry'`, `maxRetries 2` so *erroring* (non-zero) fetches retry.
+- *Expected saving.* **−13 min** (skips a healthy download) **+ removes the hang**.
+
+**2. Threaded the reference-panel PLINK2 scoring (`conf/rootless.config`).**
+- `PLINK2_SCORE` (used for both the `--run_ancestry` reference panel and the single
+  sample) runs at `process_low` (cpus=2) upstream; the reference-panel task
+  (HGDP+1kGP, ~4k genomes) is the long pole (~26 min). Bumped to `cpus = 8` via
+  `withName:'.*PLINK2_SCORE'` (bounded by `params.max_cpus = 16`).
+- *Score-safe.* `plink2 --score --threads N --seed 31` is **deterministic in N** —
+  identical `.sscore` values at any thread count — so this parallelizes without
+  changing results. Per-sample scoring is already fast; extra threads are harmless.
+- *Expected saving.* **−10 to −15 min**, only when ancestry/`--panel` is used.
+
+**3. Deliberately NOT touched: `FORMAT_SCOREFILES` / `MATCH_COMBINE`.**
+These are single-process and memory-bound (89–108 GB RSS in the THAL trace).
+`cpus`/`maxForks` parallelism directives do **nothing** for them — do not add them
+here; raising concurrency only risks the OOM already documented (2026-07-12). The
+memory fix for those is `--batch` (see `docs/memory-optimization-plan.md`), not cores.
+
 ## 2026-07-15 — honest PMID/DOI provenance (`source_doi` added to the contract)
 
 **Problem.** A handful of scored PGS carried an **empty `source_pmid`** in

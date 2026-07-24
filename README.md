@@ -71,6 +71,16 @@ bin/run.sh --sample HG001 --pgs "PGS000018,PGS000004" --outdir results/hg001 \
 # add --dry-run to print the plan. Or run the stages manually:
 ```
 
+**Scorefile cache is the default (perf).** When `--scorefile-cache` is omitted, run.sh
+auto-uses `$POLY_SCOREFILE_CACHE`, else the first existing known cache dir
+(`results/launch70/scorefile_cache`, `cache/scorefiles`). A full cache hit skips
+pgsc_calc's `DOWNLOAD_SCOREFILES` (the PGS-Catalog FTP fetch that hung ~66 min on
+2026-07-23; ~13 min even when healthy). The lookup is all-or-nothing, so a partial
+cache transparently falls back to `--pgs_id` (download) — **outputs are identical**.
+On a cache miss the harmonize run is bounded by `timeout`/retry (`HM_TIMEOUT`,
+`HM_RETRIES`) so a stalled fetch fails loud instead of hanging. See
+[docs/CHANGES.md](docs/CHANGES.md) (2026-07-24, Class-A optimizations).
+
 Full launch set (74 traits, 142 scorefiles at top-2): resolve with
 `python3 bin/select_pgs.py results/meta.json 2 all`, then pass the resolved ids as `--pgs`.
 See [Documentation.md §6](docs/Documentation.md#6-the-tiered-launch-set) for the trait list.
