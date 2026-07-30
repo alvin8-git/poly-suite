@@ -50,3 +50,6 @@ docs/pgs-space-review.md
 
 # manuscript draft for journal submission — local-only, not for public repo
 manuscript/
+
+# graphify knowledge-graph build output (regenerate with /graphify)
+graphify-out/
