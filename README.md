@@ -74,6 +74,7 @@ bin/run.sh --sample HG001 --pgs "PGS000018,PGS000004" --outdir results/hg001 \
 **Scorefile cache is the default (perf).** When `--scorefile-cache` is omitted, run.sh
 auto-uses `$POLY_SCOREFILE_CACHE`, else the first existing known cache dir
 (`results/launch70/scorefile_cache`, `cache/scorefiles`). A full cache hit skips
+(launch71 adds 13 scores to `cache/scorefiles`; see docs/CHANGES.md.)
 pgsc_calc's `DOWNLOAD_SCOREFILES` (the PGS-Catalog FTP fetch that hung ~66 min on
 2026-07-23; ~13 min even when healthy). The lookup is all-or-nothing, so a partial
 cache transparently falls back to `--pgs_id` (download) — **outputs are identical**.
