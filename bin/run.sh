@@ -10,13 +10,21 @@
 #          (--vcf full_genotype.vcf.gz | --bam sample.bam --bootstrap-vcf boot.vcf.gz) \
 #          [--panel panel.tar.zst] [--sex male|female] [--reuse-prep cached.vcf.gz]
 #          [--work-cache DIR] [--ref REF] [--dry-run]
+#          [--check-input]   # --vcf only: restrict to PGS targets + plink2 import test, then exit
+#          [--nf-timeout SEC]  # wall limit per pgsc_calc scoring run (default NF_TIMEOUT=28800 = 8 h)
+# --vcf: pgsc_calc's PLINK2_VCF runs out of memory on a whole-genome all-sites VCF and passes no
+#   sex to plink2 (chrX aborts the run). The VCF is first restricted to the PGS target positions
+#   (parallel per-contig `bcftools view -r chrN -T targets`) -> $OUTDIR/<S>.targeted.vcf.gz, then staged to
+#   $OUTDIR/<S>.autosomes.vcf.gz (chrX/chrY/chrM excluded); sex (--sex, else inferred from
+#   chrX non-PAR het) is kept for absolute risk. Input must be an ALL-SITES VCF. See README.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SCOREFILE_CACHE= PGS_META=
+CHECK= NF_TIMEOUT=${NF_TIMEOUT:-28800} NF_FAIL_GRACE=${NF_FAIL_GRACE:-600}
 BATCH= MAX_BATCH_BYTES=525000000  # --batch: size-aware bins cap peak RSS. 525MB -> ~35GB worst bin (measured: peak_rss=36.3*GB+15.8), safe 2-3 wide. See docs/memory-optimization-plan.md
 REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
-NF=/home/alvin/bin/nextflow
+NF=${NF:-/home/alvin/bin/nextflow}
 while [ $# -gt 0 ]; do
   case "$1" in
     --sample) SAMPLE=$2; shift 2;; --pgs) PGS=$2; shift 2;;
@@ -27,10 +35,13 @@ while [ $# -gt 0 ]; do
     --work-cache) WORK_CACHE=$2; shift 2;; --scorefile-cache) SCOREFILE_CACHE=$2; shift 2;;
     --pgs-meta) PGS_META=$2; shift 2;;
     --batch) BATCH=1; shift;; --max-batch-bytes) MAX_BATCH_BYTES=$2; shift 2;;
-    --dry-run) DRY=1; shift;;
+    --dry-run) DRY=1; shift;; --check-input) CHECK=1; shift;;
+    --nf-timeout) NF_TIMEOUT=$2; shift 2;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
 done
+[ -n "$CHECK" ] && [ -z "$PGS" ] && { echo "--check-input needs --pgs (the target positions come from the PGS set)"; exit 2; }
+[ -n "$CHECK" ] && [ -z "$VCF" ] && { echo "--check-input needs --vcf"; exit 2; }
 [ -n "$SAMPLE" ] && [ -n "$PGS" ] && [ -n "$OUTDIR" ] || {
   echo "need --sample --pgs --outdir (and --vcf or --bam)"; exit 2; }
 [ -n "$VCF" ] || [ -n "$BAM" ] || [ -n "$REUSE_PREP" ] || { echo "need --vcf, --bam, or --reuse-prep"; exit 2; }
@@ -97,7 +108,10 @@ elif [ -n "$BAM" ]; then
   plan "step 2: genotype-prep BAM at scoring loci -> $OUTDIR/${SAMPLE}.prepped.vcf.gz"
   [ -z "$SEX" ] && plan "step 2b: infer sex from BAM"
 else
-  SCORE_IN="${VCF%.vcf.gz}"
+  SCORE_IN="$OUTDIR/${SAMPLE}.autosomes"
+  plan "step 1a: index input if needed; restrict to PGS target positions (per-contig bcftools view -r -T, parallel) -> $OUTDIR/${SAMPLE}.targeted.vcf.gz"
+  plan "step 1: stage targeted VCF -> $SCORE_IN.vcf.gz (chrX/chrY/chrM excluded: pgsc_calc passes plink2 no sex)"
+  [ -z "$SEX" ] && plan "step 1b: infer sex from VCF chrX non-PAR het; unknown -> no sex"
 fi
 plan "step 3: pgsc_calc score${PANEL:+ + --run_ancestry}"
 plan "step 4: grade -> contract + provenance + report.html  (sex=${SEX:-auto/none})"
@@ -105,9 +119,110 @@ plan "step 4: grade -> contract + provenance + report.html  (sex=${SEX:-auto/non
 if [ -n "$DRY" ]; then echo "== dry-run: plan only, nothing executed =="; exit 0; fi
 
 # ---- execution ----
+BCF_IMG=${BCFTOOLS_IMG:-quay.io/biocontainers/bcftools:1.21--h8b25389_0}
+PLINK2_IMG=${PLINK2_IMG:-ghcr.io/pgscatalog/plink2:2.00a5.10}
+bcf() { docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools "$@"; }
+
+# (check-input mirrors pgsc_calc's PLINK2_VCF flags: --new-id-max-allele-len 100 missing, --chr 1-22,X,Y,XY)
+# Run one pgsc_calc/nextflow invocation: own process group, wall-clock limit ($NF_TIMEOUT),
+# and a watchdog -- once the log reports a failed pipeline ("Execution cancelled" / "Pipeline
+# completed with errors") and nextflow has not exited within $NF_FAIL_GRACE s, kill the group
+# (Nextflow otherwise waits for unrelated running tasks for hours). Returns non-zero on failure.
+# usage: run_nf LOGFILE nextflow-args...   (log is appended)
+run_nf() {
+  local log=$1; shift
+  local start=$SECONDS failed_at= pid pgid rc=0
+  : >> "$log"
+  NXF_ANSI_LOG=false setsid "$NF" "$@" >> "$log" 2>&1 &
+  pid=$!; pgid=$pid
+  while kill -0 "$pid" 2>/dev/null; do
+    sleep 10
+    if [ $((SECONDS - start)) -ge "$NF_TIMEOUT" ]; then
+      echo "[nextflow] TIMEOUT after ${NF_TIMEOUT}s -> killing process group $pgid ($log)" >&2
+      kill -TERM -- -"$pgid" 2>/dev/null; sleep 30; kill -KILL -- -"$pgid" 2>/dev/null; wait "$pid" 2>/dev/null
+      return 124
+    fi
+    if [ -z "$failed_at" ] && grep -qE "Execution cancelled|Pipeline completed with errors|^ERROR ~" "$log" 2>/dev/null; then
+      failed_at=$SECONDS; echo "[nextflow] pipeline reported an error; allowing ${NF_FAIL_GRACE}s to exit ($log)" >&2
+    fi
+    if [ -n "$failed_at" ] && [ $((SECONDS - failed_at)) -ge "$NF_FAIL_GRACE" ]; then
+      echo "[nextflow] still running ${NF_FAIL_GRACE}s after error -> killing process group $pgid" >&2
+      kill -TERM -- -"$pgid" 2>/dev/null; sleep 30; kill -KILL -- -"$pgid" 2>/dev/null; wait "$pid" 2>/dev/null
+      return 1
+    fi
+  done
+  wait "$pid" || rc=$?
+  return $rc
+}
 if [ -n "$REUSE_PREP" ]; then
   [ -f "$REUSE_PREP" ] || { echo "reuse-prep VCF not found: $REUSE_PREP"; exit 1; }
   [ -z "$SEX" ] && [ -n "$BAM" ] && SEX=$(python3 bin/infer_sex.py "$BAM" | sed -n 's/.*sex=\([a-z]*\).*/\1/p')
+elif [ -z "$BAM" ] && [ -n "$VCF" ]; then
+  # Stage the raw VCF for pgsc_calc: autosomes only (see header). Sex for absolute risk is
+  # --sex, else inferred from the VCF's chrX non-PAR heterozygosity (indexed VCFs only).
+  [ -f "$VCF" ] || { echo "VCF not found: $VCF"; exit 1; }
+  THREADS=${THREADS:-8}
+  T0=$SECONDS
+  # (1) index is mandatory: -R and the chrX sex inference both seek through it.
+  if [ -f "$VCF.tbi" ] || [ -f "$VCF.csi" ]; then IDX=present
+  else
+    t=$SECONDS; echo "[vcf] no .tbi/.csi next to $VCF: indexing (bcftools index -t)"
+    bcf index -t --threads "$THREADS" "$VCF" || { echo "cannot index $VCF (is its directory writable?)"; exit 1; }
+    echo "[vcf] indexed in $((SECONDS - t)) s"; IDX="created ($((SECONDS - t)) s)"
+  fi
+  IN_ROWS=$(bcf index -n "$VCF" 2>/dev/null || echo "?")
+  case "$(bcf index -s "$VCF" 2>/dev/null | head -1)" in chr*|"") ;; *)
+    echo "VCF contigs are not chr-prefixed (GRCh38 'chr1' style required for the PGS target list)"; exit 1;; esac
+  # (2) sex from the full input (indexed chrX non-PAR query), before restriction.
+  if [ -z "$SEX" ]; then
+    SEXLINE=$(bcf query -r "$(python3 bin/vcf_input.py nonpar-region)" -i 'GT="alt"' -f '[%GT\n]' "$VCF" | python3 bin/vcf_input.py sex)
+    echo "[vcf] $SEXLINE"
+    SEX=$(echo "$SEXLINE" | sed -n 's/^sex=\([a-z]*\).*/\1/p')
+    [ "$SEX" = unknown ] && SEX=
+  fi
+  # (3) PGS target positions (same list genotype_prep.sh builds), cached per PGS-set hash.
+  [ -n "$SCOREFILE_CACHE" ] && cache_scorefile_paths "$SCOREFILE_CACHE" "$PGS" >/dev/null 2>&1 || {
+    echo "--vcf needs a scorefile cache covering every --pgs id (to build the target positions); see --scorefile-cache"; exit 1; }
+  TL=$(python3 bin/vcf_input.py targets "$SCOREFILE_CACHE" "$REF" "$PGS") || { echo "target list build failed"; exit 1; }
+  TARGETS=${TL%%$'\t'*}; NTARGETS=${TL##*$'\t'}
+  # (4) restrict through the index (-R), then drop sex chromosomes on the small file.
+  t=$SECONDS
+  # A single `-R` over ~10 M point regions behaves like a scan (>67 min on the 20 GB HG001 file),
+  # so restrict per contig in parallel: `-r <chrom> -T <targets>` streams the targets inside one
+  # region; parts are concatenated in contig order (`concat --naive`, identical headers).
+  PAR=${NPROC:-24}   # parallel per-contig workers (same NPROC convention as genotype_prep.sh)
+  PARTS="$OUTDIR/${SAMPLE}.targeted_parts"; rm -rf "$PARTS"; mkdir -p "$PARTS"
+  mapfile -t CHROMS < <(bcf index -s "$VCF" | cut -f1 | grep -xE 'chr([1-9]|1[0-9]|2[0-2])' | sort -V)
+  export BCF_IMG PWD VCF TARGETS PARTS
+  printf '%s\n' "${CHROMS[@]}" | xargs -P "$PAR" -I{} bash -c \
+    'docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools view -r "$1" -T "$TARGETS" -Oz -o "$PARTS/$1.vcf.gz" "$VCF"' _ {} \
+    || { echo "per-contig restriction failed"; exit 1; }
+  bcf concat --naive -Oz -o "$OUTDIR/$SAMPLE.targeted.vcf.gz" $(for c in "${CHROMS[@]}"; do echo "$PARTS/$c.vcf.gz"; done) \
+    || { echo "concat failed"; exit 1; }
+  rm -rf "$PARTS"
+  bcf index -t -f "$OUTDIR/$SAMPLE.targeted.vcf.gz"
+  T_RESTRICT=$((SECONDS - t))
+  EXPR=$(python3 bin/vcf_input.py restrict-expr)
+  bcf view --threads "$THREADS" -t "$EXPR" -Oz -o "$SCORE_IN.vcf.gz" "$OUTDIR/$SAMPLE.targeted.vcf.gz"
+  bcf index -t -f "$SCORE_IN.vcf.gz"
+  OUT_ROWS=$(bcf index -n "$SCORE_IN.vcf.gz")
+  AF=$(bcf query -f '%CHROM\t%POS[\t%GT]\n' "$SCORE_IN.vcf.gz" | python3 bin/vcf_input.py afrac "$TARGETS")
+  FRAC=${AF##*fraction=}
+  echo "[vcf] input rows=$IN_ROWS targets=$NTARGETS restricted rows=$OUT_ROWS $AF restrict=${T_RESTRICT}s total=$((SECONDS - T0))s"
+  echo "[vcf] sex=${SEX:-unknown}; sex chromosomes (chrX/chrY/chrM) EXCLUDED from scoring: pgsc_calc imports VCFs without sex, so chrX PGS loci are dropped (README: 'chrX loci lost')"
+  ALLSITES=$(awk -v f="$FRAC" 'BEGIN{print (f >= 0.5) ? "yes" : "no"}')
+  [ "$ALLSITES" = no ] && echo "[vcf] WARNING: input is not an all-sites VCF (explicit genotype at $FRAC of target positions); match rate will be low" >&2
+  if [ -n "$CHECK" ]; then
+    echo "check-input: index=$IDX input_records=$IN_ROWS target_positions=$NTARGETS restricted_records=$OUT_ROWS explicit_genotype_fraction=$FRAC all_sites=$ALLSITES sex=${SEX:-unknown} restricted_size=$(du -h "$SCORE_IN.vcf.gz" | cut -f1) restrict_wall=${T_RESTRICT}s"
+    [ "$ALLSITES" = no ] && { echo "CHECK_INPUT_FAILED: input is not an all-sites VCF (explicit genotype at $FRAC of $NTARGETS target positions, need >= 0.5)"; exit 1; }
+    rm -rf "$OUTDIR/check_input"; mkdir -p "$OUTDIR/check_input"
+    docker run --rm -v /data:/data -w "$PWD" "$PLINK2_IMG" plink2 --vcf "$SCORE_IN.vcf.gz" \
+      --allow-extra-chr --chr 1-22,X,Y,XY --max-alleles 2 --set-all-var-ids '@:#:$r:$a' \
+      --new-id-max-allele-len 100 missing --make-pgen --out "$OUTDIR/check_input/$SAMPLE" > "$OUTDIR/check_input/plink2.log" 2>&1 \
+      && echo "CHECK_INPUT_OK: plink2 imported $SCORE_IN.vcf.gz ($(grep -vc '^#' "$OUTDIR/check_input/$SAMPLE.pvar" 2>/dev/null) variants, sex=${SEX:-unknown})" \
+      || { echo "CHECK_INPUT_FAILED: see $OUTDIR/check_input/plink2.log"; tail -3 "$OUTDIR/check_input/plink2.log"; exit 1; }
+    exit 0
+  fi
 elif [ -n "$BAM" ]; then
   # Full scorefile-cache hit -> feed the cached hmPOS files straight to genotype-prep and
   # skip the harmonize nextflow run entirely (one fewer pgsc_calc cold-start on the BAM path).
@@ -181,17 +296,20 @@ if [ -n "$BATCH" ] && [ -n "$SFDIR" ]; then
     mkdir -p "$bsf"; IFS=$'\t' read -ra FILES <<< "$line"
     for f in "${FILES[@]}"; do ln -sf "$f" "$bsf/"; done
     echo "[batch] bin $k/${#BINS[@]}: ${#FILES[@]} scores -> $bo" >&2
-    NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+    run_nf "$OUTDIR/score.log" run pgscatalog/pgsc_calc -profile docker \
       --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 --scorefile "$bsf/*.txt.gz" --min_overlap 0.1 "${ANC[@]}" \
-      -c conf/rootless.config --outdir "$bo" -work-dir "$WORKDIR" -resume >> "$OUTDIR/score.log" 2>&1
+      -c conf/rootless.config --outdir "$bo" -work-dir "$WORKDIR" -resume \
+      || { echo "scoring bin $k failed/timed out -- see $OUTDIR/score.log"; exit 1; }
     BIN_OUT+=("$bo")
   done
   mkdir -p "$OUTDIR/score"
   python3 bin/merge_scores.py "$OUTDIR/score" "$SAMPLE" "${BIN_OUT[@]}" >> "$OUTDIR/score.log" 2>&1
 else
-  NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
+  : > "$OUTDIR/score.log"
+  run_nf "$OUTDIR/score.log" run pgscatalog/pgsc_calc -profile docker \
     --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 "${SCORE_SEL[@]}" --min_overlap 0.1 "${ANC[@]}" \
-    -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" > "$OUTDIR/score.log" 2>&1
+    -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" \
+    || { echo "scoring failed/timed out -- see $OUTDIR/score.log"; exit 1; }
 fi
 
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"

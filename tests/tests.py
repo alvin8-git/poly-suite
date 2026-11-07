@@ -297,6 +297,89 @@ def test_sample_sex_parsing(tmp="/tmp/poly_sex_test"):
     assert G.sample_sex(tmp) is None        # rejects non male/female
 
 
+def test_vcf_input_sex_and_restrict(tmp="/data/alvin/tmp/polyx/test_vcf_input"):
+    import sys as _s; _s.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin"))
+    import vcf_input as V
+    assert V.infer_sex_from_gts(["0/1"] * 40 + ["1/1"] * 60)[0] == "female"      # het 0.40
+    assert V.infer_sex_from_gts(["0/1"] * 3 + ["1|1"] * 97)[0] == "male"         # het 0.03
+    assert V.infer_sex_from_gts(["0/1"] * 15 + ["1/1"] * 85)[0] == "unknown"     # het 0.15 -> autosomes-only
+    assert V.infer_sex_from_gts(["0/1"] * 5)[0] == "unknown"                     # too few sites
+    assert V.infer_sex_from_gts(["./.", "0/0", "1"] * 100)[0] == "unknown"       # hom-ref/missing/haploid ignored
+    # restriction expression drops sex chroms + chrM, keeps autosomes (mirrors bcftools -t semantics)
+    ex = set(V.EXCLUDE.lstrip("^").split(","))
+    assert {"chrX", "chrY", "chrM"} <= ex and not {f"chr{i}" for i in range(1, 23)} & ex
+
+
+def _synth_targets_env(d):
+    """Tiny GRCh38-style fixture: chr1 fasta, one hmPOS scorefile, an all-sites VCF."""
+    import gzip, pysam
+    os.makedirs(d, exist_ok=True)
+    seq = "ACGT" * 50                                    # chr1, 200 bp; pos p -> seq[p-1]
+    ref = os.path.join(d, "ref.fa")
+    open(ref, "w").write(f">chr1\n{seq}\n")
+    pysam.faidx(ref)
+    sfdir = os.path.join(d, "sf"); os.makedirs(sfdir, exist_ok=True)
+    with gzip.open(os.path.join(sfdir, "PGS000001_hmPOS_GRCh38.txt.gz"), "wt") as f:
+        f.write("#pgs_id=PGS000001\nchr_name\tchr_position\teffect_allele\tother_allele\teffect_weight\thm_chr\thm_pos\n")
+        for pos in (10, 20, 30):                         # targets
+            ea = seq[pos - 1]; oa = "A" if ea != "A" else "C"
+            f.write(f"1\t{pos}\t{oa}\t{ea}\t0.1\t1\t{pos}\n")
+        f.write("X\t5\tA\tC\t0.1\tX\t5\n")           # sex chr: never a target
+    vcf = os.path.join(d, "allsites.vcf")
+    with open(vcf, "w") as f:
+        f.write("##fileformat=VCFv4.2\n##contig=<ID=chr1,length=200>\n"
+                '##FORMAT=<ID=GT,Number=1,Type=String,Description="GT">\n'
+                "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS\n")
+        for pos in range(1, 41):                         # all-sites: every position has a row
+            r = seq[pos - 1]
+            alt, gt = ((("C" if r != "C" else "G"), "0/1") if pos == 20 else (".", "0/0"))
+            f.write(f"chr1\t{pos}\t.\t{r}\t{alt}\t50\tPASS\t.\tGT\t{gt}\n")
+    return ref, sfdir, vcf
+
+
+def test_vcf_target_list_builder_and_cache(d="/data/alvin/tmp/polytarget/test_targets"):
+    import shutil, gzip, io, contextlib
+    shutil.rmtree(d, ignore_errors=True)
+    ref, sfdir, _ = _synth_targets_env(d)
+    import vcf_input as V
+    log = io.StringIO()
+    out, n = V.get_targets(sfdir, ["PGS000001"], sfdir, ref, log=log)
+    assert n == 3 and "built" in log.getvalue(), log.getvalue()
+    rows = [l.split("\t") for l in gzip.open(out, "rt").read().split("\n") if l]
+    assert [(r[0], r[1]) for r in rows] == [("chr1", "10"), ("chr1", "20"), ("chr1", "30")]  # 2 cols, no chrX
+    assert all(len(r) == 2 for r in rows) and os.path.exists(out + ".tbi")
+    log2 = io.StringIO()
+    out2, n2 = V.get_targets(sfdir, ["PGS000001"], sfdir, ref, log=log2)
+    assert (out2, n2) == (out, 3) and "cache hit" in log2.getvalue()                           # repeat run skips the build
+    assert V.targets_key(["B", "A"], ref) == V.targets_key(["A", "B"], ref)                    # order-free
+    assert V.targets_key(["A"], ref) != V.targets_key(["A", "B"], ref)                         # set-sensitive
+    # explicit-genotype fraction: hom-ref counts, ./. does not
+    tg = [("chr1", "10"), ("chr1", "20"), ("chr1", "30"), ("chr2", "5")]   # chr2 outside the input footprint
+    k, n, fr = V.explicit_fraction(["chr1\t10\t0/0", "chr1\t20\t0/1", "chr1\t30\t./."], tg)
+    assert (k, n) == (2, 3) and abs(fr - 2 / 3) < 1e-9
+
+
+def test_vcf_restriction_keeps_homref_drops_offtarget(d="/data/alvin/tmp/polytarget/test_restrict"):
+    import shutil, subprocess, io
+    if not shutil.which("docker"):
+        print("  (skipped: no docker for the bcftools container)"); return
+    shutil.rmtree(d, ignore_errors=True)
+    ref, sfdir, vcf = _synth_targets_env(d)
+    import vcf_input as V
+    targets, n = V.get_targets(sfdir, ["PGS000001"], sfdir, ref, log=io.StringIO())
+    img = os.environ.get("BCFTOOLS_IMG", "quay.io/biocontainers/bcftools:1.21--h8b25389_0")
+    bcf = ["docker", "run", "--rm", "-v", "/data:/data", "-w", d, img, "bcftools"]
+    subprocess.run(bcf + ["view", "-Oz", "-o", vcf + ".gz", vcf], check=True)
+    subprocess.run(bcf + ["index", "-t", vcf + ".gz"], check=True)
+    out = os.path.join(d, "targeted.vcf.gz")
+    subprocess.run(bcf + ["view", "-R", targets, "-Oz", "-o", out, vcf + ".gz"], check=True)
+    q = subprocess.run(bcf + ["query", "-f", "%CHROM\\t%POS[\\t%GT]\\n", out], check=True,
+                       capture_output=True, text=True).stdout.splitlines()
+    got = {l.split("\t")[1]: l.split("\t")[2] for l in q}
+    assert got == {"10": "0/0", "20": "0/1", "30": "0/0"}, got      # 0/0 survive; 11 off-target positions dropped
+    assert V.explicit_fraction(q, [l.split("\t")[:2] for l in __import__('gzip').open(targets, 'rt')]) == (3, 3, 1.0)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items())
              if k.startswith("test_") and callable(v)]

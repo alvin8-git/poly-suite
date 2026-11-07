@@ -3,6 +3,19 @@
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
+## 2026-11-07 - `--vcf` restricted to PGS target positions (all-sites input)
+- Why: pgsc_calc's `PLINK2_VCF` runs out of memory on a whole-genome all-sites VCF (HG001, 20 GB, 2.88 G rows) after the autosome staging had copied the whole file for 69 min. A VCF restricted to the PGS loci scores in ~1 h 45 min at ~90 % median scorefile match; a variant-only VCF halves the match rate.
+- `run.sh --vcf`: index the input if needed (`bcftools index -t`, logged) -> build the target list for `--pgs` (`bin/scoring_targets.py`, same as `genotype_prep.sh`; cached per PGS-set hash as `<scorefile-cache>/vcf_targets_<hash>.tsv.gz`+`.tbi`) -> per-contig parallel `bcftools view -r chrN -T targets` (`NPROC` workers, default 24; single `-R` over ~10 M points was >67 min, killed) + `concat --naive` -> `<outdir>/<S>.targeted.vcf.gz` (HG001 20 GB: 3 min with 24 workers, 4 min 19 s with 8) -> sex-chromosome exclusion on that small file -> `<S>.autosomes.vcf.gz`. Requires the scorefile cache to cover every `--pgs` id and chr-prefixed contigs. One log line: input rows, targets, restricted rows, explicit-genotype fraction, wall time.
+- Records are kept whole, so hom-ref `0/0` rows of an all-sites input survive (unit-tested); a variant-only input yields a sparse file. The README input requirement is an all-sites VCF.
+- `--check-input` now needs `--pgs` and reports index, input/restricted record counts, target positions, explicit-genotype fraction (denominator: targets inside the input's own per-contig footprint, so region slices are judged on what they cover), inferred sex; `CHECK_INPUT_FAILED: input is not an all-sites VCF` when the fraction is < 0.5. A normal run only warns.
+- `bin/vcf_input.py`: `targets`, `afrac` subcommands. Tests: `test_vcf_target_list_builder_and_cache`, `test_vcf_restriction_keeps_homref_drops_offtarget`.
+- Note: base-69 gives 9,786,436 autosomal target positions here (not 12.6 M, which was the HG001 prepped set's size).
+
+## 2026-11-07 - raw-VCF input fix + scoring watchdog
+- `run.sh --vcf`: stage autosomes-only (chrX/chrY/chrM excluded) before pgsc_calc import; plink2 aborted on chrX with no sex. Sex from `--sex` or VCF chrX non-PAR het (`bin/vcf_input.py`). 4,592 chrX rows lost across base-69 (4,576 in PGS004799).
+- `--check-input`: staging + plink2 import test, then exit.
+- `run_nf` watchdog: `--nf-timeout`/`NF_TIMEOUT` (8 h) and kill after `NF_FAIL_GRACE` (10 min) once the pipeline logs an error; failed scoring now exits non-zero.
+
 ## 2026-07-24 — Class-A runtime optimizations (rigor-preserving; outputs unchanged)
 
 Faster runs **without changing any score or output**. Baseline: THAL1/THAL2

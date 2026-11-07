@@ -81,6 +81,59 @@ On a cache miss the harmonize run is bounded by `timeout`/retry (`HM_TIMEOUT`,
 `HM_RETRIES`) so a stalled fetch fails loud instead of hanging. See
 [docs/CHANGES.md](docs/CHANGES.md) (2026-07-24, Class-A optimizations).
 
+**`--vcf` input requirements (raw whole-genome VCF).** The input must be an **all-sites VCF**
+(a genotype row, including hom-ref `0/0`, at every position; e.g. GATK `-ERC`/`--all-sites`
+output or `bcftools mpileup | call -A` without `-v`). A variant-only VCF scores but roughly halves
+the PGS match rate (hom-ref loci are absent, so they read as missing, not dosage 0).
+pgsc_calc's `PLINK2_VCF` import runs out of memory on a whole-genome all-sites VCF (HG001: 20 GB,
+2.88 G rows), so `run.sh --vcf` first **restricts the input to the PGS target positions**:
+1. The input needs a `.tbi`/`.csi` index; if absent it is created with `bcftools index -t`
+   (next to the input; the time is logged).
+2. The target list for the requested `--pgs` set is built exactly as `genotype_prep.sh` builds it
+   (`bin/scoring_targets.py`, autosomes only, from the scorefile cache; every `--pgs` id must be
+   cached) and cached as a bgzipped, tabix-indexed CHROM/POS file
+   `<scorefile-cache>/vcf_targets_<hash of PGS set + ref + builder>.tsv.gz` (+ `.tbi`, `.n`), so
+   repeat runs skip the build. Base-69: 12.6 M positions.
+3. Restriction runs **per contig in parallel** (`NPROC` workers, default 24): one
+   `bcftools view -r <chrN> -T <targets> -Oz` per autosome, then `bcftools concat --naive` + `index -t`
+   -> `<outdir>/<sample>.targeted.vcf.gz`. (A single `bcftools view -R` over ~10 M point regions
+   behaves like a scan: >67 min and ~30 % done on the 20 GB HG001 file, killed.) Hence the
+   index is required: `-r` seeks through it. Records are kept whole, so a `0/0` row of
+   an all-sites input survives; off-target rows are dropped (unit-tested). The input needs
+   chr-prefixed GRCh38 contigs.
+4. The sex-chromosome exclusion below is then applied to that small file (not the whole genome),
+   giving `<outdir>/<sample>.autosomes.vcf.gz`, and one log line reports input rows, target
+   positions, restricted rows, explicit-genotype fraction and wall time.
+pgsc_calc's `PLINK2_VCF` also passes no sex to plink2 and this pinned pgsc_calc has no samplesheet/
+psam sex column, so a VCF that contains chrX aborts with "chrX is present ... no sex information
+was provided"; hence `bcftools view -t ^chrX,chrY,chrM,...` (same bcftools container as
+`genotype_prep.sh`) and a log line saying sex chromosomes were excluded. Sex (kept for absolute
+risk, written to `score/sample_sex.txt`) comes from `--sex`; else it is inferred from the input's
+chrX non-PAR heterozygosity `het/(het+homalt)` (>= 0.25 female, < 0.10 male, else unknown -> no
+sex; `bin/vcf_input.py`); the inferred value is printed.
+**chrX loci lost:** for the base-69 PGS set (`cache/scorefiles`, 81.3 M rows) only 4,592 rows
+are chrX (PGS004799 4,576; PGS003765 12; PGS003755 3; PGS002252 1) - 0.006 %; the other 65
+scores are autosomal-only, so scores are unaffected except PGS004799 (partial) and, marginally,
+the three others. BAM input already emits chr1-22 only, so the two paths now match.
+`--check-input` (needs `--vcf` and `--pgs`) runs the restriction + a plink2 import test using
+pgsc_calc's own flags and exits. It prints `check-input: index=, input_records=,
+target_positions=, restricted_records=, explicit_genotype_fraction=, all_sites=, sex=,
+restricted_size=, restrict_wall=` then `CHECK_INPUT_OK`/`CHECK_INPUT_FAILED`. The **explicit-genotype
+fraction** (share of target positions with a fully-called GT in the restricted file) is the
+all-sites indicator: ~1.0 for an all-sites VCF, far lower for variant-only; below 0.5 it fails with
+"input is not an all-sites VCF" (a normal run only warns). **Timings (HG001 20 GB all-sites, 2.89 G rows, base-69):** independent coordinator run, 24 workers,
+12.6 M targets: 3 min 0 s (174 s chunks + 5 s concat), 234 MB, 12,669,602 records (9,466,300 explicit
+0/0). This implementation, 8 workers, 9.79 M autosomal targets: restriction 259 s, whole check-input
+(index count, chrX sex inference, target cache hit, restriction, fraction, plink2 import) 7 min 14 s,
+autosomes file 197 MB, explicit-genotype fraction 0.9993, plink2 imported 9.80 M variants. First
+target-list build (cold cache) ~6 min. Region slices: all-sites chr22:20-25 Mb 0.987 (OK);
+variant-only HC slice 0.307 (FAILED < 0.5).
+**Timeout / hang guard.** Each pgsc_calc scoring run is wall-clock limited by `--nf-timeout SEC`
+(env `NF_TIMEOUT`, default 28800 = 8 h). Nextflow runs in its own process group; if its log
+reports `Execution cancelled` / `Pipeline completed with errors` and it has not exited within
+`NF_FAIL_GRACE` seconds (default 600), the group is killed. Either way `run.sh` exits non-zero
+with a pointer to `score.log` rather than blocking its caller.
+
 Full launch set (74 traits, 142 scorefiles at top-2): resolve with
 `python3 bin/select_pgs.py results/meta.json 2 all`, then pass the resolved ids as `--pgs`.
 See [Documentation.md §6](docs/Documentation.md#6-the-tiered-launch-set) for the trait list.
