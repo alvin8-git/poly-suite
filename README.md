@@ -102,6 +102,21 @@ pgsc_calc's `PLINK2_VCF` import runs out of memory on a whole-genome all-sites V
    index is required: `-r` seeks through it. Records are kept whole, so a `0/0` row of
    an all-sites input survives; off-target rows are dropped (unit-tested). The input needs
    chr-prefixed GRCh38 contigs.
+   **ALT fill.** An all-sites `bcftools call -m` VCF writes hom-ref rows with `ALT = "."`, but
+   pgsc_calc's MATCH stage needs REF and ALT to equal the scorefile's alleles, so every hom-ref
+   target site would be "unmatched" (THAL1 launch76 before this fix: median `match_rate` 0.479,
+   151 of 152 scores < 0.6; the BAM path, whose `call -C alleles` puts the target ALT on hom-ref
+   rows, gives ~0.90). Each per-contig worker therefore streams its rows through
+   `bin/vcf_input.py fill`, which sets ALT on rows with ALT `.` whose (CHROM, POS, REF) is in
+   `<scorefile-cache>/vcf_targets_<hash>.alleles.tsv.gz` (CHROM POS REF ALT, built by the same
+   `scoring_targets.py` run as the target list), keeps GT `0/0` and appends `,0` to `AD`/`ADF`/`ADR`.
+   Genuine variant rows, REF-mismatching rows and off-table rows are unchanged. Limitation: one ALT
+   per site - at a multi-ALT target site the first table ALT is used. The log prints
+   `[vcf] alt_filled=N of M hom-ref target rows`, `--check-input` reports `alt_filled=` and
+   `hom_ref_target_rows=`, and both go to `provenance.json` `parameters.vcf_input_alt_fill`. The
+   timings below were measured before the fill was added; the 0.9993 explicit fraction concerns
+   input completeness, not allele matching, and no raw-VCF match rate had been measured at ~0.90
+   before this fix (the earlier ~0.90 figure was a prepped, allele-aware VCF).
 4. The sex-chromosome exclusion below is then applied to that small file (not the whole genome),
    giving `<outdir>/<sample>.autosomes.vcf.gz`, and one log line reports input rows, target
    positions, restricted rows, explicit-genotype fraction and wall time.

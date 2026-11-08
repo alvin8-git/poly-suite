@@ -302,7 +302,11 @@ def main():
 
     # standalone deliverable: provenance record + self-contained HTML report
     sample = rows[0].get("sample") if rows else None
-    provenance.write(RESULTS, sample=sample, sample_sex=_SEX,
+    _params = None
+    _vi = os.path.join(RESULTS, "vcf_input.json")      # written by run.sh --vcf
+    if os.path.isfile(_vi):
+        _params = {"min_overlap": 0.1, "target_build": "GRCh38", **json.load(open(_vi))}
+    provenance.write(RESULTS, sample=sample, sample_sex=_SEX, params=_params,
                      ref_fasta="/data/alvin/ref/GRCh38/hg38.canonical.fa")
     report_html.render(RESULTS)
 

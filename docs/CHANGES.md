@@ -3,6 +3,12 @@
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
+## 2026-11-08 - `--vcf`: fill ALT on hom-ref target rows (match-rate defect)
+- Defect: the restriction kept `bcftools call -m` hom-ref rows with `ALT "."` (e.g. `chr1 68082 T . GT:DP:AD 0/0:47:47`); pgsc_calc MATCH needs REF/ALT = scorefile alleles, so every hom-ref target site was unmatched. launch76 THAL1: median `match_rate` 0.479 (151/152 scores < 0.6; pgsc_calc summary ~45-53 % unmatched per score) vs median ~0.90 on the BAM path (launch75 HG002), where `call -C alleles` carries the target ALT. Explicit-genotype fraction was fine (0.9997), so the input itself was correct. The `results/track_d/HG001allsitesB69` ~0.90 figure was a prepped (allele-aware) VCF, not a raw one; the raw path had never been measured at that rate.
+- Fix: `bin/scoring_targets.py` output is now also kept as an allele table (`vcf_targets_<hash>.alleles.tsv.gz`+`.tbi`, CHROM POS REF first-ALT; old caches rebuild once). Each per-contig worker pipes `bcftools view -r chrN -T targets -Ov` through `python3 bin/vcf_input.py fill ALLELES CHROM COUNTS` (`fill_homref_alt()`, `load_alleles()`, `alleles_path()`) and `bgzip`; ALT set only when ALT is `.` and REF equals the table REF, GT stays `0/0`, `AD/ADF/ADR` get a trailing `,0`. Variant rows untouched. Multi-ALT sites: first table ALT only (documented limitation). Streaming, parallel-safe.
+- Reporting: log line `[vcf] alt_filled=N of M hom-ref target rows`; `--check-input` adds `alt_filled=`/`hom_ref_target_rows=`; `run.sh` writes `<outdir>/vcf_input.json` -> `score/vcf_input.json` -> `grade_pgs.py` puts it in `provenance.json` `parameters.vcf_input_alt_fill`.
+- Test: `test_vcf_homref_alt_filled_from_targets`. Rescoring: results/launch77/{THAL1,THAL2}.
+
 ## 2026-11-07 - launch71: base-69 + 13 CircleDNA-gap polygenic scores
 - Why: the OmniGen DTC report needs polygenic cards for CircleDNA-equivalent traits the base set lacks. One PGS per trait, chosen from the PGS Catalog REST API.
 - Criteria: GRCh38 harmonised scorefile available; largest/most recent development GWAS; at least one independent evaluation in the catalog performance records; multi-ancestry preferred. `grade_suggestion` A only with two or more evaluation cohorts outside the UKB development data and AUC/R2/OR reported, else B.

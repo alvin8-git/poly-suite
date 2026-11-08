@@ -193,13 +193,20 @@ elif [ -z "$BAM" ] && [ -n "$VCF" ]; then
   PAR=${NPROC:-24}   # parallel per-contig workers (same NPROC convention as genotype_prep.sh)
   PARTS="$OUTDIR/${SAMPLE}.targeted_parts"; rm -rf "$PARTS"; mkdir -p "$PARTS"
   mapfile -t CHROMS < <(bcf index -s "$VCF" | cut -f1 | grep -xE 'chr([1-9]|1[0-9]|2[0-2])' | sort -V)
-  export BCF_IMG PWD VCF TARGETS PARTS
+  ALLELES=${TARGETS%.tsv.gz}.alleles.tsv.gz
+  export BCF_IMG PWD VCF TARGETS PARTS ALLELES
   printf '%s\n' "${CHROMS[@]}" | xargs -P "$PAR" -I{} bash -c \
-    'docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools view -r "$1" -T "$TARGETS" -Oz -o "$PARTS/$1.vcf.gz" "$VCF"' _ {} \
+    'docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools view -r "$1" -T "$TARGETS" -Ov "$VCF" \
+       | python3 bin/vcf_input.py fill "$ALLELES" "$1" "$PARTS/$1.fill" | bgzip -c > "$PARTS/$1.vcf.gz"; \
+     [ "${PIPESTATUS[0]}${PIPESTATUS[1]}${PIPESTATUS[2]}" = 000 ]' _ {} \
     || { echo "per-contig restriction failed"; exit 1; }
   bcf concat --naive -Oz -o "$OUTDIR/$SAMPLE.targeted.vcf.gz" $(for c in "${CHROMS[@]}"; do echo "$PARTS/$c.vcf.gz"; done) \
     || { echo "concat failed"; exit 1; }
+  read -r HOMREF_ROWS ALT_FILLED < <(cat "$PARTS"/*.fill | awk '{a+=$1; b+=$2} END{print a+0, b+0}')
   rm -rf "$PARTS"
+  printf '{"vcf_input_alt_fill": {"hom_ref_target_rows": %s, "alt_filled": %s, "multi_alt_policy": "first table ALT"}}\n' \
+    "$HOMREF_ROWS" "$ALT_FILLED" > "$OUTDIR/vcf_input.json"
+  echo "[vcf] alt_filled=$ALT_FILLED of $HOMREF_ROWS hom-ref target rows"
   bcf index -t -f "$OUTDIR/$SAMPLE.targeted.vcf.gz"
   T_RESTRICT=$((SECONDS - t))
   EXPR=$(python3 bin/vcf_input.py restrict-expr)
@@ -213,7 +220,7 @@ elif [ -z "$BAM" ] && [ -n "$VCF" ]; then
   ALLSITES=$(awk -v f="$FRAC" 'BEGIN{print (f >= 0.5) ? "yes" : "no"}')
   [ "$ALLSITES" = no ] && echo "[vcf] WARNING: input is not an all-sites VCF (explicit genotype at $FRAC of target positions); match rate will be low" >&2
   if [ -n "$CHECK" ]; then
-    echo "check-input: index=$IDX input_records=$IN_ROWS target_positions=$NTARGETS restricted_records=$OUT_ROWS explicit_genotype_fraction=$FRAC all_sites=$ALLSITES sex=${SEX:-unknown} restricted_size=$(du -h "$SCORE_IN.vcf.gz" | cut -f1) restrict_wall=${T_RESTRICT}s"
+    echo "check-input: index=$IDX input_records=$IN_ROWS target_positions=$NTARGETS restricted_records=$OUT_ROWS alt_filled=$ALT_FILLED hom_ref_target_rows=$HOMREF_ROWS explicit_genotype_fraction=$FRAC all_sites=$ALLSITES sex=${SEX:-unknown} restricted_size=$(du -h "$SCORE_IN.vcf.gz" | cut -f1) restrict_wall=${T_RESTRICT}s"
     [ "$ALLSITES" = no ] && { echo "CHECK_INPUT_FAILED: input is not an all-sites VCF (explicit genotype at $FRAC of $NTARGETS target positions, need >= 0.5)"; exit 1; }
     rm -rf "$OUTDIR/check_input"; mkdir -p "$OUTDIR/check_input"
     docker run --rm -v /data:/data -w "$PWD" "$PLINK2_IMG" plink2 --vcf "$SCORE_IN.vcf.gz" \
@@ -313,6 +320,8 @@ else
 fi
 
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"
+# raw-VCF ALT-fill counters -> score/vcf_input.json; grade_pgs puts them in provenance.json parameters
+[ -n "$VCF" ] && [ -f "$OUTDIR/vcf_input.json" ] && cp -f "$OUTDIR/vcf_input.json" "$OUTDIR/score/vcf_input.json"
 # grade_pgs reads pgs_catalog_meta.json from the score dir for trait names + evidence
 # grades; drop the run's own select_pgs metadata there so custom-named metas resolve
 # (without this, a non-default score set falls back to the starter meta -> trait==pgs_id).

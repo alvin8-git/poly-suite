@@ -380,6 +380,34 @@ def test_vcf_restriction_keeps_homref_drops_offtarget(d="/data/alvin/tmp/polytar
     assert V.explicit_fraction(q, [l.split("\t")[:2] for l in __import__('gzip').open(targets, 'rt')]) == (3, 3, 1.0)
 
 
+def test_vcf_homref_alt_filled_from_targets(d="/data/alvin/tmp/polyfix/test_altfill"):
+    """Hom-ref target rows (ALT '.') get the scorefile's ALT so pgsc_calc MATCH can pair them;
+    variant rows, off-target rows and REF-mismatching rows are left alone; CLI path streams stdin->stdout."""
+    import shutil, io, subprocess, sys as _s
+    shutil.rmtree(d, ignore_errors=True)
+    ref, sfdir, vcf = _synth_targets_env(d)
+    import vcf_input as V
+    out, n = V.get_targets(sfdir, ["PGS000001"], sfdir, ref, log=io.StringIO())
+    al = V.alleles_path(out)
+    assert os.path.exists(al + ".tbi")
+    seq = "ACGT" * 50
+    want = {p: (seq[p - 1], "A" if seq[p - 1] != "A" else "C") for p in (10, 20, 30)}   # scorefile non-ref allele
+    assert V.load_alleles(al, "chr1") == {p: v for p, v in want.items()} and V.load_alleles(al, "chr2") == {}
+    hdr = "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS\n"
+    rows = (f"chr1\t10\t.\t{want[10][0]}\t.\t5\t.\tDP=9\tGT:DP:AD\t0/0:9:9\n"        # hom-ref target -> filled
+            f"chr1\t20\t.\t{want[20][0]}\tG\t5\t.\tDP=9\tGT:DP:AD\t0/1:9:5,4\n"   # genuine variant -> untouched
+            f"chr1\t30\t.\tT\t.\t5\t.\tDP=9\tGT:DP:AD\t0/0:9:9\n"                   # REF mismatch -> untouched
+            f"chr1\t35\t.\t{seq[34]}\t.\t5\t.\tDP=9\tGT\t0/0\n")                    # off-table -> untouched
+    cp = subprocess.run([_s.executable, os.path.join(os.path.dirname(V.__file__), "vcf_input.py"), "fill", al, "chr1",
+                         os.path.join(d, "counts")], input=hdr + rows, capture_output=True, text=True, check=True)
+    body = [l.split("\t") for l in cp.stdout.splitlines() if not l.startswith("#")]
+    assert body[0][4] == want[10][1] and body[0][9] == "0/0:9:9,0", body[0]            # ALT set, GT kept, AD gets trailing 0
+    assert body[1][4] == "G" and body[1][9] == "0/1:9:5,4"
+    assert body[2][4] == "." and body[3][4] == "." and body[3][8] == "GT"
+    assert open(os.path.join(d, "counts")).read().split() == ["3", "1"]                   # hom-ref rows seen, filled
+    assert "##fileformat=VCFv4.2" in cp.stdout
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items())
              if k.startswith("test_") and callable(v)]
