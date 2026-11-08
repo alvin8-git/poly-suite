@@ -404,8 +404,26 @@ def test_vcf_homref_alt_filled_from_targets(d="/data/alvin/tmp/polyfix/test_altf
     assert body[0][4] == want[10][1] and body[0][9] == "0/0:9:9,0", body[0]            # ALT set, GT kept, AD gets trailing 0
     assert body[1][4] == "G" and body[1][9] == "0/1:9:5,4"
     assert body[2][4] == "." and body[3][4] == "." and body[3][8] == "GT"
-    assert open(os.path.join(d, "counts")).read().split() == ["3", "1"]                   # hom-ref rows seen, filled
+    assert open(os.path.join(d, "counts")).read().split() == ["3", "1", "0", "0", "0"]                   # hom-ref rows seen, filled
     assert "##fileformat=VCFv4.2" in cp.stdout
+    # multi-record positions: never filled, hom-ref dropped beside a variant, no duplicate CHROM:POS:REF:ALT
+    r10, r20 = want[10][0], want[20][0]
+    multi = (f"chr1\t10\t.\t{r10}\t{want[10][1]}\t5\t.\t.\tGT:AD\t1/1:1,9\n"      # SNP variant ...
+             f"chr1\t10\t.\t{r10}\t.\t5\t.\t.\tGT:AD\t0/0:9\n"                      # ... + its hom-ref twin: dropped
+             f"chr1\t20\t.\t{r20}\tAGG\t5\t.\t.\tGT:AD\t0/1:5,4\n"                  # indel record ...
+             f"chr1\t20\t.\t{r20}\tAGG\t5\t.\t.\tGT:AD\t0/1:5,4\n"                  # ... exact repeat: dropped
+             f"chr1\t20\t.\t{r20}\t.\t5\t.\t.\tGT:AD\t0/0:9\n"                      # hom-ref beside indel: dropped
+             f"chr1\t30\t.\t{seq[29]}\t.\t5\t.\t.\tGT:AD\t0/0:9\n"                  # single hom-ref: filled
+             f"chr1\t31\t.\t{seq[30]}\t.\t5\t.\t.\tGT:AD\t0/0:9\n"
+             f"chr1\t31\t.\t{seq[30]}\t.\t5\t.\t.\tGT:AD\t0/0:9\n")                 # two hom-ref: none filled, one kept
+    al2 = dict(V.load_alleles(al, "chr1")); al2[30] = (seq[29], "T" if seq[29] != "T" else "A"); al2[31] = (seq[30], "T" if seq[30] != "T" else "A")
+    o = [l.split("\t") for l in "".join(V.fill_homref_alt(multi.splitlines(True), al2)).splitlines()]
+    ids = [(x[1], x[3], x[4]) for x in o]
+    assert len(ids) == len(set(ids)), ids
+    assert [x[1] for x in o] == ["10", "20", "30", "31"] and o[0][4] == want[10][1] and o[1][4] == "AGG", o
+    assert o[2][4] == al2[30][1] and o[3][4] == ".", o
+    assert V.fill_homref_alt.stats == {"homref": 5, "filled": 1, "skipped_multirecord": 3,
+                                       "dropped_homref_dup": 2, "dropped_dup": 2}, V.fill_homref_alt.stats
 
 
 if __name__ == "__main__":

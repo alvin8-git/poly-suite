@@ -24,7 +24,8 @@ target ALT on hom-ref rows). fill_homref_alt() therefore sets ALT on hom-ref row
 (CHROM, POS, REF) is in the allele table (<targets>.alleles.tsv.gz = CHROM POS REF ALT from
 scoring_targets.py, the same builder genotype_prep.sh uses): GT stays 0/0 and AD/ADF/ADR gain a
 trailing 0. Genuine variant rows are untouched. Limitation: one ALT per site - at a multi-ALT target
-site the FIRST table ALT is used. It streams per contig, so it runs inside the parallel restriction.
+site the FIRST table ALT is used. A position with several records is left unfilled and de-duplicated
+(see fill_homref_alt). It streams per contig, so it runs inside the parallel restriction.
 
 infer_sex_from_gts(): chrX non-PAR heterozygosity, het/(het+homalt):
   >= 0.25 female, < 0.10 male, else unknown (caller falls back to autosomes-only
@@ -151,36 +152,73 @@ def load_alleles(alleles_gz, chrom):
         tb.close()
 
 
+def _fill_row(f, alleles):
+    """Fill one split hom-ref row in place; True if its ALT was set."""
+    hit = alleles.get(int(f[1]))
+    if not hit or hit[0] != f[3].upper():
+        return False
+    f[4] = hit[1]
+    keys = f[8].split(":")
+    idx = [i for i, k in enumerate(keys) if k in R_FORMAT_KEYS]
+    for j in range(9, len(f)) if idx else ():
+        v = f[j].split(":")
+        for i in idx:
+            if i < len(v) and v[i] not in (".", ""):
+                v[i] += ",0"
+        f[j] = ":".join(v)
+    return True
+
+
 def fill_homref_alt(lines, alleles):
-    """Generator over VCF text lines: set ALT on hom-ref rows (ALT '.') from `alleles`
-    ({pos: (ref, alt)} for the row's contig). Returns lines; counts in fill_homref_alt.stats
-    (homref rows seen, rows filled). A row is filled only when its REF equals the table REF."""
-    st = fill_homref_alt.stats = {"homref": 0, "filled": 0}
+    """Generator over VCF text lines (position-sorted per contig): set ALT on hom-ref rows
+    (ALT '.') from `alleles` ({pos: (ref, alt)}). Records are buffered by (CHROM, POS).
+    A position with more than one record (bcftools call -m emits a variant record AND a separate
+    hom-ref record, or SNP + indel records) is never filled; its hom-ref (ALT '.') records are
+    dropped when a variant record is present, and a record repeating an earlier record's REF/ALT
+    is dropped, so no two output records share CHROM:POS:REF:ALT (plink2 would abort on the ID).
+    Counts in fill_homref_alt.stats: homref (ALT '.' rows seen), filled, skipped_multirecord
+    (positions with >1 record), dropped_homref_dup (hom-ref rows dropped beside a variant),
+    dropped_dup (exact REF/ALT repeats dropped)."""
+    st = fill_homref_alt.stats = {"homref": 0, "filled": 0, "skipped_multirecord": 0,
+                                  "dropped_homref_dup": 0, "dropped_dup": 0}
+    buf, key = [], None
+
+    def flush():
+        if not buf:
+            return
+        if len(buf) == 1:
+            f = buf[0]
+            if f[4] == "." and len(f) >= 10 and _fill_row(f, alleles):
+                st["filled"] += 1
+            yield "\t".join(f) + "\n"
+            return
+        st["skipped_multirecord"] += 1
+        has_var = any(f[4] != "." for f in buf)
+        seen = set()
+        for f in buf:
+            if f[4] == "." and has_var:
+                st["dropped_homref_dup"] += 1
+                continue
+            k = (f[3], f[4])
+            if k in seen:
+                st["dropped_dup"] += 1
+                continue
+            seen.add(k)
+            yield "\t".join(f) + "\n"
+
     for ln in lines:
         if ln.startswith("#"):
             yield ln
             continue
         f = ln.rstrip("\n").split("\t")
-        if len(f) < 10 or f[4] != ".":
-            yield ln
-            continue
-        st["homref"] += 1
-        hit = alleles.get(int(f[1]))
-        if not hit or hit[0] != f[3].upper():
-            yield ln
-            continue
-        f[4] = hit[1]
-        keys = f[8].split(":")
-        idx = [i for i, k in enumerate(keys) if k in R_FORMAT_KEYS]
-        if idx:
-            for j in range(9, len(f)):
-                v = f[j].split(":")
-                for i in idx:
-                    if i < len(v) and v[i] not in (".", ""):
-                        v[i] += ",0"
-                f[j] = ":".join(v)
-        st["filled"] += 1
-        yield "\t".join(f) + "\n"
+        if f[4] == "." and len(f) >= 10:
+            st["homref"] += 1
+        k = (f[0], f[1])
+        if k != key:
+            yield from flush()
+            buf, key = [], k
+        buf.append(f)
+    yield from flush()
 
 
 def explicit_fraction(lines, target_rows):
@@ -228,7 +266,8 @@ if __name__ == "__main__":
             sys.stdout.write(out)
         st = fill_homref_alt.stats
         with open(sys.argv[4], "w") as fh:
-            fh.write(f"{st['homref']}\t{st['filled']}\n")
+            fh.write("\t".join(str(st[k]) for k in ("homref", "filled", "skipped_multirecord",
+                                                   "dropped_homref_dup", "dropped_dup")) + "\n")
     elif cmd == "afrac":
         with gzip.open(sys.argv[2], "rt") as tf:
             k, n, fr = explicit_fraction(sys.stdin, (l.split("\t")[:2] for l in tf))

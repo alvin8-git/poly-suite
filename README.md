@@ -111,8 +111,11 @@ pgsc_calc's `PLINK2_VCF` import runs out of memory on a whole-genome all-sites V
    `<scorefile-cache>/vcf_targets_<hash>.alleles.tsv.gz` (CHROM POS REF ALT, built by the same
    `scoring_targets.py` run as the target list), keeps GT `0/0` and appends `,0` to `AD`/`ADF`/`ADR`.
    Genuine variant rows, REF-mismatching rows and off-table rows are unchanged. Limitation: one ALT
-   per site - at a multi-ALT target site the first table ALT is used. The log prints
-   `[vcf] alt_filled=N of M hom-ref target rows`, `--check-input` reports `alt_filled=` and
+   per site - at a multi-ALT target site the first table ALT is used. A position with more than one
+   record (call -m emits a variant record plus a separate hom-ref record) is never filled: the hom-ref
+   record is dropped beside a variant and exact REF/ALT repeats are dropped, so plink2 never sees a
+   duplicate `CHROM:POS:REF:ALT` ID (`skipped_multirecord`, `dropped_homref_dup`, `dropped_dup`). The log prints
+   `[vcf] alt_filled=N of M; skipped_multirecord=K; dropped_homref_dup=D; dropped_dup=E`, `--check-input` reports `alt_filled=` and
    `hom_ref_target_rows=`, and both go to `provenance.json` `parameters.vcf_input_alt_fill`. The
    timings below were measured before the fill was added; the 0.9993 explicit fraction concerns
    input completeness, not allele matching, and no raw-VCF match rate had been measured at ~0.90
