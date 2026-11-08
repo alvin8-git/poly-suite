@@ -426,6 +426,13 @@ def test_vcf_homref_alt_filled_from_targets(d="/data/alvin/tmp/polyfix/test_altf
                                        "dropped_homref_dup": 2, "dropped_dup": 2}, V.fill_homref_alt.stats
 
 
+def test_is_european_only_labels():
+    for yes in ("EUR", "EUR100%", "European", "EUR (UKB-trained, N=400k)", " eur "):
+        assert G.is_european_only(yes), yes
+    for no in ("EUR, EAS", "multi", "EUR/AFR", "mixed", "EUR100%, EAS", "East Asian", "", None, "NA"):
+        assert not G.is_european_only(no), no
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items())
              if k.startswith("test_") and callable(v)]

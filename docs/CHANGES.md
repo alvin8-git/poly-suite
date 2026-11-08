@@ -3,6 +3,11 @@
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
+## 2026-11-08 - grade_pgs: portability downgrade recognises every European-only label
+- Defect: `bin/grade_pgs.py` compared `training_ancestry == "European"`, so contract labels `EUR`, `EUR100%` and `EUR (UKB-trained...` never triggered the portability downgrade for a non-EUR most-similar population.
+- Fix: helper `is_european_only()` counts `EUR`, `EUR100%`, `European` and strings starting `EUR (` (case-insensitive) as European; mixed / multi-ancestry labels (`EUR, EAS`, `EUR/AFR`, `multi`, `mixed`) stay non-European and are not downgraded.
+- Test: `test_is_european_only_labels`. Docs: Documentation.md section 5 gate table. Re-graded (no rescoring): results/launch78/THAL1 (`pgs_scores.tsv.pre_portability` keeps the old file).
+
 ## 2026-11-08 - `--vcf` ALT fill: multi-record positions (plink2 duplicate-ID abort)
 - Failure: launch77 (THAL1/THAL2) aborted in pgsc_calc `PLINK2_ORIENT`: `--alt1-allele variant ID '9:135681662:G:T' appears multiple times`. Source (THAL1 allsites input): `bcftools call -m` all-sites output has, at some positions, a variant record plus a separate hom-ref record with ALT `.` (e.g. chr9:135681662 `G T 1/1` + `G . 0/0`; chr3:64572064 `A AAAGTAGG 0/1` + `A . 0/0`). Filling the hom-ref twin gave two records with the same CHROM:POS:REF:ALT. Measured on the restricted THAL1 file: 32,870 positions with >1 record (23,057 hom-ref+variant, 8,423 variant+variant, 994 variant+hom-ref, 396 hom-ref+hom-ref) of which 990 had identical REF/ALT pairs after the fill.
 - Fix (`fill_homref_alt()`): records are buffered by (CHROM,POS). A position with >1 record is never filled; its hom-ref (ALT `.`) records are dropped when a variant record is present; a record repeating an earlier REF/ALT is dropped. No two output records share CHROM:POS:REF:ALT. Log `[vcf] alt_filled=N of M; skipped_multirecord=K; dropped_homref_dup=D; dropped_dup=E` and the same fields in `vcf_input.json` / `provenance.json` `parameters.vcf_input_alt_fill`; `--check-input` also reports `duplicate_allele_ids=` (must be 0). Effect on scoring: the dropped hom-ref twin of a variant is not needed (the variant record carries the alleles); unfilled hom-ref+hom-ref positions stay ALT `.` as before.

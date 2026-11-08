@@ -210,7 +210,7 @@ applies gates before anything is shown:
 |---|---|---|
 | Coverage / match-rate | matched scoring variants below the overlap floor | downgrade to D, "not a valid PRS" caveat, suppress headline |
 | Calibration | no ancestry percentile available | grade D, "uncalibrated — needs `--run_ancestry`" |
-| Ancestry portability | sample outside the score's training ancestry | `portability_flag`, cap grade, "reduced accuracy" caveat |
+| Ancestry portability | sample outside the score's training ancestry | `portability_flag`, cap grade, "reduced accuracy" caveat (European-only labels `EUR`, `EUR100%`, `European`, `EUR (...` count as EUR-trained; mixed labels do not) |
 | Absolute risk | percentile + baseline + effect available | convert (odds-scale, sex-resolved); else percentile-only, say so |
 | Multi-score robustness | ≥2 scores per trait disagree (different risk tertiles) | "robustness LOW — treat as uncertain" |
 | Evidence grade | always | A (large multi-ancestry GWAS) … D (thin/unreplicated) |

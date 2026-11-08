@@ -65,6 +65,14 @@ CONTRACT_COLS = [
 ]
 
 
+def is_european_only(label):
+    """True only for European-only training labels: EUR, EUR100%, European, 'EUR (...'.
+    Mixed / multi-ancestry labels ('EUR, EAS', 'EUR/AFR', 'multi', 'mixed') are False."""
+    t = str(label or "").strip()
+    u = t.upper()
+    return u in ("EUR", "EUR100%", "EUROPEAN") or u.startswith("EUR (")
+
+
 def downgrade(g, n=1):
     return GRADES[min(len(GRADES) - 1, GRADES.index(g) + n)] if g in GRADES else "D"
 
@@ -180,7 +188,7 @@ def grade_row(r, cov=None):
                      "reference was applied")
     else:
         # portability: EUR-trained score read outside European ancestry
-        if pop and pop.upper() != "EUR" and m["training_ancestry"] == "European":
+        if pop and pop.upper() != "EUR" and is_european_only(m["training_ancestry"]):
             portability = True
             grade = downgrade(grade)
             notes.append(f"portability: score trained in {m['training_ancestry']} "
