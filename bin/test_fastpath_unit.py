@@ -108,7 +108,7 @@ def test_relabel_awk_matches_tool():
     with gzip.open(os.path.join(t, "s.gz"), "wt") as f:
         f.write("ID\teffect_allele\tPGS1\tPGS2\n1:10:C:A\tC\t0.5\t0\n1:20:A:G\tG\t-1e-05\t2.25\n")
     fastpath.relabel_awk(os.path.join(t, "m.gz"), os.path.join(t, "s.gz"), os.path.join(t, "awk.gz"))
-    subprocess.run(["docker", "run", "--rm", "-v", "/data:/data", "-w", t, fastpath.IMG_UTILS, "bash", "-c",
+    subprocess.run(fastpath.docker_base(t) + [fastpath.IMG_UTILS, "bash", "-c",
                     f"pgscatalog-relabel --maps {t}/m.gz --col_from ID_TARGET --col_to ID_REF --target_file {t}/s.gz "
                     f"--target_col ID --dataset reference --combined --outdir . && mv reference_ALL_relabelled.gz tool.gz"],
                    check=True, capture_output=True)

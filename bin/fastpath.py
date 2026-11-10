@@ -60,9 +60,17 @@ def sha256_file(path, chunk=1 << 24):
     return h.hexdigest()
 
 
+def docker_base(workdir, name=None):
+    """`docker run` prefix honouring the server patch's env vars (same defaults as apply_server_patches.sh P1):
+    OG_MOUNT (default /data) is mounted at the same path; OG_DOCKER_USER (e.g. "--user 1006:1007") is split into args."""
+    mount = os.environ.get("OG_MOUNT", "/data")
+    cmd = ["docker", "run", "--rm"] + (["--name", name] if name else []) + os.environ.get("OG_DOCKER_USER", "").split()
+    return cmd + ["-v", f"{mount}:{mount}", "-w", workdir]
+
+
 def dkr(image, script, workdir, mem_gb=None, env=None, cpus=None, name=None):
-    """Run a bash script in a container with /data mounted; raises on non-zero."""
-    cmd = ["docker", "run", "--rm", "-v", "/data:/data", "-w", workdir]
+    """Run a bash script in a container with $OG_MOUNT (default /data) mounted; raises on non-zero."""
+    cmd = docker_base(workdir)
     if mem_gb:
         cmd += ["--memory", f"{mem_gb}g", "--memory-swap", f"{mem_gb}g"]
     if cpus:
@@ -336,7 +344,7 @@ def run_step(name, image, script, workdir, mem_gb=None, env=None):
     import threading
     os.makedirs(workdir, exist_ok=True)
     cname = f"fp_{os.getpid()}_{name}".replace("/", "_")
-    cmd = ["docker", "run", "--rm", "--name", cname, "-v", "/data:/data", "-w", workdir]
+    cmd = docker_base(workdir, cname)
     if mem_gb:
         cmd += ["--memory", f"{mem_gb}g", "--memory-swap", f"{mem_gb}g"]
     for k, v in (env or {}).items():
