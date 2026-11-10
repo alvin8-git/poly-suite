@@ -78,6 +78,22 @@ auto-uses `$POLY_SCOREFILE_CACHE`, else the first existing known cache dir
 pgsc_calc's `DOWNLOAD_SCOREFILES` (the PGS-Catalog FTP fetch that hung ~66 min on
 2026-07-23; ~13 min even when healthy). The lookup is all-or-nothing, so a partial
 cache transparently falls back to `--pgs_id` (download) — **outputs are identical**.
+
+**Fastpath (opt-in, `--fastpath`; accepted: exact on HG002/HG005/HG006 end to end, 23-32 min per sample; pgsc_calc stays the default).** `bin/fastpath.py` gives the same scores as pgsc_calc but does the
+sample-independent work (scorefile formatting, panel extraction, target matching, panel intersect) once
+in `cache/fastpath/fp-<id>/`; per sample it only restricts the cached match candidates to the sample's own
+variant list and runs the unchanged ancestry/scoring steps. One-off build, then per sample:
+```bash
+bin/fastpath.py build --pgs "PGS...,PGS..." --scorefile-cache cache/scorefiles \
+  --panel /data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst \
+  --ref /data/alvin/ref/GRCh38/hg38.canonical.fa                  # ~80 min, once per PGS list
+bin/run.sh --sample S --pgs "PGS...,PGS..." --outdir results/S --reuse-prep results/S/S.prepped.vcf.gz \
+  --panel .../pgsc_HGDP+1kGP_v1.tar.zst --scorefile-cache cache/scorefiles --fastpath   # or POLY_FASTPATH=1
+```
+A missing, incomplete or mismatching cache is a hard error (no fallback to pgsc_calc, no partial scores).
+pgsc_calc stays the default until the fastpath is accepted. Design, cache key, per-sample missing-site
+handling and acceptance status: [docs/fastpath.md](docs/fastpath.md); equivalence check:
+`bin/compare_fastpath.py TRUTH_SCORE_DIR NEW_SCORE_DIR SAMPLE` (exit 1 on any difference).
 On a cache miss the harmonize run is bounded by `timeout`/retry (`HM_TIMEOUT`,
 `HM_RETRIES`) so a stalled fetch fails loud instead of hanging. See
 [docs/CHANGES.md](docs/CHANGES.md) (2026-07-24, Class-A optimizations).

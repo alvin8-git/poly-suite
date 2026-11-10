@@ -12,6 +12,10 @@
 #          [--work-cache DIR] [--ref REF] [--dry-run]
 #          [--check-input]   # --vcf only: restrict to PGS targets + plink2 import test, then exit
 #          [--nf-timeout SEC]  # wall limit per pgsc_calc scoring run (default NF_TIMEOUT=28800 = 8 h)
+#          [--fastpath [--fastpath-cache DIR]]  # fast per-sample scoring (bin/fastpath.py; env POLY_FASTPATH=1).
+#               Same scores as pgsc_calc, sample-independent work cached once (`bin/fastpath.py build`).
+#               Needs --panel and a complete cache; a missing/mismatching cache is a hard error (no fallback).
+#               pgsc_calc stays the default until the fastpath is accepted (docs/fastpath.md).
 # --vcf: pgsc_calc's PLINK2_VCF runs out of memory on a whole-genome all-sites VCF and passes no
 #   sex to plink2 (chrX aborts the run). The VCF is first restricted to the PGS target positions
 #   (parallel per-contig `bcftools view -r chrN -T targets`) -> $OUTDIR/<S>.targeted.vcf.gz, then staged to
@@ -21,6 +25,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SCOREFILE_CACHE= PGS_META=
+FASTPATH=${POLY_FASTPATH:-} FASTPATH_CACHE=
 CHECK= NF_TIMEOUT=${NF_TIMEOUT:-28800} NF_FAIL_GRACE=${NF_FAIL_GRACE:-600}
 BATCH= MAX_BATCH_BYTES=525000000  # --batch: size-aware bins cap peak RSS. 525MB -> ~35GB worst bin (measured: peak_rss=36.3*GB+15.8), safe 2-3 wide. See docs/memory-optimization-plan.md
 REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
@@ -34,6 +39,7 @@ while [ $# -gt 0 ]; do
     --bootstrap-vcf) BOOT=$2; shift 2;; --reuse-prep) REUSE_PREP=$2; shift 2;;
     --work-cache) WORK_CACHE=$2; shift 2;; --scorefile-cache) SCOREFILE_CACHE=$2; shift 2;;
     --pgs-meta) PGS_META=$2; shift 2;;
+    --fastpath) FASTPATH=1; shift;; --fastpath-cache) FASTPATH_CACHE=$2; FASTPATH=1; shift 2;;
     --batch) BATCH=1; shift;; --max-batch-bytes) MAX_BATCH_BYTES=$2; shift 2;;
     --dry-run) DRY=1; shift;; --check-input) CHECK=1; shift;;
     --nf-timeout) NF_TIMEOUT=$2; shift 2;;
@@ -113,7 +119,7 @@ else
   plan "step 1: stage targeted VCF -> $SCORE_IN.vcf.gz (chrX/chrY/chrM excluded: pgsc_calc passes plink2 no sex)"
   [ -z "$SEX" ] && plan "step 1b: infer sex from VCF chrX non-PAR het; unknown -> no sex"
 fi
-plan "step 3: pgsc_calc score${PANEL:+ + --run_ancestry}"
+if [ -n "$FASTPATH" ]; then plan "step 3: FASTPATH score (bin/fastpath.py; cached match/format/intersect)"; else plan "step 3: pgsc_calc score${PANEL:+ + --run_ancestry}"; fi
 plan "step 4: grade -> contract + provenance + report.html  (sex=${SEX:-auto/none})"
 
 if [ -n "$DRY" ]; then echo "== dry-run: plan only, nothing executed =="; exit 0; fi
@@ -268,6 +274,19 @@ elif [ -n "$BAM" ]; then
   [ -z "$SEX" ] && SEX=$(python3 bin/infer_sex.py "$BAM" | sed -n 's/.*sex=\([a-z]*\).*/\1/p')
 fi
 
+if [ -n "$FASTPATH" ]; then
+  # --- fastpath: same outputs as the pgsc_calc block below, cached sample-independent work ------
+  [ -n "$PANEL" ] || { echo "--fastpath needs --panel (ancestry calibration; the cache is built for it)"; exit 2; }
+  [ -n "$SCOREFILE_CACHE" ] || { echo "--fastpath needs --scorefile-cache covering every --pgs id"; exit 2; }
+  [ -f "$SCORE_IN.vcf.gz" ] || { echo "--fastpath needs the prepped VCF $SCORE_IN.vcf.gz"; exit 2; }
+  rm -rf "$OUTDIR/score"
+  FP_ARGS=(--sample "$SAMPLE" --prepped "$SCORE_IN.vcf.gz" --outdir "$OUTDIR" --pgs "$PGS"
+           --scorefile-cache "$SCOREFILE_CACHE" --panel "$PANEL" --ref "$REF")
+  [ -n "$FASTPATH_CACHE" ] && FP_ARGS+=(--cache "$(readlink -f "$FASTPATH_CACHE")")
+  : > "$OUTDIR/score.log"
+  python3 bin/fastpath.py score "${FP_ARGS[@]}" >> "$OUTDIR/score.log" 2>&1 \
+    || { echo "fastpath scoring failed (no fallback to pgsc_calc) -- see $OUTDIR/score.log"; tail -5 "$OUTDIR/score.log"; exit 1; }
+else
 printf 'sampleset,path_prefix,chrom,format\n%s,%s,,%s\n' "$SAMPLE" "$SCORE_IN" "$FMT" > "$OUTDIR/samplesheet.csv"
 rm -rf "$OUTDIR/score"
 
@@ -317,6 +336,8 @@ else
     --input "$OUTDIR/samplesheet.csv" --target_build GRCh38 "${SCORE_SEL[@]}" --min_overlap 0.1 "${ANC[@]}" \
     -c conf/rootless.config --outdir "$OUTDIR/score" -work-dir "$WORKDIR" "${RESUME[@]}" \
     || { echo "scoring failed/timed out -- see $OUTDIR/score.log"; exit 1; }
+fi
+
 fi
 
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"
