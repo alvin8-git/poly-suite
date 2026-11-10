@@ -15,6 +15,7 @@
 #          [--fastpath [--fastpath-cache DIR]]  # fast per-sample scoring (bin/fastpath.py; env POLY_FASTPATH=1).
 #               Same scores as pgsc_calc, sample-independent work cached once (`bin/fastpath.py build`).
 #               Needs --panel and a complete cache; a missing/mismatching cache is a hard error (no fallback).
+#               Env: POLY_FASTPATH_THREADS (default NPROC or 8), POLY_FASTPATH_MEM_GB (default 100; server needs more).
 #               pgsc_calc stays the default until the fastpath is accepted (docs/fastpath.md).
 # --vcf: pgsc_calc's PLINK2_VCF runs out of memory on a whole-genome all-sites VCF and passes no
 #   sex to plink2 (chrX aborts the run). The VCF is first restricted to the PGS target positions
@@ -282,6 +283,9 @@ if [ -n "$FASTPATH" ]; then
   rm -rf "$OUTDIR/score"
   FP_ARGS=(--sample "$SAMPLE" --prepped "$SCORE_IN.vcf.gz" --outdir "$OUTDIR" --pgs "$PGS"
            --scorefile-cache "$SCOREFILE_CACHE" --panel "$PANEL" --ref "$REF")
+  # resources: POLY_FASTPATH_THREADS (default NPROC, else 8) -> --threads/--score-threads; POLY_FASTPATH_MEM_GB (default 100)
+  FP_ARGS+=(--threads "${POLY_FASTPATH_THREADS:-${NPROC:-8}}" --score-threads "${POLY_FASTPATH_THREADS:-${NPROC:-8}}"
+            --mem-gb "${POLY_FASTPATH_MEM_GB:-100}")
   [ -n "$FASTPATH_CACHE" ] && FP_ARGS+=(--cache "$(readlink -f "$FASTPATH_CACHE")")
   : > "$OUTDIR/score.log"
   python3 bin/fastpath.py score "${FP_ARGS[@]}" >> "$OUTDIR/score.log" 2>&1 \

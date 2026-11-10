@@ -161,3 +161,15 @@ bit-identical single-precision sums).
   ancestry analysis 118/0.3; report 9. Total 1326 s. HG006: 1352 s, same profile.
 * Still above the "under 20 GB" goal: only the delta match step (mmap'd arrow scans). Panel scoring (~6 min),
   aggregate (3 min) and derive intersect (3.4 min) remain per sample.
+
+## Resource knobs and server numbers
+
+`bin/run.sh --fastpath` passes `--threads`, `--score-threads` and `--mem-gb` to `fastpath.py score` from two env vars:
+
+* `POLY_FASTPATH_THREADS` (default: `NPROC`, else 8) - threads for plink2, polars and the containers.
+* `POLY_FASTPATH_MEM_GB` (default 100, unchanged on dev) - docker memory cap of the heavy containers (delta match/merge).
+
+Server (CentOS 7, kernel 3.10, root docker): its cgroup accounting needs more headroom than dev. The one-off
+`build` was killed in MATCH_VARIANTS at `--mem-gb 110` and succeeded with **`--mem-gb 220`**; a per-sample `score` was
+killed in the delta match step (rc=137, 161 GB RSS) at the default 100 GB. Set `POLY_FASTPATH_MEM_GB` (e.g. 200+)
+on the server, and pass `--mem-gb 220` to `fastpath.py build` there.
