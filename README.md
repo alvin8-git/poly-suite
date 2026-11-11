@@ -94,6 +94,10 @@ A missing, incomplete or mismatching cache is a hard error (no fallback to pgsc_
 pgsc_calc stays the default until the fastpath is accepted. Design, cache key, per-sample missing-site
 handling and acceptance status: [docs/fastpath.md](docs/fastpath.md); equivalence check:
 `bin/compare_fastpath.py TRUTH_SCORE_DIR NEW_SCORE_DIR SAMPLE` (exit 1 on any difference).
+
+**Sample names.** pgsc_calc accepts only `[A-Za-z0-9]` sampleset names, so `bin/run.sh` scores under an internal id (the name
+with every non-alphanumeric character removed, `bin/sample_id.py`) and maps the score dir, `pgs_scores.*`, provenance and
+report back to the real name (e.g. `CF_30X`); an empty/colliding id fails immediately (see docs/fastpath.md).
 On a cache miss the harmonize run is bounded by `timeout`/retry (`HM_TIMEOUT`,
 `HM_RETRIES`) so a stalled fetch fails loud instead of hanging. See
 [docs/CHANGES.md](docs/CHANGES.md) (2026-07-24, Class-A optimizations).

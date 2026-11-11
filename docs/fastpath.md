@@ -173,3 +173,27 @@ Server (CentOS 7, kernel 3.10, root docker): its cgroup accounting needs more he
 `build` was killed in MATCH_VARIANTS at `--mem-gb 110` and succeeded with **`--mem-gb 220`**; a per-sample `score` was
 killed in the delta match step (rc=137, 161 GB RSS) at the default 100 GB. Set `POLY_FASTPATH_MEM_GB` (e.g. 200+)
 on the server, and pass `--mem-gb 220` to `fastpath.py build` there.
+
+## Sample names with `_` `.` `-` (internal sampleset id)
+
+pgsc_calc's samplesheet schema allows only `[A-Za-z0-9]` in a sampleset name, and its ancestry step splits file
+names on `_`; production names such as `CF_30X` or `Trio1_Proband` broke `ancestry_analysis` (`KeyError: 'CF_30X'`).
+`bin/run.sh` (both the pgsc_calc and the `--fastpath` branch) now:
+
+1. computes the internal id `SID` = the sample name with every non-alphanumeric character removed
+   (`bin/sample_id.py`); this check runs first, so it fails in seconds on an empty or reserved (`reference`) id, and
+   on a collision when `POLY_SAMPLE_NAMES=n1,n2,...` lists the other samples of a batch (`fastpath.py` itself also
+   refuses a non-alphanumeric `--sample`, and an id equal to a reference-panel IID);
+2. scores under `SID` (samplesheet, `fastpath.py --sample`, `merge_scores.py`);
+3. then `sample_id.py rename` maps the score directory back to the real name: `score/<SID>` -> `score/<name>`, the
+   `<SID>_*` file names, and the sampleset / FID / IID fields of `_pgs.txt.gz` and `_popsimilarity.txt.gz`, the
+   dataset column of `_summary.csv`, `pop_summary.csv`, `_info.json.gz` and `report.html`. It fails loudly if the
+   internal id survives in `_pgs.txt.gz`. `grade_pgs.py`, `pgs_scores.tsv/.json` and `provenance.json` are produced
+   afterwards and carry the real name. Other files in the output dir (`<name>.prepped.vcf.gz`, ...) keep the real name.
+
+`compare_fastpath.py ... --id-map NEWNAME=SAMPLE` declares a renamed sample so an aliased run can be compared against
+the truth of the original sample (only that exact id is mapped). Check: HG002 prepped VCF run as `HG_002`
+(results/fastpath/HG_002_alias) vs results/concord/HG002/score - see the result line below.
+
+Result: HG002 prepped VCF run as `HG_002` through `bin/run.sh --fastpath` (31.2 min wall) vs results/concord/HG002/score with
+`--id-map HG_002=HG002`: 4,830,368 values, 0 differences. pgs_scores.tsv, provenance.json and the score dir carry `HG_002`.

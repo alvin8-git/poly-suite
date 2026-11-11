@@ -11,7 +11,7 @@
      (tiny synthetic example with a missing genotype, an absent site and an ambiguous SNP).
 Exit 1 on any failure.
 """
-import gzip, os, subprocess, sys, tempfile
+import gzip, json, os, subprocess, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import itertools
 
@@ -117,8 +117,45 @@ def test_relabel_awk_matches_tool():
     print("ok  relabel_awk byte-identical to pgscatalog-relabel")
 
 
+def test_sample_id_roundtrip():
+    """AB_12.x -> internal AB12x -> score dir mapped back; collisions / empty / reserved fail loud."""
+    import sample_id as sid
+    assert sid.sid("AB_12.x") == "AB12x" and sid.sid("Proband01") == "Proband01"
+    for bad in ("_.-", "reference", "Reference"):
+        try:
+            sid.sid(bad); raise AssertionError(bad)
+        except SystemExit:
+            pass
+    try:
+        sid.check("AB_12", ["AB.12"]); raise AssertionError("collision")
+    except SystemExit:
+        pass
+    assert sid.check("AB_12", ["AB_12", "CD_3"]) == "AB12"
+    t = tempfile.mkdtemp(); d = os.path.join(t, "AB12x"); os.makedirs(d + "/match"); os.makedirs(d + "/score")
+    with gzip.open(d + "/score/AB12x_pgs.txt.gz", "wt") as f:
+        f.write("sampleset\tFID\tIID\tPGS\tSUM\nAB12x\tAB12x\tAB12x\tPGS1\t1.5\nreference\tHG1\tHG1\tPGS1\t2\n")
+    with gzip.open(d + "/score/AB12x_popsimilarity.txt.gz", "wt") as f:
+        f.write("sampleset\tFID\tIID\tPC1\nAB12x\tAB12x\tAB12x\t0.1\n")
+    with gzip.open(d + "/score/AB12x_info.json.gz", "wt") as f:
+        f.write('{"AB12x": {"x": "AB12x"}}')
+    open(d + "/score/pop_summary.csv", "w").write("Most similar population,AB12x,reference\nEUR,1 (100%),2 (50%)\n")
+    open(d + "/match/AB12x_summary.csv", "w").write("dataset,accession,count\nAB12x,PGS1,3\n")
+    open(d + "/score/report.html", "w").write("<h1>AB12x</h1> AB12xy")
+    sid.rename(t, "AB12x", "AB_12.x")
+    n = os.path.join(t, "AB_12.x")
+    assert os.path.isdir(n) and not os.path.exists(d)
+    rows = gzip.open(n + "/score/AB_12.x_pgs.txt.gz", "rt").read().split("\n")
+    assert rows[1] == "AB_12.x\tAB_12.x\tAB_12.x\tPGS1\t1.5" and rows[2].startswith("reference\tHG1"), rows
+    assert "AB_12.x" in gzip.open(n + "/score/AB_12.x_popsimilarity.txt.gz", "rt").read()
+    assert json.load(gzip.open(n + "/score/AB_12.x_info.json.gz", "rt")) == {"AB_12.x": {"x": "AB_12.x"}}
+    assert open(n + "/score/pop_summary.csv").readline().strip() == "Most similar population,AB_12.x,reference"
+    assert open(n + "/match/AB_12.x_summary.csv").read().startswith("dataset,accession,count\nAB_12.x,")
+    assert open(n + "/score/report.html").read() == "<h1>AB_12.x</h1> AB12xy"
+    print("ok  sample id mapping (AB_12.x <-> AB12x)")
+
+
 if __name__ == "__main__":
-    for fn in (test_encode, test_derive_intersect, test_relabel_awk_matches_tool):
+    for fn in (test_sample_id_roundtrip, test_encode, test_derive_intersect, test_relabel_awk_matches_tool):
         try:
             fn()
         except ImportError as e:

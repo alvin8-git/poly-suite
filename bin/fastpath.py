@@ -628,6 +628,10 @@ def run_ancestry_chain(d, matched, tpf, pre, S, ref, refpre, king, ld, thr, memm
 
 def cmd_score(a):
     t_all = time.time()
+    import re
+    if not re.fullmatch(r"[A-Za-z0-9]+", a.sample) or a.sample.lower() == "reference":
+        die(f"--sample {a.sample!r} is not a valid internal sampleset id ([A-Za-z0-9]+, not 'reference'); "
+            f"bin/run.sh maps names with bin/sample_id.py")
     cache, man = load_cache(a)
     pgs = man["pgs"]
     S = a.sample
@@ -648,6 +652,11 @@ def cmd_score(a):
     for ext in (".pgen", ".psam", ".pvar.zst"):
         if not os.path.isfile(os.path.join(ref, refpre + ext)):
             die(f"cache reference panel file missing: {refpre}{ext}")
+    with open(os.path.join(ref, refpre + ".psam")) as fh:       # the sampleset id must not be a panel IID
+        hdr = fh.readline().lstrip("#").split()
+        ci = hdr.index("IID")
+        if S in {l.split()[ci] for l in fh}:
+            die(f"sampleset id {S!r} equals an IID of the reference panel; rename the sample")
     king = os.path.join(ref, f"{TARGET_BUILD}_HGDP+1kGP.king.cutoff.out.id")
     ld = os.path.join(PGSC_ASSETS, "assets", "ancestry", "high-LD-regions-hg38-GRCh38.txt")
     formatted = sorted(glob.glob(os.path.join(cache, "formatted", "normalised_*")))

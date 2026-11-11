@@ -52,6 +52,10 @@ done
 [ -n "$SAMPLE" ] && [ -n "$PGS" ] && [ -n "$OUTDIR" ] || {
   echo "need --sample --pgs --outdir (and --vcf or --bam)"; exit 2; }
 [ -n "$VCF" ] || [ -n "$BAM" ] || [ -n "$REUSE_PREP" ] || { echo "need --vcf, --bam, or --reuse-prep"; exit 2; }
+# Internal sampleset id: pgsc_calc (and the fastpath) accept only [A-Za-z0-9] in a sampleset name, production sample
+# names contain '_' etc.  Everything scored internally uses $SID; the score dir is mapped back to $SAMPLE below.
+# Fails here, in seconds, on an empty/reserved id or (POLY_SAMPLE_NAMES=n1,n2,...) a collision with another sample.
+SID=$(python3 bin/sample_id.py check "$SAMPLE" ${POLY_SAMPLE_NAMES:+--others "$POLY_SAMPLE_NAMES"}) || exit 2
 mkdir -p "$OUTDIR"
 # pgsc_calc resolves samplesheet path_prefix relative to its own base — all paths absolute
 OUTDIR=$(readlink -f "$OUTDIR")
@@ -246,7 +250,7 @@ elif [ -n "$BAM" ]; then
     echo "[harmonize] scorefile-cache hit (${#SF[@]} files) -> skipping harmonize nextflow run"
   else
     [ -n "$SCOREFILE_CACHE" ] && echo "[harmonize] scorefile-cache miss -> running harmonize" >&2
-    printf 'sampleset,path_prefix,chrom,format\n%s,%s,,vcf\n' "$SAMPLE" "${BOOT%.vcf.gz}" > "$OUTDIR/hm.samplesheet.csv"
+    printf 'sampleset,path_prefix,chrom,format\n%s,%s,,vcf\n' "$SID" "${BOOT%.vcf.gz}" > "$OUTDIR/hm.samplesheet.csv"
     rm -rf "$OUTDIR/hm" "$OUTDIR/work_hm"
     # The harmonize run is the only DOWNLOAD_SCOREFILES-triggering step left once the
     # scorefile cache is the default (the scoring run below uses --scorefile on a hit).
@@ -281,7 +285,7 @@ if [ -n "$FASTPATH" ]; then
   [ -n "$SCOREFILE_CACHE" ] || { echo "--fastpath needs --scorefile-cache covering every --pgs id"; exit 2; }
   [ -f "$SCORE_IN.vcf.gz" ] || { echo "--fastpath needs the prepped VCF $SCORE_IN.vcf.gz"; exit 2; }
   rm -rf "$OUTDIR/score"
-  FP_ARGS=(--sample "$SAMPLE" --prepped "$SCORE_IN.vcf.gz" --outdir "$OUTDIR" --pgs "$PGS"
+  FP_ARGS=(--sample "$SID" --prepped "$SCORE_IN.vcf.gz" --outdir "$OUTDIR" --pgs "$PGS"
            --scorefile-cache "$SCOREFILE_CACHE" --panel "$PANEL" --ref "$REF")
   # resources: POLY_FASTPATH_THREADS (default NPROC, else 8) -> --threads/--score-threads; POLY_FASTPATH_MEM_GB (default 100)
   FP_ARGS+=(--threads "${POLY_FASTPATH_THREADS:-${NPROC:-8}}" --score-threads "${POLY_FASTPATH_THREADS:-${NPROC:-8}}"
@@ -291,7 +295,7 @@ if [ -n "$FASTPATH" ]; then
   python3 bin/fastpath.py score "${FP_ARGS[@]}" >> "$OUTDIR/score.log" 2>&1 \
     || { echo "fastpath scoring failed (no fallback to pgsc_calc) -- see $OUTDIR/score.log"; tail -5 "$OUTDIR/score.log"; exit 1; }
 else
-printf 'sampleset,path_prefix,chrom,format\n%s,%s,,%s\n' "$SAMPLE" "$SCORE_IN" "$FMT" > "$OUTDIR/samplesheet.csv"
+printf 'sampleset,path_prefix,chrom,format\n%s,%s,,%s\n' "$SID" "$SCORE_IN" "$FMT" > "$OUTDIR/samplesheet.csv"
 rm -rf "$OUTDIR/score"
 
 # --scorefile-cache: use locally-cached harmonized scoring files (--scorefile) instead of
@@ -333,7 +337,7 @@ if [ -n "$BATCH" ] && [ -n "$SFDIR" ]; then
     BIN_OUT+=("$bo")
   done
   mkdir -p "$OUTDIR/score"
-  python3 bin/merge_scores.py "$OUTDIR/score" "$SAMPLE" "${BIN_OUT[@]}" >> "$OUTDIR/score.log" 2>&1
+  python3 bin/merge_scores.py "$OUTDIR/score" "$SID" "${BIN_OUT[@]}" >> "$OUTDIR/score.log" 2>&1
 else
   : > "$OUTDIR/score.log"
   run_nf "$OUTDIR/score.log" run pgscatalog/pgsc_calc -profile docker \
@@ -344,6 +348,8 @@ fi
 
 fi
 
+# map the internal sampleset id back to the real sample name in everything downstream reads
+python3 bin/sample_id.py rename "$OUTDIR/score" "$SID" "$SAMPLE" || { echo "sample-id mapping failed (internal id $SID -> $SAMPLE)"; exit 1; }
 [ -n "$SEX" ] && echo "$SEX" > "$OUTDIR/score/sample_sex.txt"
 # raw-VCF ALT-fill counters -> score/vcf_input.json; grade_pgs puts them in provenance.json parameters
 [ -n "$VCF" ] && [ -f "$OUTDIR/vcf_input.json" ] && cp -f "$OUTDIR/vcf_input.json" "$OUTDIR/score/vcf_input.json"

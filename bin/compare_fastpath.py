@@ -3,7 +3,10 @@
 
 Exits 1 on ANY difference beyond floating-point formatting (relative 1e-9), 0 when identical.
 
-usage: compare_fastpath.py TRUTH_SCORE_DIR NEW_SCORE_DIR SAMPLE [--rtol 1e-9]
+usage: compare_fastpath.py TRUTH_SCORE_DIR NEW_SCORE_DIR SAMPLE [--rtol 1e-9] [--id-map NEWNAME=SAMPLE]
+
+--id-map declares that the new run's sample is called NEWNAME (file names and values) where the truth says SAMPLE;
+only that exact ID is mapped, every other value must still be identical.
 
 Compares, for every score and every column:
   * match/<S>_summary.csv        matched counts / coverage rows (exact, row for row)
@@ -59,11 +62,18 @@ class Rep:
             self.diffs.append(f"{what}: {a!r} != {b!r}")
 
 
+ID_MAP = {}          # declared sample-ID mapping NEWNAME -> SAMPLE (--id-map); only that exact string is mapped
+
+
+def _m(x):
+    return ID_MAP.get(x, x) if isinstance(x, str) else x
+
+
 def rows(path, delim):
     with opener(path) as f:
         r = csv.reader(f, delimiter=delim)
-        hdr = next(r)
-        return hdr, list(r)
+        hdr = [_m(x) for x in next(r)]
+        return hdr, [[_m(x) for x in row] for row in r]
 
 
 def cmp_table(rep, tag, pa, pb, delim, key_cols):
@@ -105,6 +115,8 @@ def cmp_json(rep, tag, a, b, path=""):
             rep.diffs.append(f"{tag}{path}: list length {len(a)} vs {len(b)}"); return
         for i, (x, y) in enumerate(zip(a, b)):
             cmp_json(rep, tag, x, y, f"{path}[{i}]")
+    elif isinstance(a, str) and isinstance(b, str) and ID_MAP:
+        rep.eq(f"{tag}:json-value", _m(a), _m(b))
     elif isinstance(a, (int, float)) and isinstance(b, (int, float)):
         rep.num(f"{tag}:json-number", repr(a), repr(b))
     else:
@@ -116,9 +128,14 @@ def main():
     rtol = 1e-9
     if "--rtol" in sys.argv:
         rtol = float(sys.argv[sys.argv.index("--rtol") + 1]); args = [x for x in args if x != str(rtol) and x != sys.argv[sys.argv.index("--rtol") + 1]]
+    if "--id-map" in sys.argv:
+        new, truth = sys.argv[sys.argv.index("--id-map") + 1].split("=")
+        ID_MAP[new] = truth
+        args = [x for x in args if x != sys.argv[sys.argv.index("--id-map") + 1]]
     if len(args) != 3:
         sys.exit(__doc__)
     A, B, S = args
+    NEW = next(iter(ID_MAP), S)
     rep = Rep(rtol)
     pairs = [("match-summary", f"{S}_summary.csv", ",", ["accession", "match_status", "score_pass", "ambiguous",
                                                          "is_multiallelic", "duplicate_best_match", "duplicate_ID", "match_flipped"]),
@@ -127,7 +144,7 @@ def main():
              ("pop_summary", "pop_summary.csv", ",", ["Population"]),
              ("graded-tsv", "pgs_scores.tsv", "\t", ["sample", "pgs_id"])]
     for tag, fname, delim, keys in pairs:
-        pa, pb = find(A, fname), find(B, fname)
+        pa, pb = find(A, fname), find(B, fname.replace(f"{S}_", f"{NEW}_", 1) if fname.startswith(f"{S}_") else fname)
         if pa is None and pb is None:
             continue
         if pa is None or pb is None:
@@ -135,12 +152,13 @@ def main():
                 continue
             rep.diffs.append(f"{tag}: {fname} present in only one dir ({pa} / {pb})"); continue
         cmp_table(rep, tag, pa, pb, delim, keys)
-    pa, pb = find(A, f"{S}_info.json.gz"), find(B, f"{S}_info.json.gz")
+    pa, pb = find(A, f"{S}_info.json.gz"), find(B, f"{NEW}_info.json.gz")
     if pa and pb:
         cmp_json(rep, "info.json", json.load(opener(pa)), json.load(opener(pb)))
     # scoring files: same set, same lines
     fa = {os.path.basename(p): p for p in glob.glob(os.path.join(A, "**", f"{S}_ALL_*.scorefile.gz"), recursive=True)}
-    fb = {os.path.basename(p): p for p in glob.glob(os.path.join(B, "**", f"{S}_ALL_*.scorefile.gz"), recursive=True)}
+    fb = {os.path.basename(p).replace(f"{NEW}_", f"{S}_", 1): p
+          for p in glob.glob(os.path.join(B, "**", f"{NEW}_ALL_*.scorefile.gz"), recursive=True)}
     if set(fa) != set(fb):
         rep.diffs.append(f"scorefiles: names differ {sorted(fa)} vs {sorted(fb)}")
     for n in sorted(set(fa) & set(fb)):
