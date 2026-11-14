@@ -76,7 +76,7 @@ def build(results_dir, ref_fasta=None, panel=None, sample=None, bam=None, params
         "genotype_prep": "force-genotype at scoring loci (bcftools mpileup | call -A -C alleles)",
         "tool_versions": _tool_versions(results_dir),
         "host_tools": {
-            "nextflow": _first_line(["/home/alvin/bin/nextflow", "-v"]),
+            "nextflow": _first_line([os.environ.get("NF", "nextflow"), "-v"]),
             "samtools": _first_line(["samtools", "--version"]),
             "python": _first_line(["python3", "--version"]),
         },

@@ -3,6 +3,7 @@
 network, no BAM needed). Run: python3 bin/tests.py  (or bin/selftest.sh).
 """
 import sys, os
+TMP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scratch", "tests")  # gitignored
 _here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _here)                                 # tests/ (validate_* modules)
 sys.path.insert(0, os.path.join(_here, "..", "bin"))      # bin/ (pipeline modules)
@@ -297,7 +298,7 @@ def test_sample_sex_parsing(tmp="/tmp/poly_sex_test"):
     assert G.sample_sex(tmp) is None        # rejects non male/female
 
 
-def test_vcf_input_sex_and_restrict(tmp="/data/alvin/tmp/polyx/test_vcf_input"):
+def test_vcf_input_sex_and_restrict(tmp=os.path.join(TMP, "test_vcf_input")):
     import sys as _s; _s.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin"))
     import vcf_input as V
     assert V.infer_sex_from_gts(["0/1"] * 40 + ["1/1"] * 60)[0] == "female"      # het 0.40
@@ -337,7 +338,7 @@ def _synth_targets_env(d):
     return ref, sfdir, vcf
 
 
-def test_vcf_target_list_builder_and_cache(d="/data/alvin/tmp/polytarget/test_targets"):
+def test_vcf_target_list_builder_and_cache(d=os.path.join(TMP, "test_targets")):
     import shutil, gzip, io, contextlib
     shutil.rmtree(d, ignore_errors=True)
     ref, sfdir, _ = _synth_targets_env(d)
@@ -359,7 +360,7 @@ def test_vcf_target_list_builder_and_cache(d="/data/alvin/tmp/polytarget/test_ta
     assert (k, n) == (2, 3) and abs(fr - 2 / 3) < 1e-9
 
 
-def test_vcf_restriction_keeps_homref_drops_offtarget(d="/data/alvin/tmp/polytarget/test_restrict"):
+def test_vcf_restriction_keeps_homref_drops_offtarget(d=os.path.join(TMP, "test_restrict")):
     import shutil, subprocess, io
     if not shutil.which("docker"):
         print("  (skipped: no docker for the bcftools container)"); return
@@ -380,7 +381,7 @@ def test_vcf_restriction_keeps_homref_drops_offtarget(d="/data/alvin/tmp/polytar
     assert V.explicit_fraction(q, [l.split("\t")[:2] for l in __import__('gzip').open(targets, 'rt')]) == (3, 3, 1.0)
 
 
-def test_vcf_homref_alt_filled_from_targets(d="/data/alvin/tmp/polyfix/test_altfill"):
+def test_vcf_homref_alt_filled_from_targets(d=os.path.join(TMP, "test_altfill")):
     """Hom-ref target rows (ALT '.') get the scorefile's ALT so pgsc_calc MATCH can pair them;
     variant rows, off-target rows and REF-mismatching rows are left alone; CLI path streams stdin->stdout."""
     import shutil, io, subprocess, sys as _s

@@ -29,8 +29,8 @@ SAMPLE= PGS= OUTDIR= VCF= BAM= PANEL= SEX= BOOT= DRY= REUSE_PREP= WORK_CACHE= SC
 FASTPATH=${POLY_FASTPATH:-} FASTPATH_CACHE=
 CHECK= NF_TIMEOUT=${NF_TIMEOUT:-28800} NF_FAIL_GRACE=${NF_FAIL_GRACE:-600}
 BATCH= MAX_BATCH_BYTES=525000000  # --batch: size-aware bins cap peak RSS. 525MB -> ~35GB worst bin (measured: peak_rss=36.3*GB+15.8), safe 2-3 wide. See docs/memory-optimization-plan.md
-REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
-NF=${NF:-/home/alvin/bin/nextflow}
+REF=${POLY_REF:-}   # GRCh38 FASTA: --ref, else $POLY_REF
+NF=${NF:-$(command -v nextflow || echo nextflow)}
 while [ $# -gt 0 ]; do
   case "$1" in
     --sample) SAMPLE=$2; shift 2;; --pgs) PGS=$2; shift 2;;
@@ -52,6 +52,8 @@ done
 [ -n "$SAMPLE" ] && [ -n "$PGS" ] && [ -n "$OUTDIR" ] || {
   echo "need --sample --pgs --outdir (and --vcf or --bam)"; exit 2; }
 [ -n "$VCF" ] || [ -n "$BAM" ] || [ -n "$REUSE_PREP" ] || { echo "need --vcf, --bam, or --reuse-prep"; exit 2; }
+{ [ -n "$VCF" ] || [ -n "$BAM" ] || [ -n "$FASTPATH" ]; } && [ -z "$REF" ] && { echo "need --ref FASTA (or POLY_REF) for --vcf, --bam or --fastpath"; exit 2; }
+export POLY_REF=$REF   # recorded in provenance.json by grade_pgs.py
 # Internal sampleset id: pgsc_calc (and the fastpath) accept only [A-Za-z0-9] in a sampleset name, production sample
 # names contain '_' etc.  Everything scored internally uses $SID; the score dir is mapped back to $SAMPLE below.
 # Fails here, in seconds, on an empty/reserved id or (POLY_SAMPLE_NAMES=n1,n2,...) a collision with another sample.

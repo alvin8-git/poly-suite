@@ -78,8 +78,8 @@ Limits of the current code:
   outputs must sit under `/data`.
 - `bin/run.sh` runs `nextflow run pgscatalog/pgsc_calc` without `-r`. It uses whichever revision is checked out
   in `~/.nextflow/assets`. Pull v2.3.0 explicitly (see Installation).
-- The defaults for `--ref` and for the Nextflow binary (`$NF`) point to paths on the author's machine. Always
-  pass `--ref`, and set `NF` or put `nextflow` on `PATH` (the smoke test sets `NF` for you).
+- `--bam`, `--vcf` and `--fastpath` need the GRCh38 FASTA: pass `--ref`, or set `POLY_REF` once in your shell.
+  Nextflow is taken from `$NF`, else from `PATH`.
 - On a 128 GB machine, run at most two full-set samples at a time (three of four parallel runs were OOM-killed).
 
 ## Installation
@@ -170,7 +170,7 @@ bin/run.sh --sample S --pgs "PGS...,PGS..." --outdir DIR  (one input route)  [op
 | Option | Effect |
 |---|---|
 | `--panel FILE` | HGDP+1kGP panel; enables ancestry calibration and percentiles. Omit for uncalibrated raw sums. |
-| `--ref FASTA` | GRCh38 FASTA (needed by `--bam`, `--vcf`, `--fastpath`) |
+| `--ref FASTA` | GRCh38 FASTA (needed by `--bam`, `--vcf`, `--fastpath`); default `$POLY_REF` |
 | `--sex male\|female` | sex for absolute risk; otherwise inferred from the BAM or the VCF's chrX |
 | `--scorefile-cache DIR` | cached `*_hmPOS_GRCh38.txt.gz`; default `$POLY_SCOREFILE_CACHE`, then `cache/scorefiles`. Do not point it at `<outdir>/scorefiles`, which run.sh uses as a staging dir. |
 | `--pgs-meta FILE` | `select_pgs.py` metadata for trait names and evidence grades of a custom score set |
@@ -181,7 +181,7 @@ bin/run.sh --sample S --pgs "PGS...,PGS..." --outdir DIR  (one input route)  [op
 | `--check-input` | with `--vcf`: restrict, test the plink2 import, print `CHECK_INPUT_OK` or `CHECK_INPUT_FAILED`, exit |
 | `--dry-run` | print the plan and exit |
 
-Environment variables: `NF` (nextflow binary), `NPROC` (parallel chunks, default 24), `HM_TIMEOUT` / `HM_RETRIES`
+Environment variables: `POLY_REF` (default `--ref`), `NF` (nextflow binary, default from `PATH`), `NPROC` (parallel chunks, default 24), `HM_TIMEOUT` / `HM_RETRIES`
 (harmonize download guard), `NF_FAIL_GRACE`, `POLY_FASTPATH_THREADS`, `POLY_FASTPATH_MEM_GB`,
 `POLY_SAMPLE_NAMES` (fail early on internal-id collisions in a batch). `bin/run.sh --help` prints nothing;
 the option list is in the header of `bin/run.sh`.

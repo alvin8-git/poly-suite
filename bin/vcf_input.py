@@ -19,7 +19,7 @@ an all-sites input survive; a variant-only input yields a sparse file (see expli
 
 ALT fill: `bcftools call -m` (no -C alleles) writes hom-ref rows with ALT ".", and pgsc_calc's MATCH
 needs REF and ALT to equal the scorefile's alleles, so every hom-ref target site would be "unmatched"
-(THAL1 launch76: median match_rate 0.479 vs ~0.90 on the BAM path, where `call -C alleles` puts the
+(non-GIAB all-sites sample, launch76: median match_rate 0.479 vs ~0.90 on the BAM path, where `call -C alleles` puts the
 target ALT on hom-ref rows). fill_homref_alt() therefore sets ALT on hom-ref rows (ALT ".") whose
 (CHROM, POS, REF) is in the allele table (<targets>.alleles.tsv.gz = CHROM POS REF ALT from
 scoring_targets.py, the same builder genotype_prep.sh uses): GT stays 0/0 and AD/ADF/ADR gain a

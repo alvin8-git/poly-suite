@@ -177,7 +177,7 @@ on the server, and pass `--mem-gb 220` to `fastpath.py build` there.
 ## Sample names with `_` `.` `-` (internal sampleset id)
 
 pgsc_calc's samplesheet schema allows only `[A-Za-z0-9]` in a sampleset name, and its ancestry step splits file
-names on `_`; production names such as `CF_30X` or `Trio1_Proband` broke `ancestry_analysis` (`KeyError: 'CF_30X'`).
+names on `_`; production names such as `S_30X` broke `ancestry_analysis` (`KeyError: 'S_30X'`).
 `bin/run.sh` (both the pgsc_calc and the `--fastpath` branch) now:
 
 1. computes the internal id `SID` = the sample name with every non-alphanumeric character removed

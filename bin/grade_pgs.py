@@ -315,7 +315,7 @@ def main():
     if os.path.isfile(_vi):
         _params = {"min_overlap": 0.1, "target_build": "GRCh38", **json.load(open(_vi))}
     provenance.write(RESULTS, sample=sample, sample_sex=_SEX, params=_params,
-                     ref_fasta="/data/alvin/ref/GRCh38/hg38.canonical.fa")
+                     ref_fasta=os.environ.get("POLY_REF") or "unknown")
     report_html.render(RESULTS)
 
     # human card

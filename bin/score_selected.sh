@@ -6,16 +6,17 @@
 #   pass 2  re-score on the prepped full-genotype VCF  (good coverage)
 # Grade separately:  python3 bin/grade_pgs.py results/selected
 set -euo pipefail
-cd /data/alvin/poly-suite
+cd "$(dirname "$0")/.."
 
-BAM=/data/alvin/ref/GIAB/HG001.bwa.sortdup.bqsr.bam
-REF=/data/alvin/ref/GRCh38/hg38.canonical.fa
+BAM=${BAM:?set BAM to the GIAB HG001 GRCh38 BAM}
+REF=${POLY_REF:?set POLY_REF to the GRCh38 FASTA}
+NF=${NF:-$(command -v nextflow || echo nextflow)}
 IDS=$(python3 -c "import json;print(','.join(sorted(json.load(open('results/pgs_catalog_meta.json')))))")
 echo "[selected] auto-selected set: $IDS"
 
 echo "[selected] pass 1 — harmonize scorefiles"
 rm -rf results/selected_hm work_selected_hm
-NXF_ANSI_LOG=false /home/alvin/bin/nextflow run pgscatalog/pgsc_calc -profile docker \
+NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
   --input data/samplesheet.csv --target_build GRCh38 \
   --pgs_id "$IDS" --min_overlap 0.1 \
   -c conf/rootless.config --outdir results/selected_hm -work-dir work_selected_hm \
@@ -37,10 +38,10 @@ echo "[selected] genotype-prep at union of selected loci (~15M)"
 NPROC=32 bin/genotype_prep.sh "$BAM" "$REF" results/prep/HG001_selected.vcf.gz "${SF[@]}"
 
 echo "[selected] pass 2 — re-score on prepped VCF"
-printf 'sampleset,path_prefix,chrom,format\nHG001sel,/data/alvin/poly-suite/results/prep/HG001_selected,,vcf\n' \
+printf 'sampleset,path_prefix,chrom,format\nHG001sel,%s/results/prep/HG001_selected,,vcf\n' "$PWD" \
   > data/samplesheet_selected.csv
 rm -rf results/selected work_selected
-NXF_ANSI_LOG=false /home/alvin/bin/nextflow run pgscatalog/pgsc_calc -profile docker \
+NXF_ANSI_LOG=false "$NF" run pgscatalog/pgsc_calc -profile docker \
   --input data/samplesheet_selected.csv --target_build GRCh38 \
   --pgs_id "$IDS" --min_overlap 0.1 \
   -c conf/rootless.config --outdir results/selected -work-dir work_selected \

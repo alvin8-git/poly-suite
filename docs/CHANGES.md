@@ -1,29 +1,31 @@
 # Changelog
 
+S1 and S2 stand for two non-GIAB samples (names withheld); GIAB samples are named as is.
+
 Notable changes to poly-suite. The shipped-feature list lives in
 [TODO.md](../TODO.md); this file records dated releases and the runs behind them.
 
 ## 2026-11-08 - grade_pgs: portability downgrade recognises every European-only label
 - Defect: `bin/grade_pgs.py` compared `training_ancestry == "European"`, so contract labels `EUR`, `EUR100%` and `EUR (UKB-trained...` never triggered the portability downgrade for a non-EUR most-similar population.
 - Fix: helper `is_european_only()` counts `EUR`, `EUR100%`, `European` and strings starting `EUR (` (case-insensitive) as European; mixed / multi-ancestry labels (`EUR, EAS`, `EUR/AFR`, `multi`, `mixed`) stay non-European and are not downgraded.
-- Test: `test_is_european_only_labels`. Docs: Documentation.md section 5 gate table. Re-graded (no rescoring): results/launch78/THAL1 (`pgs_scores.tsv.pre_portability` keeps the old file).
+- Test: `test_is_european_only_labels`. Docs: Documentation.md section 5 gate table. Re-graded (no rescoring): results/launch78/S1 (`pgs_scores.tsv.pre_portability` keeps the old file).
 
 ## 2026-11-08 - `--vcf` ALT fill: multi-record positions (plink2 duplicate-ID abort)
-- Failure: launch77 (THAL1/THAL2) aborted in pgsc_calc `PLINK2_ORIENT`: `--alt1-allele variant ID '9:135681662:G:T' appears multiple times`. Source (THAL1 allsites input): `bcftools call -m` all-sites output has, at some positions, a variant record plus a separate hom-ref record with ALT `.` (e.g. chr9:135681662 `G T 1/1` + `G . 0/0`; chr3:64572064 `A AAAGTAGG 0/1` + `A . 0/0`). Filling the hom-ref twin gave two records with the same CHROM:POS:REF:ALT. Measured on the restricted THAL1 file: 32,870 positions with >1 record (23,057 hom-ref+variant, 8,423 variant+variant, 994 variant+hom-ref, 396 hom-ref+hom-ref) of which 990 had identical REF/ALT pairs after the fill.
+- Failure: launch77 (S1/S2) aborted in pgsc_calc `PLINK2_ORIENT`: `--alt1-allele variant ID '9:135681662:G:T' appears multiple times`. Source (S1 allsites input): `bcftools call -m` all-sites output has, at some positions, a variant record plus a separate hom-ref record with ALT `.` (e.g. chr9:135681662 `G T 1/1` + `G . 0/0`; chr3:64572064 `A AAAGTAGG 0/1` + `A . 0/0`). Filling the hom-ref twin gave two records with the same CHROM:POS:REF:ALT. Measured on the restricted S1 file: 32,870 positions with >1 record (23,057 hom-ref+variant, 8,423 variant+variant, 994 variant+hom-ref, 396 hom-ref+hom-ref) of which 990 had identical REF/ALT pairs after the fill.
 - Fix (`fill_homref_alt()`): records are buffered by (CHROM,POS). A position with >1 record is never filled; its hom-ref (ALT `.`) records are dropped when a variant record is present; a record repeating an earlier REF/ALT is dropped. No two output records share CHROM:POS:REF:ALT. Log `[vcf] alt_filled=N of M; skipped_multirecord=K; dropped_homref_dup=D; dropped_dup=E` and the same fields in `vcf_input.json` / `provenance.json` `parameters.vcf_input_alt_fill`; `--check-input` also reports `duplicate_allele_ids=` (must be 0). Effect on scoring: the dropped hom-ref twin of a variant is not needed (the variant record carries the alleles); unfilled hom-ref+hom-ref positions stay ALT `.` as before.
-- Test: `test_vcf_homref_alt_filled_from_targets` extended (SNP + hom-ref twin, indel + exact repeat + hom-ref, two hom-ref). Rescoring: results/launch78/{THAL1,THAL2} (launch77 aborted).
+- Test: `test_vcf_homref_alt_filled_from_targets` extended (SNP + hom-ref twin, indel + exact repeat + hom-ref, two hom-ref). Rescoring: results/launch78/{S1,S2} (launch77 aborted).
 
 ## 2026-11-08 - `--vcf`: fill ALT on hom-ref target rows (match-rate defect)
-- Defect: the restriction kept `bcftools call -m` hom-ref rows with `ALT "."` (e.g. `chr1 68082 T . GT:DP:AD 0/0:47:47`); pgsc_calc MATCH needs REF/ALT = scorefile alleles, so every hom-ref target site was unmatched. launch76 THAL1: median `match_rate` 0.479 (151/152 scores < 0.6; pgsc_calc summary ~45-53 % unmatched per score) vs median ~0.90 on the BAM path (launch75 HG002), where `call -C alleles` carries the target ALT. Explicit-genotype fraction was fine (0.9997), so the input itself was correct. The `results/track_d/HG001allsitesB69` ~0.90 figure was a prepped (allele-aware) VCF, not a raw one; the raw path had never been measured at that rate.
+- Defect: the restriction kept `bcftools call -m` hom-ref rows with `ALT "."` (e.g. `chr1 68082 T . GT:DP:AD 0/0:47:47`); pgsc_calc MATCH needs REF/ALT = scorefile alleles, so every hom-ref target site was unmatched. launch76 S1: median `match_rate` 0.479 (151/152 scores < 0.6; pgsc_calc summary ~45-53 % unmatched per score) vs median ~0.90 on the BAM path (launch75 HG002), where `call -C alleles` carries the target ALT. Explicit-genotype fraction was fine (0.9997), so the input itself was correct. The `results/track_d/HG001allsitesB69` ~0.90 figure was a prepped (allele-aware) VCF, not a raw one; the raw path had never been measured at that rate.
 - Fix: `bin/scoring_targets.py` output is now also kept as an allele table (`vcf_targets_<hash>.alleles.tsv.gz`+`.tbi`, CHROM POS REF first-ALT; old caches rebuild once). Each per-contig worker pipes `bcftools view -r chrN -T targets -Ov` through `python3 bin/vcf_input.py fill ALLELES CHROM COUNTS` (`fill_homref_alt()`, `load_alleles()`, `alleles_path()`) and `bgzip`; ALT set only when ALT is `.` and REF equals the table REF, GT stays `0/0`, `AD/ADF/ADR` get a trailing `,0`. Variant rows untouched. Multi-ALT sites: first table ALT only (documented limitation). Streaming, parallel-safe.
 - Reporting: log line `[vcf] alt_filled=N of M hom-ref target rows`; `--check-input` adds `alt_filled=`/`hom_ref_target_rows=`; `run.sh` writes `<outdir>/vcf_input.json` -> `score/vcf_input.json` -> `grade_pgs.py` puts it in `provenance.json` `parameters.vcf_input_alt_fill`.
-- Test: `test_vcf_homref_alt_filled_from_targets`. Rescoring: results/launch77/{THAL1,THAL2}.
+- Test: `test_vcf_homref_alt_filled_from_targets`. Rescoring: results/launch77/{S1,S2}.
 
 ## 2026-11-07 - launch71: base-69 + 13 CircleDNA-gap polygenic scores
 - Why: the OmniGen DTC report needs polygenic cards for CircleDNA-equivalent traits the base set lacks. One PGS per trait, chosen from the PGS Catalog REST API.
 - Criteria: GRCh38 harmonised scorefile available; largest/most recent development GWAS; at least one independent evaluation in the catalog performance records; multi-ancestry preferred. `grade_suggestion` A only with two or more evaluation cohorts outside the UKB development data and AUC/R2/OR reported, else B.
 - Added (trait: id): lean body mass PGS003531; sleep duration PGS003480; insomnia PGS000908; waist circumference PGS003555; male testosterone PGS003559; neuroticism PGS004608; educational attainment PGS003573; allergic disease PGS000800; idiopathic pulmonary fibrosis PGS001791; psoriatic arthritis PGS000198; vitiligo PGS000738; fasting insulin adj. BMI (HOMA-IR) PGS005276; acne PGS019637 (East Asian development only: weak transfer to other ancestries). Androgenetic alopecia: no score exists in the catalog.
-- Machine-readable record: `/data/alvin/tmp/dtcreview/new_pgs.json` (PGS id, n_variants, development ancestry/N, evaluation, scorefile URL). Metadata: `results/launch71/pgs_catalog_meta.json` = launch70 file + 13 entries (`trait_rank` 1, extra `category` key); launch70 entries unchanged. Ids: `results/launch71/pgs_ids.txt` (82 = 69 + 13).
+- Machine-readable record: a local working file (not in the repo) (PGS id, n_variants, development ancestry/N, evaluation, scorefile URL). Metadata: `results/launch71/pgs_catalog_meta.json` = launch70 file + 13 entries (`trait_rank` 1, extra `category` key); launch70 entries unchanged. Ids: `results/launch71/pgs_ids.txt` (82 = 69 + 13).
 - Scorefiles added to `cache/scorefiles` (82/82 present). Scoring parameters unchanged. Driver `scratch/run_launch71.sh` runs HG001 then HG002 sequentially from the BAM (as launch70 did) so the new scores' loci are genotyped; the launch70 prepped VCFs cover only launch70 targets and were not reused. Output `results/launch71/<S>`, timing in `results/launch71/timing.log`.
 - Unverified: Ding 2023 scores (PGS003531/3555/3559/3573) have no development N in the catalog; evaluation is UKB held-out partitions only (grade B).
 
@@ -42,7 +44,7 @@ Notable changes to poly-suite. The shipped-feature list lives in
 
 ## 2026-07-24 — Class-A runtime optimizations (rigor-preserving; outputs unchanged)
 
-Faster runs **without changing any score or output**. Baseline: THAL1/THAL2
+Faster runs **without changing any score or output**. Baseline: S1/S2
 (2026-07-23), ~3.5 h each, from an intact Nextflow trace. Nothing here touches the
 scorefile set/count, scoring parameters, or the graded contract — only where time
 is spent. Validated statically (`bash -n bin/run.sh`, `--dry-run` plan, and a
@@ -82,7 +84,7 @@ is spent. Validated statically (`bash -n bin/run.sh`, `--dry-run` plan, and a
 - *Expected saving.* **−10 to −15 min**, only when ancestry/`--panel` is used.
 
 **3. Deliberately NOT touched: `FORMAT_SCOREFILES` / `MATCH_COMBINE`.**
-These are single-process and memory-bound (89–108 GB RSS in the THAL trace).
+These are single-process and memory-bound (89–108 GB RSS in the S1/S2 trace).
 `cpus`/`maxForks` parallelism directives do **nothing** for them — do not add them
 here; raising concurrency only risks the OOM already documented (2026-07-12). The
 memory fix for those is `--batch` (see `docs/memory-optimization-plan.md`), not cores.

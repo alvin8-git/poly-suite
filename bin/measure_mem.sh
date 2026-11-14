@@ -12,7 +12,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-NF=${NF:-/home/alvin/bin/nextflow}
+NF=${NF:-$(command -v nextflow || echo nextflow)}
 SAMPLE=${SAMPLE:-HG001}
 PREP=${PREP:-results/launch70/HG001/HG001.prepped.vcf.gz}
 CACHE=${CACHE:-cache/scorefiles}

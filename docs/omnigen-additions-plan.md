@@ -143,9 +143,9 @@ python3 bin/select_pgs.py results/pgs_catalog_meta.json 2 all
 # 2. score a sample end-to-end (adds the pinned IDs to --pgs; --pgs-meta carries the pins)
 bin/run.sh --sample HG001 --pgs "PGS002804,PGS000657,PGS002231,PGS002209,PGS002213,PGS001091,<existing ids>" \
   --outdir results/launch70/HG001 \
-  --bam /data/alvin/ref/GIAB/HG001.bwa.sortdup.bqsr.bam \
+  --bam /data/<giab>/HG001.GRCh38.bam \
   --bootstrap-vcf data/HG001_GRCh38_benchmark.vcf.gz \
-  --panel /data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst \
+  --panel /data/<ref>/pgsc/pgsc_HGDP+1kGP_v1.tar.zst \
   --pgs-meta results/pgs_catalog_meta.json --scorefile-cache cache/scorefiles --work-cache work
 ```
 **Real Neanderthal % (separate, needs the panel force-genotyped off the BAM — the PGS-only prepped VCF does not cover archaic loci):** build the production panel per the `resources/neanderthal_panel.tsv` recipe, re-fit `neanderthal_calibration.json` against 1000G, then force-genotype and score:

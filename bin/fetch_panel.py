@@ -3,14 +3,14 @@
 on this box). Resumable via HTTP Range; verifies size; prints progress.
 
 usage: fetch_panel.py [URL] [OUT]
-default: HGDP+1kGP v1 panel -> /data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst
+default: HGDP+1kGP v1 panel -> ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst (relative to the current directory)
 """
 import sys, os, urllib.request
 
 URL = sys.argv[1] if len(sys.argv) > 1 else \
     "https://ftp.ebi.ac.uk/pub/databases/spot/pgs/resources/pgsc_HGDP+1kGP_v1.tar.zst"
 OUT = sys.argv[2] if len(sys.argv) > 2 else \
-    "/data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst"
+    "ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst"
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 tmp = OUT + ".part"

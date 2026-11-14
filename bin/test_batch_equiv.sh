@@ -16,7 +16,7 @@ cd "$(dirname "$0")/.."
 
 SAMPLE=${SAMPLE:-HG001}
 PREP=${PREP:-results/launch70/HG001/HG001.prepped.vcf.gz}
-PANEL=${PANEL:-/data/alvin/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst}
+PANEL=${PANEL:?set PANEL to the pgsc_HGDP+1kGP_v1.tar.zst reference panel}
 CACHE=${CACHE:-cache/scorefiles}
 # 6 small scores incl. two real disease scores (PGS000071/000135) so percentiles exist
 PGS=${PGS:-PGS004700,PGS005161,PGS003442,PGS002299,PGS000071,PGS000135}
