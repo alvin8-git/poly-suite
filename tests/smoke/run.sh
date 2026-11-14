@@ -9,7 +9,7 @@
 #
 # Needs: Docker, Nextflow (on PATH or $NF), network on first use (pulls pgsc_calc and its containers).
 # Not covered: BAM input / genotype_prep.sh, the raw --vcf restriction path, ancestry calibration (--panel),
-# the fastpath. Inputs: see tests/smoke/build_inputs.py. Run from a checkout under /data (run.sh mounts /data).
+# the fastpath. Inputs: see tests/smoke/build_inputs.py. The checkout must sit under $OG_MOUNT (default /data).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 S=tests/smoke

@@ -10,7 +10,7 @@ VCF=$(readlink -f "$1")
 PREFIX="${VCF%.vcf.gz}"
 IMG=${PLINK2_IMG:-ghcr.io/pgscatalog/plink2:2.00a5.10}
 
-docker run --rm -v /data:/data -w "$PWD" "$IMG" \
+docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$IMG" \
   plink2 --vcf "$VCF" --make-pgen \
     --set-all-var-ids '@:#:$r:$a' --new-id-max-allele-len 1000 \
     --out "$PREFIX" >/dev/null 2>&1

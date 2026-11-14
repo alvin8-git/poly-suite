@@ -134,7 +134,7 @@ if [ -n "$DRY" ]; then echo "== dry-run: plan only, nothing executed =="; exit 0
 # ---- execution ----
 BCF_IMG=${BCFTOOLS_IMG:-quay.io/biocontainers/bcftools:1.21--h8b25389_0}
 PLINK2_IMG=${PLINK2_IMG:-ghcr.io/pgscatalog/plink2:2.00a5.10}
-bcf() { docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools "$@"; }
+bcf() { docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$BCF_IMG" bcftools "$@"; }
 
 # (check-input mirrors pgsc_calc's PLINK2_VCF flags: --new-id-max-allele-len 100 missing, --chr 1-22,X,Y,XY)
 # Run one pgsc_calc/nextflow invocation: own process group, wall-clock limit ($NF_TIMEOUT),
@@ -209,7 +209,7 @@ elif [ -z "$BAM" ] && [ -n "$VCF" ]; then
   ALLELES=${TARGETS%.tsv.gz}.alleles.tsv.gz
   export BCF_IMG PWD VCF TARGETS PARTS ALLELES
   printf '%s\n' "${CHROMS[@]}" | xargs -P "$PAR" -I{} bash -c \
-    'docker run --rm -v /data:/data -w "$PWD" "$BCF_IMG" bcftools view -r "$1" -T "$TARGETS" -Ov "$VCF" \
+    'docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$BCF_IMG" bcftools view -r "$1" -T "$TARGETS" -Ov "$VCF" \
        | python3 bin/vcf_input.py fill "$ALLELES" "$1" "$PARTS/$1.fill" | bgzip -c > "$PARTS/$1.vcf.gz"; \
      [ "${PIPESTATUS[0]}${PIPESTATUS[1]}${PIPESTATUS[2]}" = 000 ]' _ {} \
     || { echo "per-contig restriction failed"; exit 1; }
@@ -236,7 +236,7 @@ elif [ -z "$BAM" ] && [ -n "$VCF" ]; then
     echo "check-input: index=$IDX input_records=$IN_ROWS target_positions=$NTARGETS restricted_records=$OUT_ROWS alt_filled=$ALT_FILLED hom_ref_target_rows=$HOMREF_ROWS skipped_multirecord=$SKIP_MULTI dropped_homref_dup=$DROP_HOMREF dropped_dup=$DROP_DUP duplicate_allele_ids=$(bcf query -f '%CHROM:%POS:%REF:%ALT\n' "$OUTDIR/$SAMPLE.targeted.vcf.gz" | uniq -d | wc -l) explicit_genotype_fraction=$FRAC all_sites=$ALLSITES sex=${SEX:-unknown} restricted_size=$(du -h "$SCORE_IN.vcf.gz" | cut -f1) restrict_wall=${T_RESTRICT}s"
     [ "$ALLSITES" = no ] && { echo "CHECK_INPUT_FAILED: input is not an all-sites VCF (explicit genotype at $FRAC of $NTARGETS target positions, need >= 0.5)"; exit 1; }
     rm -rf "$OUTDIR/check_input"; mkdir -p "$OUTDIR/check_input"
-    docker run --rm -v /data:/data -w "$PWD" "$PLINK2_IMG" plink2 --vcf "$SCORE_IN.vcf.gz" \
+    docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$PLINK2_IMG" plink2 --vcf "$SCORE_IN.vcf.gz" \
       --allow-extra-chr --chr 1-22,X,Y,XY --max-alleles 2 --set-all-var-ids '@:#:$r:$a' \
       --new-id-max-allele-len 100 missing --make-pgen --out "$OUTDIR/check_input/$SAMPLE" > "$OUTDIR/check_input/plink2.log" 2>&1 \
       && echo "CHECK_INPUT_OK: plink2 imported $SCORE_IN.vcf.gz ($(grep -vc '^#' "$OUTDIR/check_input/$SAMPLE.pvar" 2>/dev/null) variants, sex=${SEX:-unknown})" \

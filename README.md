@@ -65,17 +65,19 @@ Measured on the development machine (Linux, kernel 5.15, 64 cores, 125 GB RAM):
 | Item | Version or size used here |
 |---|---|
 | Docker | 28.3.2 (rootless works with [`conf/rootless.config`](conf/rootless.config)) |
-| Nextflow | 25.10.4 |
+| Nextflow | 25.10.4, with Java 17 (OpenJDK 17.0.10 here) |
 | pgsc_calc | v2.3.0 (local Nextflow asset; see the pinning note below) |
 | Python 3 | 3.13.2, with `pysam` (needed by `--vcf` input and the Neanderthal estimate) |
+| samtools | 1.23 here; only to index the FASTA (and recorded in `provenance.json` if present) |
 | bcftools / plink2 | not needed on the host: they run in containers (`bcftools:1.21`, `plink2:2.00a5.10`) |
 | Disk | panel 15 GB, GRCh38 FASTA 3.0 GB, scorefile cache for the full trait set 2.7 GB, about 240 MB of prepped VCF per sample; fastpath cache 59 GB |
 | Memory | full trait set: pgsc_calc `FORMAT_SCOREFILES` needs about 35 GB per run, and the `MATCH_COMBINE` step was seen at 89-108 GB RSS; the fastpath caps containers at 100 GB by default |
 
 Limits of the current code:
 
-- `bin/run.sh` mounts `/data` into its containers (`docker run -v /data:/data`), so the checkout, inputs and
-  outputs must sit under `/data`.
+- The containers see only one host directory, mounted at the same path: `$OG_MOUNT` (default `/data`). The
+  checkout, inputs, caches and outputs must all sit under it. Set `OG_DOCKER_USER` (for example
+  `"--user 1000:1000"`) only if your Docker is not rootless and you want files owned by your user.
 - `bin/run.sh` runs `nextflow run pgscatalog/pgsc_calc` without `-r`. It uses whichever revision is checked out
   in `~/.nextflow/assets`. Pull v2.3.0 explicitly (see Installation).
 - `--bam`, `--vcf` and `--fastpath` need the GRCh38 FASTA: pass `--ref`, or set `POLY_REF` once in your shell.
@@ -85,7 +87,8 @@ Limits of the current code:
 ## Installation
 
 ```bash
-cd /data/<your-dir>                      # must be under /data, see Requirements
+export OG_MOUNT=/path/to/workspace         # one directory holding the checkout, inputs and references
+cd "$OG_MOUNT"
 git clone https://github.com/alvin8-git/poly-suite.git
 cd poly-suite
 nextflow pull pgscatalog/pgsc_calc -r v2.3.0     # not run here: v2.3.0 was already the local asset
@@ -120,13 +123,28 @@ OmniGen deployment notes and was not unpacked here.
 # HGDP+1kGP panel from the PGS Catalog FTP (streams with urllib, resumable)
 python3 bin/fetch_panel.py \
   https://ftp.ebi.ac.uk/pub/databases/spot/pgs/resources/pgsc_HGDP+1kGP_v1.tar.zst \
-  /data/<ref-dir>/pgsc/pgsc_HGDP+1kGP_v1.tar.zst
+  "$OG_MOUNT/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst"
 # harmonized scorefiles for a PGS list
 python3 bin/cache_scorefiles.py cache/scorefiles "PGS003442,PGS005161"
 ```
 
-For the FASTA, use any GRCh38 build with `chr`-prefixed contigs (for example UCSC hg38 limited to the canonical
-contigs) and index it with `samtools faidx`.
+**GRCh38 FASTA.** The runs in this repo use UCSC hg38 limited to its 25 canonical contigs (chr1-22, X, Y, M;
+the local `.fai` has exactly these, chr1 = 248,956,422 bp). Download
+`https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz` (938 MB) with any HTTP client, then
+(not run here):
+
+```bash
+gunzip hg38.fa.gz && samtools faidx hg38.fa
+samtools faidx hg38.fa chr{1..22} chrX chrY chrM > hg38.canonical.fa
+samtools faidx hg38.canonical.fa
+export POLY_REF=$PWD/hg38.canonical.fa
+```
+
+**Sample BAMs.** GIAB publishes reads for HG001-HG007 at
+`https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data/` (HG002 is under
+`AshkenazimTrio/HG002_NA24385_son/`). The GIAB BAMs used here were aligned locally with `bwa` to GRCh38, then
+sorted and duplicate-marked with biobambam `bamsormadup` (per their `@PG` header lines). Any bwa-aligned, coordinate-sorted, indexed BAM
+with `chr`-prefixed GRCh38 contigs works as `--bam`.
 
 ## Quick start: smoke test
 
@@ -181,20 +199,32 @@ bin/run.sh --sample S --pgs "PGS...,PGS..." --outdir DIR  (one input route)  [op
 | `--check-input` | with `--vcf`: restrict, test the plink2 import, print `CHECK_INPUT_OK` or `CHECK_INPUT_FAILED`, exit |
 | `--dry-run` | print the plan and exit |
 
-Environment variables: `POLY_REF` (default `--ref`), `NF` (nextflow binary, default from `PATH`), `NPROC` (parallel chunks, default 24), `HM_TIMEOUT` / `HM_RETRIES`
+Environment variables: `OG_MOUNT` (host directory mounted into containers, default `/data`), `OG_DOCKER_USER`, `POLY_REF` (default `--ref`), `NF` (nextflow binary, default from `PATH`), `NPROC` (parallel chunks, default 24), `HM_TIMEOUT` / `HM_RETRIES`
 (harmonize download guard), `NF_FAIL_GRACE`, `POLY_FASTPATH_THREADS`, `POLY_FASTPATH_MEM_GB`,
 `POLY_SAMPLE_NAMES` (fail early on internal-id collisions in a batch). `bin/run.sh --help` prints nothing;
 the option list is in the header of `bin/run.sh`.
 
-### Worked example: GIAB HG002 from a BAM (not run here; a full run takes hours)
+### Worked example: GIAB HG002 from a BAM, full trait set
+
+Steps 1-2 query the PGS Catalog; step 3 takes hours. Only the id extraction (on an existing 155-score metadata
+file) and step 3 with `--dry-run` were run here.
 
 ```bash
-bin/run.sh --sample HG002 --pgs "PGS003442,PGS005161" --outdir results/HG002 \
-  --bam /data/<giab>/HG002.GRCh38.bam --ref /data/<ref>/GRCh38/hg38.canonical.fa \
-  --panel /data/<ref>/pgsc/pgsc_HGDP+1kGP_v1.tar.zst --scorefile-cache cache/scorefiles
+# 1. choose scores: 2 per trait, all tiers (core, extended, gated) -> metadata JSON keyed by PGS id
+python3 bin/select_pgs.py results/meta.json 2 all
+PGS=$(python3 -c "import json; print(','.join(sorted(json.load(open('results/meta.json')))))")
+# 2. cache their harmonized scorefiles (one-time download)
+python3 bin/cache_scorefiles.py cache/scorefiles "$PGS"
+# 3. genotype, score, calibrate, grade
+bin/run.sh --sample HG002 --pgs "$PGS" --pgs-meta results/meta.json --outdir results/HG002 \
+  --bam "$OG_MOUNT/giab/HG002.GRCh38.bam" --ref "$POLY_REF" \
+  --panel "$OG_MOUNT/ref/pgsc/pgsc_HGDP+1kGP_v1.tar.zst" --scorefile-cache cache/scorefiles
 ```
 
-This command was run here with `--dry-run` on local GIAB HG002 files. It printed the plan: scorefile-cache
+`--pgs-meta` supplies trait names and evidence for the grader. Without it, the `trait` column holds the PGS
+id (checked here on the smoke inputs, with and without a 2-entry metadata file).
+
+Step 3 was run here with `--dry-run`, all 155 ids and local GIAB HG002 files. It printed the plan: scorefile-cache
 hit, skip harmonize, genotype-prep, infer sex, `pgsc_calc score + --run_ancestry`, grade. The directory holding
 each `--panel`, `--vcf`, `--reuse-prep` and `--outdir` path must exist, even for `--dry-run`: run.sh resolves the
 paths with `readlink -f` and exits 1 with no message if it cannot. To re-score later without re-genotyping, pass
@@ -206,7 +236,7 @@ paths with `readlink -f` and exits 1 with no message if it cannot. To re-score l
 |---|---|
 | `bin/fastpath.py build --pgs ... --scorefile-cache DIR --panel P --ref FA [--cache-root cache/fastpath] [--threads 8] [--mem-gb 100]` | one-off cache for a PGS list (about 80 min for 154 scores) |
 | `bin/compare_fastpath.py TRUTH_SCORE_DIR NEW_SCORE_DIR SAMPLE [--rtol 1e-9] [--id-map NEW=SAMPLE]` | compare two score dirs; exit 1 on any difference |
-| `bin/select_pgs.py [OUT.json] [TOP_N]` | choose scores per trait from the PGS Catalog API (network; not run here) |
+| `bin/select_pgs.py [OUT.json] [TOP_N] [TIER]` | choose `TOP_N` (default 2) scores per trait from the PGS Catalog API; `TIER` = `core`, `extended` (default), `gated` or `all` (network; not run here) |
 | `bin/grade_pgs.py RESULTS_DIR` | re-grade a finished score dir |
 | `bin/report_html.py SCORE_DIR` | re-render `report.html` from `pgs_scores.tsv` |
 | `bin/neanderthal.py SCORE_DIR [--vcf VCF]` | Neanderthal-ancestry estimate (seed panel, marked PROVISIONAL) |

@@ -36,7 +36,7 @@ force_chunk() {
   cut -f1,2 "$t" > "$t.regions"
   bgzip -f "$t";         tabix -s1 -b2 -e2 -f "$t.gz"
   bgzip -f "$t.regions"; tabix -s1 -b2 -e2 -f "$t.regions.gz"
-  docker run --rm -v /data:/data -w "$PWD" "$IMG" bash -c "
+  docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$IMG" bash -c "
     set -euo pipefail
     bcftools mpileup -f '$REF' -R '$t.regions.gz' -Ou '$BAM' |
     bcftools call -m -A -C alleles -T '$t.gz' -Oz -o '$t.vcf.gz'
@@ -50,10 +50,10 @@ printf '%s\n' "$CHUNK"/part_* | xargs -P "$NPROC" -I{} bash -c 'force_chunk "$@"
 # concat chunks in order (each is coord-sorted; parts are in genome order)
 echo "[genotype-prep] concatenating..."
 mapfile -t PARTS < <(printf '%s\n' "$CHUNK"/part_*.vcf.gz | sort)
-docker run --rm -v /data:/data -w "$PWD" "$IMG" \
+docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$IMG" \
   bcftools concat -Oz -o "$OUT" "${PARTS[@]}"
 tabix -f -p vcf "$OUT"
 rm -rf "$CHUNK"
 echo "[genotype-prep] done -> $OUT"
 # record count from the index we just built — no full decompress of the VCF
-echo "[genotype-prep] $(docker run --rm -v /data:/data -w "$PWD" "$IMG" bcftools index -n "$OUT") genotype records emitted"
+echo "[genotype-prep] $(docker run --rm ${OG_DOCKER_USER:-} -v "${OG_MOUNT:-/data}:${OG_MOUNT:-/data}" -w "$PWD" "$IMG" bcftools index -n "$OUT") genotype records emitted"
