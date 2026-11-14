@@ -53,3 +53,7 @@ manuscript/
 
 # graphify knowledge-graph build output (regenerate with /graphify)
 graphify-out/
+
+# smoke-test inputs are small, public GIAB-derived test data (tests/smoke/run.sh)
+!tests/smoke/*.vcf.gz
+!tests/smoke/*.vcf.gz.tbi

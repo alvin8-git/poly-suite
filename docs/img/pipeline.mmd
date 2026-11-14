@@ -1,0 +1,25 @@
+flowchart LR
+  subgraph IN["Input (one of)"]
+    direction TB
+    BAM["BAM<br/>--bam"] ~~~ VCF["all-sites VCF<br/>--vcf"] ~~~ RP["prepped VCF<br/>--reuse-prep"]
+  end
+  subgraph PREP["Prepare genotypes"]
+    direction TB
+    GP["genotype_prep.sh<br/>force-call<br/>scoring loci"] ~~~ VR["restrict to targets<br/>fill hom-ref ALT"]
+  end
+  subgraph SCORE["Score"]
+    direction TB
+    PG["pgsc_calc 2.3.0<br/>Nextflow + Docker<br/>default"] ~~~ FP["fastpath.py<br/>opt-in"]
+  end
+  SF[("PGS scorefiles")]
+  PANEL[("HGDP+1kGP<br/>panel, optional")]
+  GR["grade_pgs.py<br/>gates"]
+  OUT["pgs_scores.tsv<br/>provenance.json<br/>report.html"]
+  BAM --> GP
+  VCF --> VR
+  GP --> PG
+  VR --> PG
+  RP --> PG
+  SF --> PREP
+  PANEL -.-> SCORE
+  SCORE --> GR --> OUT
