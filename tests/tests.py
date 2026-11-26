@@ -369,7 +369,8 @@ def test_vcf_restriction_keeps_homref_drops_offtarget(d=os.path.join(TMP, "test_
     import vcf_input as V
     targets, n = V.get_targets(sfdir, ["PGS000001"], sfdir, ref, log=io.StringIO())
     img = os.environ.get("BCFTOOLS_IMG", "quay.io/biocontainers/bcftools:1.21--h8b25389_0")
-    bcf = ["docker", "run", "--rm", "-v", "/data:/data", "-w", d, img, "bcftools"]
+    import fastpath
+    bcf = fastpath.docker_base(d) + [img, "bcftools"]
     subprocess.run(bcf + ["view", "-Oz", "-o", vcf + ".gz", vcf], check=True)
     subprocess.run(bcf + ["index", "-t", vcf + ".gz"], check=True)
     out = os.path.join(d, "targeted.vcf.gz")

@@ -63,7 +63,7 @@ def sha256_file(path, chunk=1 << 24):
 def docker_base(workdir, name=None):
     """`docker run` prefix honouring the server patch's env vars (same defaults as apply_server_patches.sh P1):
     OG_MOUNT (default /data) is mounted at the same path; OG_DOCKER_USER (e.g. "--user 1006:1007") is split into args."""
-    mount = os.environ.get("OG_MOUNT", "/data")
+    mount = os.environ.get("OG_MOUNT") or "/data"
     cmd = ["docker", "run", "--rm"] + (["--name", name] if name else []) + os.environ.get("OG_DOCKER_USER", "").split()
     return cmd + ["-v", f"{mount}:{mount}", "-w", workdir]
 
